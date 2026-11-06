@@ -1,0 +1,2206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
+<meta property="og:title" content="רכילותא · מישהו קרא את כל הצ'אט שלכם">
+<meta property="og:description" content="קיבלתם דוח. תפתחו, זה מצחיק. ומדויק. מדי.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://hthr63-prog.github.io/rechiluta/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#22163F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>רכילותא</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Karantina:wght@700&family=Rubik:wght@400;500;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style id="rk-css">
+/* Layout: a magazine long-read column (max 700px) with WhatsApp evidence blocks; a full-screen tap-through story overlay for the reveal. */
+:root{
+  --bg:#FBF8F4; --surface:#FFFFFF; --ink:#1B1726; --muted:#6A6378; --line:#E9E2DA;
+  --pink:#E8285F; --yolk:#FFC53D; --teal:#0E9E90; --violet:#5B3FE0; --plum:#22163F;
+  --pink-soft:#FDE6EC; --chip:#F2EDE6; --hl:#FFE08A;
+  --wa-bg:#EFE7DD; --wa-in:#FFFFFF; --wa-out:#D9FDD3; --wa-ink:#111B21; --wa-meta:#667781;
+  --serif:"Frank Ruhl Libre","Times New Roman",serif;
+  --display:"Karantina","Rubik",system-ui,sans-serif;
+  --body:"Rubik","Heebo","Arial Hebrew",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13111A; --surface:#1D1A26; --ink:#F3EFF8; --muted:#A39CB2; --line:#2E2A3A;
+  --pink:#FF5C8A; --yolk:#FFCF5C; --teal:#32D1C1; --violet:#9C88FF; --plum:#0B0912;
+  --pink-soft:#3A1824; --chip:#262230; --hl:#6B5418;
+  --wa-bg:#0B141A; --wa-in:#202C33; --wa-out:#005C4B; --wa-ink:#E9EDEF; --wa-meta:#8696A0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13111A; --surface:#1D1A26; --ink:#F3EFF8; --muted:#A39CB2; --line:#2E2A3A;
+  --pink:#FF5C8A; --yolk:#FFCF5C; --teal:#32D1C1; --violet:#9C88FF; --plum:#0B0912;
+  --pink-soft:#3A1824; --chip:#262230; --hl:#6B5418;
+  --wa-bg:#0B141A; --wa-in:#202C33; --wa-out:#005C4B; --wa-ink:#E9EDEF; --wa-meta:#8696A0; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+#app{max-width:700px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 80px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.mast{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--display);font-weight:700;font-size:58px;line-height:.8;color:var(--ink);text-decoration:none}
+.logo span{color:var(--pink)}
+.mast small{color:var(--muted);font-size:13px;max-width:24ch;text-align:end}
+.newchat{padding:8px 14px;font-size:14px;color:var(--pink)}
+
+/* upload */
+.hero{display:flex;flex-direction:column;gap:16px}
+.hero h1{font-family:var(--serif);font-size:clamp(30px,7vw,44px);line-height:1.1;font-weight:900}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 55%,var(--hl) 55%)}
+.hero .sub{font-size:17px;color:var(--muted)}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:28px 18px;border:2.5px dashed var(--pink);border-radius:20px;background:var(--surface);transition:transform .15s,background .15s}
+.drop.over{transform:scale(1.01);background:var(--pink-soft)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.drop b{font-size:18px}
+.drop span{color:var(--muted);font-size:14px}
+.drop .big{font-family:var(--display);font-size:52px;line-height:.9;color:var(--pink)}
+.howto{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:2px 16px}
+.howto summary{cursor:pointer;padding:10px 0;font-weight:500}
+.howto ol{margin:0 0 12px;padding-inline-start:20px;color:var(--muted);font-size:15px}
+.howto h4{margin:8px 0 2px;font-size:14px}
+.privacy{font-size:13px;color:var(--muted)}
+.label{font-size:12.5px;letter-spacing:.06em;font-weight:700;color:var(--muted)}
+.saved{display:flex;flex-direction:column;gap:8px}
+.saved a{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.saved a small{color:var(--muted);flex:none}
+.srow{display:flex;gap:6px;align-items:stretch}
+.srow a{flex:1;min-width:0}
+.srow a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ib{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:0 12px;font-size:13.5px;font-weight:500}
+.privbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;font-size:14px}
+.privbox ul{margin:0;padding-inline-start:18px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.privbox .btn{padding:8px 16px;font-size:14px;color:var(--pink)}
+.sheet{background:var(--plum);color:#F4EEFF;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:12px;width:100%;max-width:460px}
+.sheet h3{font-family:var(--serif);font-size:24px;font-weight:900;margin:0}
+.sheet p{font-size:14.5px;color:#D9D0F0;text-align:start}
+.sheet .fine{font-size:12.5px;color:#B8AEDA}
+.sheet .link{display:flex;gap:8px}
+.sheet input{flex:1;min-width:0;font:inherit;font-size:13px;padding:10px 12px;border-radius:12px;border:0;background:rgba(255,255,255,.12);color:#fff;direction:ltr}
+.sheet .btn.ghost{color:#fff}
+
+/* setup */
+.setup{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.setup h2{font-family:var(--serif);font-size:28px;line-height:1.15}
+.setup .meta{color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 14px;font-weight:500;font-size:15px}
+.chip[aria-pressed="true"]{border-color:var(--pink);background:var(--pink-soft)}
+.personas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.persona{display:flex;gap:10px;align-items:center;text-align:start;padding:11px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.persona .av{font-size:28px;width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--chip)}
+.persona b{display:block;font-size:15px}
+.persona small{display:block;color:var(--muted);font-size:12.5px;line-height:1.3}
+.persona[aria-pressed="true"]{border-color:var(--pink);background:var(--pink-soft)}
+.persona[aria-pressed="true"] .av{background:var(--pink)}
+.note{font-size:13.5px;color:var(--muted);background:var(--chip);padding:10px 12px;border-radius:10px}
+
+.btn{border:0;border-radius:999px;padding:12px 22px;font-weight:700;background:var(--pink);color:#fff;display:inline-flex;gap:8px;align-items:center;justify-content:center;text-decoration:none;font-size:15.5px}
+.btn.ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.btn.light{background:#fff;color:#22163F}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn.big{padding:15px 26px;font-size:17px}
+.btn:disabled{opacity:.5;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--plum);color:#F4EEFF;padding:12px 16px;border-radius:14px;font-size:14px}
+.banner b{color:#FFC53D}
+.err{background:var(--pink-soft);border-radius:12px;padding:12px 14px;font-size:14.5px}
+
+/* loading */
+.loading{display:flex;flex-direction:column;gap:16px;padding:8px 0}
+.lhead{display:flex;gap:14px;align-items:center}
+.lhead .av{font-size:56px;animation:bob 1.3s ease-in-out infinite;flex:none}
+.lhead b{display:block;font-family:var(--serif);font-size:24px;line-height:1.15}
+.lhead span{color:var(--muted);font-size:14px}
+.prog{height:10px;border-radius:999px;background:var(--chip);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--violet));border-radius:inherit;transition:width .6s}
+.feed{display:flex;flex-direction:column;gap:8px}
+.feed div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:15px;animation:pop .5s both}
+.feed small{display:block;color:var(--muted);font-size:12px;font-weight:700}
+.headprev{font-family:var(--serif);font-size:26px;font-weight:900;line-height:1.15}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-6deg)}}
+@keyframes pop{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* long read */
+.lr{display:flex;flex-direction:column;gap:22px}
+.by{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted)}
+.by i{font-style:normal;font-size:24px;width:42px;height:42px;border-radius:50%;background:var(--chip);display:grid;place-items:center;flex:none}
+.lr-h{font-family:var(--serif);font-weight:900;font-size:clamp(34px,8.6vw,54px);line-height:1.06;letter-spacing:-.3px}
+.lr-dek{font-size:19px;line-height:1.5;color:var(--muted);font-weight:500}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.prose{font-size:17.5px;line-height:1.8;display:flex;flex-direction:column;gap:16px}
+.prose b{font-weight:800;background:linear-gradient(transparent 62%,var(--hl) 62%)}
+.sect{display:flex;flex-direction:column;gap:16px;padding-top:26px;border-top:1px solid var(--line)}
+.sect-h{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.sect-h .ic{font-size:30px;width:58px;height:58px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 6px 18px rgba(30,20,60,.08)}
+.sect-h h2{font-family:var(--serif);font-weight:900;font-size:clamp(27px,6.4vw,36px);line-height:1.15}
+.reveal{font-family:var(--serif);font-weight:900;font-size:clamp(24px,5.8vw,30px);line-height:1.3;padding:18px 20px;border-radius:18px;background:var(--plum);color:#FFF6DC;text-align:center}
+.reveal b{background:none}
+.bignum{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:6px 0}
+.bignum b{font-family:var(--display);font-size:72px;line-height:.85;color:var(--pink);background:none}
+.bignum span{font-size:16px;color:var(--muted);flex:1;min-width:12ch}
+.after{font-size:16.5px;line-height:1.7;color:var(--ink);font-style:italic}
+.prose .sub{font-family:var(--serif);font-weight:900;font-size:24px;line-height:1.25;margin-top:14px;padding-top:16px;border-top:1px dashed var(--line)}
+.prose .sub:first-child{margin-top:0;padding-top:0;border-top:0}
+.aside{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:16px;background:var(--chip);border-inline-start:4px solid var(--violet);font-size:15.5px;line-height:1.55}
+.aside[data-w="savta"]{border-color:var(--pink)} .aside[data-w="sports"]{border-color:var(--teal)} .aside[data-w="roast"]{border-color:var(--yolk)}
+.aside i{font-style:normal;font-size:24px;line-height:1.2;flex:none}
+.aside b{display:block;font-size:12.5px;color:var(--muted);background:none;font-weight:700}
+.plist{margin:0;padding-inline-start:24px;display:flex;flex-direction:column;gap:8px}
+.plist li::marker{color:var(--pink);font-weight:800}
+.gloss{margin:0;display:flex;flex-direction:column;gap:10px}
+.gloss div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.gloss dt{font-family:var(--serif);font-weight:900;font-size:20px}
+.gloss dd{margin:2px 0 0;font-size:16px;line-height:1.6;color:var(--muted)}
+
+/* whatsapp evidence */
+.wa{background:var(--wa-bg);border-radius:18px;padding:12px 10px;display:flex;flex-direction:column;gap:4px;background-image:radial-gradient(rgba(120,100,80,.09) 1px,transparent 1.4px);background-size:14px 14px}
+.wa .day{align-self:center;background:var(--wa-in);color:var(--wa-meta);font-size:12px;padding:3px 10px;border-radius:8px;margin:4px 0;box-shadow:0 1px .5px rgba(0,0,0,.1)}
+.wa .m{max-width:84%;padding:6px 9px 4px;border-radius:9px;font-size:15.5px;line-height:1.45;color:var(--wa-ink);box-shadow:0 1px .5px rgba(0,0,0,.13);white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+.wa .m.in{align-self:flex-start;background:var(--wa-in);border-start-start-radius:2px}
+.wa .m.out{align-self:flex-end;background:var(--wa-out);border-start-end-radius:2px}
+.wa .m .n{display:block;font-size:12.5px;font-weight:700;margin-bottom:1px}
+.wa .m .tm{display:block;text-align:end;font-size:11px;color:var(--wa-meta);margin-top:1px}
+.wa .m .tm em{font-style:normal;color:#53BDEB;margin-inline-start:3px}
+.wa .m.media{font-style:italic;color:var(--wa-meta)}
+
+/* cast etc */
+.chars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.char{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.char .nm{font-family:var(--serif);font-size:30px;font-weight:900;line-height:1}
+.char .role{display:inline-block;align-self:flex-start;background:var(--yolk);color:#22163F;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px}
+.char p{font-size:15px}
+.char dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.char dt{color:var(--muted)} .char dd{margin:0}
+.char q{display:block;font-size:14.5px;border-inline-start:3px solid var(--pink);padding-inline-start:10px;color:var(--muted);quotes:none}
+.mini{font-size:12.5px;color:var(--muted)}
+.awards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.award{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--pink-soft);min-width:0}
+.award .t{font-size:13px;font-weight:700;color:var(--pink)}
+.award .w{font-family:var(--serif);font-size:26px;font-weight:900;line-height:1.05}
+.award .y{font-size:14px;color:var(--muted)}
+.award.data{background:var(--chip)} .award.data .t{color:var(--violet)}
+.scores{display:flex;flex-direction:column;gap:12px}
+.score{display:grid;grid-template-columns:5em 1fr 3em;gap:10px;align-items:center;font-weight:500}
+.bar{height:14px;border-radius:999px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:inherit;background:var(--pink)}
+.score .bar{height:18px}
+.score:nth-child(2) .bar i{background:var(--teal)} .score:nth-child(3) .bar i{background:var(--violet)} .score:nth-child(4) .bar i{background:var(--yolk)}
+.predict{background:var(--yolk);color:#22163F;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px;font-size:17px}
+.predict b{font-family:var(--serif);font-size:28px;font-weight:900}
+.predict .so b,.predict p b{font-family:inherit;font-size:inherit}
+.predict .so{font-weight:700}
+
+/* appendix */
+.apx{display:flex;flex-direction:column;gap:16px;padding-top:26px;border-top:3px double var(--line)}
+.apx>h2{font-family:var(--serif);font-size:30px;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.stat b{display:block;font-family:var(--display);font-size:42px;line-height:1}
+.stat span{font-size:13px;color:var(--muted)}
+.stat:nth-child(3n+1) b{color:var(--pink)} .stat:nth-child(3n+2) b{color:var(--violet)} .stat:nth-child(3n) b{color:var(--teal)}
+.share{display:flex;flex-direction:column;gap:8px}
+.share .row{display:grid;grid-template-columns:minmax(0,7.5em) 1fr auto;gap:10px;align-items:center;font-size:14px}
+.share .row b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.share .row:nth-child(4n+2) .bar i{background:var(--violet)} .share .row:nth-child(4n+3) .bar i{background:var(--teal)} .share .row:nth-child(4n+4) .bar i{background:var(--yolk)}
+.tug{display:flex;height:34px;border-radius:999px;overflow:hidden;font-weight:700;font-size:14px}
+.tug div{display:flex;align-items:center;padding:0 12px;color:#fff;min-width:0;white-space:nowrap;overflow:hidden}
+.tug div:first-child{background:var(--pink)} .tug div:last-child{background:var(--violet);justify-content:flex-end}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto;min-width:520px}
+.chart h3{font-size:15px;margin-bottom:8px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;min-width:0}
+.fact b{display:block;font-size:17px}
+.emo{display:flex;gap:10px;flex-wrap:wrap}
+.emo div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 12px;text-align:center;min-width:64px}
+.emo div span{display:block;font-size:30px;line-height:1.2}
+.emo div small{color:var(--muted);font-size:12px}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.words span{background:var(--chip);border-radius:999px;padding:4px 12px;font-size:14px}
+.words span small{color:var(--muted)}
+
+/* save / share */
+.savebox{background:var(--plum);color:#F4EEFF;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.savebox h3{font-family:var(--serif);font-size:24px;font-weight:900}
+.savebox p{font-size:14.5px;color:#D9D0F0}
+.savebox .link{display:flex;gap:8px}
+.savebox input{flex:1;min-width:0;font:inherit;font-size:13px;padding:10px 12px;border-radius:12px;border:0;background:rgba(255,255,255,.12);color:#fff;direction:ltr}
+.savebox .btn.ghost{color:#fff}
+
+/* ask */
+.ask{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.thread{display:flex;flex-direction:column;gap:8px;max-height:480px;overflow-y:auto}
+.msg{max-width:88%;padding:9px 13px;border-radius:14px;font-size:15.5px;white-space:pre-wrap;word-wrap:break-word}
+.msg.u{align-self:flex-start;background:var(--violet);color:#fff}
+.msg.a{align-self:flex-end;background:var(--chip)}
+.sugs{display:flex;flex-wrap:wrap;gap:6px}
+.sugs button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13.5px}
+.askrow{display:flex;gap:8px}
+.askrow input{flex:1;min-width:0;font:inherit;padding:11px 14px;border-radius:999px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+
+/* story */
+.story{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#000;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.story .stage{position:relative;width:100%;height:100%;max-width:480px;overflow:hidden}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:16px;padding:calc(64px + env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));overflow:hidden}
+.slide.on{display:flex}
+.bars{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));inset-inline:12px;display:flex;gap:3px;z-index:3}
+.bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden}
+.bars i b{display:block;height:100%;width:0;background:#fff}
+.story .x{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));inset-inline-end:10px;z-index:4;width:40px;height:40px;border:0;border-radius:50%;background:rgba(0,0,0,.25);color:#fff;font-size:22px;line-height:1}
+.story .hint{position:absolute;bottom:calc(12px + env(safe-area-inset-bottom,0px));inset-inline:0;text-align:center;font-size:12px;color:rgba(255,255,255,.6);z-index:3;pointer-events:none}
+.s-k{font-size:13px;font-weight:700;letter-spacing:.08em;opacity:.8}
+.s-h{font-family:var(--display);font-weight:700;line-height:.86;font-size:clamp(64px,19vw,108px)}
+.s-t{font-family:var(--serif);font-weight:900;line-height:1.1;font-size:clamp(30px,8.4vw,42px)}
+.s-p{font-size:19px;line-height:1.45;font-weight:500}
+.s-p b{font-weight:800}
+.s-s{font-size:15.5px;line-height:1.5}
+.s-av{font-size:88px;line-height:1}
+.s-rows{display:flex;flex-direction:column;gap:10px}
+.s-row{display:grid;grid-template-columns:minmax(0,6em) 1fr auto;gap:10px;align-items:center;font-weight:700}
+.s-row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-bar{height:22px;border-radius:999px;background:rgba(255,255,255,.22);overflow:hidden}
+.s-bar i{display:block;height:100%;width:0;border-radius:inherit;background:currentColor;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.slide.on .s-bar i{width:var(--v)}
+.s-wa{display:flex;flex-direction:column;gap:4px}
+.s-wa .m{max-width:90%;padding:7px 11px;border-radius:10px;font-size:16px;color:#111B21;background:#fff;align-self:flex-start;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.s-wa .m.out{background:#D9FDD3;align-self:flex-end}
+.s-wa .m small{display:block;font-size:11.5px;font-weight:700;color:#667781}
+.s-card{background:rgba(0,0,0,.18);border-radius:16px;padding:12px 14px}
+.s-emo{display:flex;gap:14px;flex-wrap:wrap;font-size:52px;line-height:1}
+.s-emo small{display:block;font-size:14px;text-align:center;font-weight:700;margin-top:4px}
+.s-chip{display:inline-block;align-self:flex-start;background:#fff;color:#22163F;font-weight:800;padding:4px 14px;border-radius:999px;font-size:16px}
+.s-btns{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+@media (prefers-reduced-motion:no-preference){
+  .slide.on .pop{animation:spop .55s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:calc(var(--i,0) * 140ms)}
+  @keyframes spop{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){.s-bar i{transition:none}.lhead .av{animation:none}.feed div{animation:none}}
+
+.modal{position:fixed;inset:0;z-index:60;background:rgba(10,6,20,.84);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:max(20px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal img{max-height:72vh;width:auto;max-width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal p{color:#F4EEFF;font-size:14px;text-align:center}
+.modal .btn.ghost{color:#fff}
+
+
+/* fun layer */
+.ticker{background:var(--yolk);color:#22163F;border-radius:18px;padding:14px 16px;font-size:16.5px;font-weight:500;line-height:1.5;min-height:3.6em}
+.ticker small{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;opacity:.7}
+.ticker.in{animation:pop .5s both}
+.quiz{background:var(--surface);border:2px solid var(--violet);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(91,63,224,.12)}
+.qk{font-size:12.5px;font-weight:700;color:var(--violet)}
+.qq{font-family:var(--serif);font-weight:900;font-size:23px;line-height:1.25}
+.qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qopts.big .qo{font-size:30px;padding:10px}
+.qo{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px;font-weight:700;font-size:15.5px;transition:transform .12s,background .2s,border-color .2s;min-width:0;overflow-wrap:anywhere}
+.qo:not(:disabled):hover{transform:translateY(-2px);border-color:var(--violet)}
+.qo:not(:disabled):active{transform:scale(.97)}
+.qo.right{background:#D9FDD3;border-color:#25A55F;color:#14532D}
+.qo.wrong{background:var(--pink-soft);border-color:var(--pink);animation:shake .4s}
+.qo:disabled:not(.right):not(.wrong){opacity:.55}
+.qwhy{font-size:15px;color:var(--muted);min-height:1.5em}
+.qquote{align-self:flex-start;max-width:92%;background:var(--wa-in);color:var(--wa-ink);padding:9px 13px;border-radius:12px;border-start-start-radius:3px;font-size:16px;line-height:1.45;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.qdots{display:flex;gap:4px;flex-wrap:wrap}
+.qdots i{width:14px;height:6px;border-radius:3px;background:var(--line);transition:background .3s,width .3s}
+.qdots i.now{background:var(--violet);width:22px}.qdots i.ok{background:#25A55F}.qdots i.no{background:var(--pink)}
+.qscore{font-family:var(--display);font-size:90px;line-height:.9;color:var(--violet)}
+.feed .ph{color:var(--muted);font-style:italic;border-style:dashed}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.floaty{position:fixed;z-index:80;font-size:26px;pointer-events:none;animation:floaty var(--d,1200ms) ease-out forwards}
+@keyframes floaty{to{transform:translate(var(--dx,0),-160px) scale(1.4);opacity:0}}
+.confetti{position:fixed;inset:0;z-index:90;pointer-events:none}
+.ready{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.ready .readyic{font-size:72px;line-height:1;animation:bob 1.2s ease-in-out infinite}
+.ready p{font-family:var(--serif);font-size:20px;font-weight:700;color:#fff!important;text-align:center!important}
+.ready .actions{justify-content:center}
+.react{display:flex;gap:8px;justify-content:center;padding-top:4px}
+.rx{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:20px;display:inline-flex;align-items:center;gap:4px;transition:transform .12s}
+.rx:active{transform:scale(1.25)}
+.rx small{font-size:12.5px;color:var(--muted);font-weight:700}
+.rx small:empty{display:none}
+.linkin{width:100%;font:inherit;font-size:12px;padding:9px 12px;border-radius:12px;border:0;background:rgba(255,255,255,.1);color:#D9D0F0;direction:ltr;text-overflow:ellipsis}
+.setup{position:relative;overflow:hidden}
+.setup>*{position:relative;z-index:1}
+.setup .bubs{position:absolute;inset:0;z-index:0;pointer-events:none}
+.bub{position:absolute;bottom:-40px;max-width:60%;padding:5px 10px;border-radius:12px;font-size:13px;background:var(--wa-out);color:var(--wa-ink);opacity:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:rise var(--d,3s) ease-out var(--w,0s) forwards}
+.bub.in{background:var(--wa-in);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+@keyframes rise{10%{opacity:.85}80%{opacity:.5}100%{transform:translateY(-560px);opacity:0}}
+.chip .av0{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;color:#fff;font-size:12.5px;font-weight:800;margin-inline-end:6px;vertical-align:middle}
+.drop{overflow:hidden}
+.drop .big{animation:wiggle 3.5s ease-in-out infinite}
+@keyframes wiggle{0%,80%,100%{transform:none}85%{transform:rotate(-3deg) scale(1.05)}90%{transform:rotate(3deg) scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.bub,.drop .big,.ready .readyic,.ticker.in{animation:none}.bub{display:none}}
+
+
+/* ===== UX layer: micro-interactions, feedback, transitions ===== */
+:root{--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.4,.5,1)}
+html{scroll-behavior:smooth}
+.btn,.chip,.persona,.qo,.rx,.ib,.sugs button{position:relative;overflow:hidden;transition:transform .16s var(--ease),box-shadow .2s var(--ease),background .2s,border-color .2s,opacity .2s;-webkit-tap-highlight-color:transparent}
+.btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(232,40,95,.22)}
+.btn.ghost:not(:disabled):hover{box-shadow:0 6px 16px rgba(30,20,60,.12)}
+.btn:not(:disabled):active,.chip:active,.persona:active,.ib:active,.sugs button:active{transform:scale(.96)}
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.22;transform:scale(0);animation:ripple .6s var(--ease) forwards}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+.btn.ok{background:#25A55F!important;color:#fff!important;box-shadow:none}
+.btn .spin,.spin{display:inline-block;width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-inline-end-color:transparent;animation:spin .7s linear infinite;vertical-align:-3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.persona[aria-pressed="true"],.chip[aria-pressed="true"]{animation:sel .35s var(--spring)}
+@keyframes sel{40%{transform:scale(1.04)}}
+.persona{position:relative}
+.persona[aria-pressed="true"]::after{content:"✓";position:absolute;top:8px;inset-inline-end:10px;width:22px;height:22px;border-radius:50%;background:var(--pink);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;animation:popin .35s var(--spring)}
+@keyframes popin{from{transform:scale(0)}to{transform:scale(1)}}
+.char,.award,.stat,.fact,.gloss div,.saved a{transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.char:hover,.award:hover,.stat:hover,.gloss div:hover,.saved a:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,20,60,.1)}
+.drop{transition:transform .2s var(--ease),background .2s,border-color .2s,box-shadow .2s}
+.drop:hover{box-shadow:0 10px 30px rgba(232,40,95,.14)}
+.drop.over{transform:scale(1.02);border-style:solid;box-shadow:0 0 0 6px var(--pink-soft)}
+.drop.busy{pointer-events:none}
+.drop .dstate{display:none;font-weight:700;color:var(--pink)}
+.drop.busy .dstate{display:flex;gap:8px;align-items:center}
+.drop.busy .big,.drop.busy b,.drop.busy>span{opacity:.25}
+/* view transitions */
+.enter{animation:enter .5s var(--ease) both}
+@keyframes enter{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* scroll reveal (only for elements that start below the fold) */
+.pre{opacity:0;transform:translateY(26px)}
+.shown{opacity:1;transform:none;transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.pre .bar i{width:0!important}
+.bar i{transition:width 1.1s var(--ease)}
+.wa .m.hide{opacity:0;transform:translateY(10px) scale(.96)}
+.wa .m{transition:opacity .35s var(--ease),transform .35s var(--spring)}
+.typing{align-self:flex-start;background:var(--wa-in);border-radius:12px;padding:10px 14px;display:flex;gap:4px;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--wa-meta);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.25;transform:translateY(-3px)}}
+.reveal.shown{animation:revealpop .7s var(--spring)}
+@keyframes revealpop{from{transform:scale(.92)}to{transform:scale(1)}}
+/* top reading progress */
+#readbar{position:fixed;top:0;inset-inline:0;height:calc(3px + env(safe-area-inset-top,0px));z-index:40;pointer-events:none}
+#readbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--yolk),var(--violet));transform-origin:right;transition:width .1s linear}
+/* toast */
+#toasts{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:100;pointer-events:none;padding-inline:16px}
+.toast{background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:700;font-size:14.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;gap:8px;align-items:center;animation:toastin .4s var(--spring) both;max-width:100%}
+.toast.out{animation:toastout .3s var(--ease) forwards}
+@keyframes toastin{from{opacity:0;transform:translateY(20px) scale(.9)}}
+@keyframes toastout{to{opacity:0;transform:translateY(10px)}}
+/* modal motion */
+.modal{animation:fadein .25s var(--ease) both;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.modal .sheet,.modal img{animation:sheetin .45s var(--spring) both}
+.modal.closing{animation:fadeout .2s var(--ease) forwards}
+.modal.closing .sheet{animation:sheetout .2s var(--ease) forwards}
+@keyframes fadein{from{opacity:0}} @keyframes fadeout{to{opacity:0}}
+@keyframes sheetin{from{opacity:0;transform:translateY(30px) scale(.94)}}
+@keyframes sheetout{to{opacity:0;transform:translateY(16px) scale(.97)}}
+/* loading steps */
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--muted);transition:background .3s,color .3s}
+.step b{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:var(--line);color:var(--muted)}
+.step.now{background:var(--pink-soft);color:var(--pink)}
+.step.now b{background:var(--pink);color:#fff;animation:pulse 1.2s infinite}
+.step.done{background:#D9FDD3;color:#14532D}
+.step.done b{background:#25A55F;color:#fff}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(232,40,95,.18)}}
+.prog i{position:relative;overflow:hidden}
+.prog i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shimmer 1.6s infinite}
+@keyframes shimmer{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+.rx.bump small{animation:bump .35s var(--spring)}
+@keyframes bump{50%{transform:scale(1.6)}}
+.rx.on{border-color:var(--pink);background:var(--pink-soft)}
+/* story transitions */
+.slide{display:flex!important;opacity:0;visibility:hidden;transform:scale(1.04);transition:opacity .4s var(--ease),transform .5s var(--ease),visibility 0s .4s;pointer-events:none}
+.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .4s var(--ease),transform .5s var(--ease);pointer-events:auto}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .pre{opacity:1;transform:none}.pre .bar i{width:auto}
+  html{scroll-behavior:auto}
+}
+
+
+/* ===== visual identity layer ===== */
+/* ambient background: drifting light blobs + grain */
+.bg-art{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-art i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(70px);opacity:.30;animation:drift 26s ease-in-out infinite alternate}
+.bg-art i:nth-child(1){background:radial-gradient(circle,var(--pink),transparent 65%);top:-25vmax;inset-inline-end:-18vmax}
+.bg-art i:nth-child(2){background:radial-gradient(circle,var(--violet),transparent 65%);top:30vh;inset-inline-start:-28vmax;animation-duration:32s;animation-delay:-8s}
+.bg-art i:nth-child(3){background:radial-gradient(circle,var(--yolk),transparent 65%);bottom:-30vmax;inset-inline-end:-10vmax;opacity:.22;animation-duration:38s;animation-delay:-14s}
+.bg-art::after{content:"";position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes drift{to{transform:translate(6vmax,8vmax) scale(1.12)}}
+#app{position:relative;z-index:1}
+:root[data-theme="dark"] .bg-art i{opacity:.22}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bg-art i{opacity:.22}}
+
+/* theme switch */
+.mast-r{display:flex;gap:10px;align-items:center}
+.tgl{position:relative;width:66px;height:34px;border-radius:999px;border:0;padding:0;flex:none;cursor:pointer;background:linear-gradient(135deg,#8FD3FF,#FFD27A);box-shadow:inset 0 2px 6px rgba(0,0,0,.18);transition:background .5s var(--ease)}
+.tgl .knob{position:absolute;top:3px;inset-inline-start:3px;width:28px;height:28px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:inset-inline-start .45s var(--spring),transform .45s var(--spring)}
+.tgl .stars{position:absolute;inset:0;opacity:0;transition:opacity .4s;background-image:radial-gradient(1.5px 1.5px at 20% 35%,#fff,transparent),radial-gradient(1px 1px at 35% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 48% 28%,#fff,transparent);border-radius:inherit}
+.tgl.dark{background:linear-gradient(135deg,#1B1446,#4B2C8F)}
+.tgl.dark .stars{opacity:1}
+.tgl.dark .knob{inset-inline-start:35px;transform:rotate(-200deg);background:#E9E4FF}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
+/* hero */
+.hero h1{font-size:clamp(34px,8.4vw,52px)}
+.hero h1 .grad{background:linear-gradient(90deg,var(--pink),var(--violet) 60%,var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-art{position:relative;height:430px;display:grid;place-items:center;margin-block:4px}
+.phone{position:relative;width:236px;height:400px;border-radius:38px;background:#0E0A18;padding:9px;box-shadow:0 30px 60px rgba(34,22,63,.35),0 0 0 2px rgba(255,255,255,.06) inset;transform:rotate(-4deg);animation:phonefloat 6s ease-in-out infinite}
+@keyframes phonefloat{50%{transform:rotate(-2deg) translateY(-10px)}}
+.phone::before{content:"";position:absolute;top:14px;left:50%;width:70px;height:18px;border-radius:999px;background:#000;transform:translateX(-50%);z-index:2}
+.ph-screen{position:relative;height:100%;border-radius:30px;overflow:hidden;background:#EFE7DD;background-image:radial-gradient(rgba(120,100,80,.12) 1px,transparent 1.4px);background-size:12px 12px;display:flex;flex-direction:column}
+.ph-top{display:flex;gap:8px;align-items:center;padding:34px 12px 8px;background:#075E54;color:#fff;font-size:12px}
+.ph-top .ph-av{width:28px;height:28px;border-radius:50%;background:#25D366;display:grid;place-items:center;font-size:14px}
+.ph-top b{display:block;font-size:13px}
+.ph-top small{opacity:.8;font-size:10.5px}
+.ph-chat{flex:1;display:flex;flex-direction:column;gap:5px;padding:10px 9px;justify-content:flex-end}
+.pm{max-width:86%;padding:5px 8px;border-radius:8px;font-size:11.5px;line-height:1.35;color:#111B21;background:#fff;align-self:flex-start;box-shadow:0 1px .5px rgba(0,0,0,.13);opacity:0;animation:msgloop 11s var(--d,0s) infinite}
+.pm i{display:block;font-style:normal;font-weight:700;font-size:10px;color:#C2185B}
+.pm.out{align-self:flex-end;background:#D9FDD3}
+.ph-report{margin-top:4px;border-radius:12px;padding:9px 10px;color:#fff;background:linear-gradient(135deg,#22163F,#5B3FE0 70%,#E8285F);box-shadow:0 8px 20px rgba(34,22,63,.35);opacity:0;animation:msgloop 11s var(--d,0s) infinite}
+.ph-report small{font-size:10px;color:#FFC53D;font-weight:700}
+.ph-report b{display:block;font-family:var(--serif);font-size:15px;line-height:1.15}
+.ph-report span{font-size:9.5px;opacity:.85}
+@keyframes msgloop{0%{opacity:0;transform:translateY(10px) scale(.92)}4%{opacity:1;transform:none}82%{opacity:1;transform:none}90%,100%{opacity:0;transform:translateY(-6px)}}
+.orb{position:absolute;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:27px;background:var(--surface);box-shadow:0 10px 24px rgba(30,20,60,.18);animation:orb 5s ease-in-out infinite}
+.orb.o1{top:22px;inset-inline-start:6%;animation-delay:-1s}.orb.o2{top:120px;inset-inline-end:4%;animation-delay:-2s}.orb.o3{bottom:60px;inset-inline-start:2%;animation-delay:-3s}.orb.o4{bottom:14px;inset-inline-end:12%;animation-delay:-4s}.orb.o5{top:-4px;inset-inline-end:24%;animation-delay:-2.5s;width:44px;height:44px;font-size:22px}
+@keyframes orb{50%{transform:translateY(-12px) rotate(6deg)}}
+.sticker{position:absolute;font-weight:800;font-size:13.5px;padding:6px 12px;border-radius:10px;box-shadow:0 6px 14px rgba(30,20,60,.18);white-space:nowrap}
+.sticker.s1{top:70px;inset-inline-end:-2px;background:var(--yolk);color:#22163F;transform:rotate(8deg)}
+.sticker.s2{bottom:130px;inset-inline-start:-4px;background:var(--teal);color:#fff;transform:rotate(-7deg)}
+.sticker.s3{bottom:-6px;inset-inline-start:30%;background:var(--pink);color:#fff;transform:rotate(3deg)}
+.marquee{overflow:hidden;border-block:1px solid var(--line);padding-block:10px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);direction:ltr}
+.marquee .trk{display:flex;gap:28px;width:max-content;animation:marq 38s linear infinite}
+.marquee span{font-weight:700;font-size:15px;white-space:nowrap;direction:rtl}
+.marquee span:nth-child(3n+1){color:var(--pink)}.marquee span:nth-child(3n+2){color:var(--violet)}.marquee span:nth-child(3n){color:var(--teal)}
+@keyframes marq{to{transform:translateX(-50%)}}
+.names{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nm-row{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:8px 10px;transition:border-color .2s,box-shadow .2s;min-width:0}
+.nm-row:focus-within{border-color:var(--violet);box-shadow:0 0 0 4px var(--chip)}
+.nm-row.guessed{animation:sel .4s var(--spring)}
+.nm-row .av0{grid-row:span 2;margin:0;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;color:#fff;font-weight:800;font-size:15px}
+.nm-row input{border:0;background:transparent;font:inherit;font-weight:700;font-size:16px;color:var(--ink);min-width:0;padding:0;outline:none}
+.nm-row small{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbl-sub{font-weight:500;letter-spacing:0;opacity:.85}
+.leave{font-size:13.5px;color:var(--muted);background:var(--chip);border-radius:12px;padding:8px 12px}
+@media (max-width:540px){.names{grid-template-columns:minmax(0,1fr)}}
+.hosted-note{display:none;background:var(--surface);border:2px solid var(--violet);border-radius:18px;padding:14px 16px;font-size:15px;line-height:1.6}
+.hosted .hosted-note{display:block}
+.hosted .drop,.hosted .howto,.hosted .how,.hosted .privbox .btn{display:none}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.how div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.how .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:14px}
+.how div:nth-child(1) .n{background:var(--pink)}.how div:nth-child(2) .n{background:var(--violet)}.how div:nth-child(3) .n{background:var(--teal)}
+.how b{font-size:15px;line-height:1.3}
+.how small{color:var(--muted);font-size:13px;line-height:1.4}
+
+/* persona colors */
+.persona[data-k="mix"] .av{background:linear-gradient(135deg,#FFC53D,#E8285F,#5B3FE0)}
+.persona[data-k="neighbor"] .av{background:linear-gradient(135deg,#8FD3FF,#5B3FE0)}
+.persona[data-k="savta"] .av{background:linear-gradient(135deg,#FFD1DC,#E8285F)}
+.persona[data-k="shrink"] .av{background:linear-gradient(135deg,#C9F2E3,#0E9E90)}
+.persona[data-k="sports"] .av{background:linear-gradient(135deg,#FFE08A,#FF8A3D)}
+.persona[data-k="roast"] .av{background:linear-gradient(135deg,#3A2A6B,#0E0A18)}
+.persona[aria-pressed="true"]{box-shadow:0 0 0 4px var(--pink-soft),0 12px 28px rgba(232,40,95,.18)}
+
+/* report cover */
+.cover{position:relative;overflow:hidden;border-radius:28px;padding:22px 20px 20px;display:flex;flex-direction:column;gap:14px;color:#fff;background:linear-gradient(140deg,#1D1240 0%,#4A2FC4 55%,#E8285F 100%);box-shadow:0 24px 50px rgba(34,22,63,.28)}
+.cover::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,197,61,.55),transparent 65%);top:-140px;inset-inline-start:-90px}
+.cover::after{content:"";position:absolute;inset:0;opacity:.09;background-image:repeating-linear-gradient(115deg,#fff 0 1px,transparent 1px 14px)}
+.cover>*{position:relative;z-index:1}
+.cover .by{color:rgba(255,255,255,.85)}
+.cover .by i{background:rgba(255,255,255,.16)}
+.cover .lr-h{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.12)}
+.cover .lr-dek{color:rgba(255,255,255,.88)}
+.cover .lr-dek b{background:none;color:#FFC53D}
+.cover .meta-row{color:rgba(255,255,255,.75)}
+.cover .meta-row span{background:rgba(255,255,255,.12);padding:3px 10px;border-radius:999px}
+.cover .btn.dark{background:#fff;color:#22163F}
+.cover .btn.ghost{color:#fff}
+.stamp{position:absolute!important;top:18px;inset-inline-end:16px;z-index:2;border:2.5px solid #FFC53D;color:#FFC53D;font-weight:800;font-size:12.5px;letter-spacing:.08em;padding:4px 10px;border-radius:8px;transform:rotate(9deg);opacity:.92}
+.cover .by{padding-inline-end:128px;font-size:13px}
+/* section icon ring */
+.sect-h .ic{border:3px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,conic-gradient(from 0deg,var(--pink),var(--yolk),var(--teal),var(--violet),var(--pink)) border-box;width:64px;height:64px;font-size:30px}
+.sect-h.shown .ic{animation:spinin .8s var(--spring)}
+@keyframes spinin{from{transform:rotate(-90deg) scale(.6)}}
+.sect-h h2{background:linear-gradient(transparent 70%,var(--pink-soft) 70%);padding-inline:6px}
+@media (max-width:540px){ .how{grid-template-columns:minmax(0,1fr)} .how div{flex-direction:row;align-items:center;gap:12px} .how .n{flex:none} .hero-art{height:410px} }
+@media (prefers-reduced-motion:reduce){ .pm,.ph-report{opacity:1} }
+
+@media (max-width:540px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chars,.awards,.personas{grid-template-columns:minmax(0,1fr)}
+  .prose{font-size:17px}
+}
+</style>
+
+<div class="bg-art" aria-hidden="true"><i></i><i></i><i></i></div>
+<div id="app" dir="rtl" lang="he">
+  <header class="mast">
+    <a class="logo" href="#" id="home">רכילות<span>א</span></a>
+    <small id="mastNote">קוראים את כל הצ'אט. מספרים לכם מה באמת קורה שם.</small>
+    <div class="mast-r">
+      <button type="button" class="btn ghost newchat" id="newChat" data-act="gohome" hidden>+ צ'אט חדש</button>
+      <button type="button" class="tgl" id="themeBtn" role="switch" aria-checked="false" aria-label="מצב כהה"><span class="stars"></span><span class="knob">☀️</span></button>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <h1>מישהו קרא את כל הצ'אט שלכם. <span class="grad">והוא צריך לדבר איתך.</span></h1>
+    <p class="sub">מעלים ייצוא של צ'אט מוואטסאפ, בוחרים מי יקרא אותו, ומקבלים דוח אישי, מדויק ומצחיק עם הוכחות מהצ'אט עצמו. ואז שולחים אותו לחברים, בחינם.</p>
+    <div class="hero-art" aria-hidden="true">
+      <div class="phone"><div class="ph-screen">
+        <div class="ph-top"><span class="ph-av">👥</span><div><b>החבר'ה 🔥</b><small>נועה מקלידה...</small></div></div>
+        <div class="ph-chat">
+          <div class="pm" style="--d:0s"><i>נועה</i>אנשים!!! תענו לסקר 🙏</div>
+          <div class="pm" style="--d:.9s"><i>איתי</i>3 בלילה ואני מתכנן מסלולים, זה נורמלי?</div>
+          <div class="pm out" style="--d:1.8s">סורי ראיתי עכשיו 🙈</div>
+          <div class="pm" style="--d:2.7s"><i>רון</i>קניתי 4 קילו קבב, זה מספיק?</div>
+          <div class="ph-report" style="--d:3.9s"><small>✨ רכילותא · הדוח מוכן</small><b>ועדת המנגל העליונה</b><span>דרמה 34 · אהבה 88 · כאוס 71</span></div>
+        </div>
+      </div></div>
+      <span class="orb o1">👵</span><span class="orb o2">🛋️</span><span class="orb o3">🎙️</span><span class="orb o4">🎤</span><span class="orb o5">🪟</span>
+      <span class="sticker s1">קורע מצחוק 😂</span><span class="sticker s2">פרטי לגמרי 🔒</span><span class="sticker s3">חינם לחברים 🎁</span>
+    </div>
+    <div class="marquee" aria-hidden="true"><div class="trk"><span>מי הינשוף של הקבוצה? 🦉</span><span>מי תמיד מאחר/ת? 🐢</span><span>מי באמת מחזיק את כולם? 🧲</span><span>מה הבדיחה הפנימית שלכם? 🤫</span><span>מי יותר בעניין? 💘</span><span>מי שכח/ה את המנגל? 🍖</span><span>על מה באמת רבתם? 🥊</span><span>מי שולח/ת קוליות של 4 דקות? 🎙️</span><span>מי הינשוף של הקבוצה? 🦉</span><span>מי תמיד מאחר/ת? 🐢</span><span>מי באמת מחזיק את כולם? 🧲</span><span>מה הבדיחה הפנימית שלכם? 🤫</span><span>מי יותר בעניין? 💘</span><span>מי שכח/ה את המנגל? 🍖</span><span>על מה באמת רבתם? 🥊</span><span>מי שולח/ת קוליות של 4 דקות? 🎙️</span></div></div>
+    <div class="how">
+      <div><span class="n">1</span><span><b>מייצאים צ'אט</b><br><small>מוואטסאפ, בלי מדיה</small></span></div>
+      <div><span class="n">2</span><span><b>בוחרים מי יקרא</b><br><small>סבתא, פסיכולוגית, או כולם</small></span></div>
+      <div><span class="n">3</span><span><b>צוחקים ושולחים</b><br><small>קישור שנפתח לכולם</small></span></div>
+    </div>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip">
+      <div class="big">גררו לכאן</div>
+      <b>או לחצו ובחרו קובץ ייצוא של וואטסאפ</b>
+      <span>קובץ ‎.zip או ‎.txt, עדיף "ללא מדיה"</span>
+      <div class="dstate"><span class="spin"></span>קוראים את הקובץ...</div>
+    </label>
+    <details class="howto">
+      <summary>איך מייצאים צ'אט מוואטסאפ?</summary>
+      <h4>אייפון</h4>
+      <ol><li>פותחים את הצ'אט ולוחצים על השם למעלה</li><li>גוללים למטה ובוחרים "ייצוא צ'אט"</li><li>בוחרים "ללא מדיה" ושומרים לקבצים</li></ol>
+      <h4>אנדרואיד</h4>
+      <ol><li>בצ'אט: ⋮ ‏> עוד ‏> ייצוא צ'אט</li><li>בוחרים "ללא מדיה"</li><li>שומרים את הקובץ ומעלים אותו לכאן</li></ol>
+    </details>
+    <div class="hosted-note"><b>כאן קוראים דוחות של רכילותא.</b> קיבלתם קישור לדוח? הוא ייפתח כאן אוטומטית, בלי חשבון ובלי התחברות. הדוחות עצמם נוצרים באפליקציה של מי ששלח לכם אותם.</div>
+    <div id="savedList"></div>
+    <div class="privbox">
+      <b>הפרטיות שלכם</b>
+      <ul>
+        <li>קובץ הצ'אט נקרא בדפדפן שלכם ולא נשלח לשום שרת. בזמן ההכנה הוא נשמר זמנית רק בדפדפן שלכם (כדי שאפשר יהיה לצאת מהמסך), ונמחק כשהדוח מוכן.</li>
+        <li>כדי לכתוב את הדוח, קטעים מהצ'אט נשלחים ל-Claude דרך החשבון שלכם, כמו שיחה רגילה איתו. האפליקציה לא שומרת אותם.</li>
+        <li>כשלוחצים "שיתוף", כל הדוח נארז בתוך הקישור עצמו. הוא לא נשמר באף שרת, ורק מי שיש לו את הקישור יכול לקרוא אותו.</li>
+      </ul>
+      <button type="button" class="btn ghost" data-act="wipe">מחיקת כל המידע</button>
+    </div>
+  </section>
+
+  <section id="setup" hidden></section>
+  <section id="loading" class="loading" hidden></section>
+  <div id="banner"></div>
+  <main id="report"></main>
+</div>
+
+<div id="story" class="story" hidden dir="rtl" lang="he"></div>
+<div id="readbar" aria-hidden="true"><i></i></div>
+<div id="toasts" aria-live="polite" dir="rtl"></div>
+<div id="modal" class="modal" hidden dir="rtl" lang="he"></div>
+
+<script>
+document.documentElement.lang = 'he';
+document.documentElement.dir = 'rtl';
+const APP_URL = 'https://claude.ai/artifact/3XZDTkFNkC5wkPNNDzei7V';
+// public reading site (outside Claude): open links point here so anyone can read them, no account needed
+const SITE_URL = 'https://hthr63-prog.github.io/rechiluta/';
+const HOSTED = !window.claude;
+
+/* ================= personas ================= */
+const PERSONAS = {
+  mix: {name:'כולם ביחד', av:'✨', short:'מצחיק, רגיש ומדויק. כל הדמויות בדוח אחד.', plural:true,
+    voice:'You are the whole "רכילותא" panel writing together. The main narrator is a balanced blend: laugh-out-loud funny like a top stand-up, warm, sensitive and containing like a good therapist who sees the good in everyone, and precise and fair like a neutral journalist who checks every fact. Shift naturally between the three: tease habits with sharp jokes, then land on real warmth and insight, and keep the facts straight and the tone fair to everyone (no taking cheap sides). Write the main text in first person plural ("קראנו", "שמנו לב"). Throughout the report, the other panel members drop in with short "aside" cameos, each in their own voice: "savta" (סבתא פנינה, a nosy loving grandmother from Bat Yam: "אוי ואבוי", "מאמי", tells them to eat), "shrink" (ד״ר אורנה, an over-serious therapist who diagnoses with invented clinical terms), "sports" (יורם, an over-excited sports commentator: "גווווול!", VAR checks), "roast" (מיקי עוקץ, a merciless but affectionate stand-up). Each aside is ONE short, very funny line reacting to what was just shown.',
+    lines:['סבתא פנינה מרכיבה משקפיים...','ד״ר אורנה פותחת תיק טיפולי','יורם מתחמם לשידור','מיקי רושם פאנצ\'ים על מפית','השכן מלמעלה מצמיד כוס לקיר','כולם מתווכחים מי יקבל את הציטוט הכי טוב']},
+  neighbor: {name:'השכן מלמעלה', av:'🪟', short:'שומע הכול דרך התקרה. וקרא הכול.', fem:false,
+    voice:'You are "השכן מלמעלה" (the upstairs neighbour): a brilliant, warm, wickedly observant columnist who has somehow read every single message. You write like the best magazine columnist crossed with the friend who notices everything: first person, intimate, specific, psychologically sharp, and very funny through precision and timing. Once in a while you mention hearing things through the ceiling.',
+    lines:['מוריד את הכוס מהקיר...','קורא את ההודעות הראשונות, כבר יש חומר','רושם לעצמו: "לבדוק מה קרה פה במרץ"','שמע משהו דרך התקרה. ממשיך לקרוא.','מסמן בטוש צהוב את הציטוטים הכי טובים','מתחיל להבין מי באמת מחזיק פה את העניינים']},
+  savta: {name:'סבתא פנינה', av:'👵', short:'חטטנית מקצועית מבת ים', fem:true,
+    voice:'You are Savta Pnina, a nosy, loving Israeli grandmother from Bat Yam. Use "אוי ואבוי", "מאמי", "חמוד/ה", tell them to eat something, compare them to cousins, worry, gossip, sprinkle Yiddish-isms. Warm, but she notices EVERYTHING and is surprisingly wise.',
+    lines:['סבתא מרכיבה משקפיים...','רגע, מי זה הבחור הזה?','אוי ואבוי, מה זה ההודעה הזאת בשתיים בלילה','מכינה תה וממשיכה לקרוא','מאמי, יש פה חומר לטלנובלה','סבתא כבר מתקשרת לדודה לספר']},
+  shrink: {name:'ד״ר אורנה', av:'🛋️', short:'פסיכולוגית שמאבחנת את כולם', fem:true,
+    voice:'You are Dr. Orna, an over-serious Israeli therapist. Diagnose everyone with invented clinical terms (e.g. "הפרעת קוליות כפייתית"), reflect feelings back, therapy-speak, assign homework. Deadpan, funny, and genuinely insightful underneath.',
+    lines:['פותחת תיק טיפולי חדש...','מזהה דפוסי התקשרות. הרבה דפוסים.','"חחח" זה מנגנון הגנה, שתדעו','רושמת הערות על הכרית','ספרו לי על אמא שלכם','מאבחנת בזהירות ובשיפוט מלא']},
+  sports: {name:'יורם מהשידור', av:'🎙️', short:'שדר ספורט בשידור חי', fem:false,
+    voice:'You are Yoram, an over-excited Israeli sports commentator broadcasting this chat like a championship final: "גווווול!", tactical analysis, player ratings, replays, VAR checks on deleted messages, crowd noise.',
+    lines:['עולים לשידור חי מהאולפן...','השחקנים עולים למגרש!','איזו מסירה! איזו הודעה!','בדיקת VAR על הודעה שנמחקה','הקהל על הרגליים!','מכינים את טבלת הדירוג']},
+  roast: {name:'מיקי עוקץ', av:'🎤', short:'סטנדאפיסט בלי רחמים', fem:false,
+    voice:'You are Miki Oketz, a sharp Israeli stand-up comedian doing an affectionate roast: punchy one-liners, callbacks, exaggeration. Roast chat habits and behaviour only, never looks, body, health, religion, money troubles or anything genuinely hurtful.',
+    lines:['בודק מיקרופון... אחת, שתיים...','וואו. כמה חומר.','רושם פאנצ\'ים על מפית','מישהו פה צריך טיפול, עוד לא ברור מי','זה הולך להיות מצחיק לכולם חוץ מלכם','מחמם את הקהל']},
+};
+let personaKey = 'mix';
+const readVerb = p => p.plural ? 'קראו' : p.fem ? 'קראה' : 'קרא';
+const ASIDE_SCHEMA = `,\n  {"t":"aside","who":"savta|shrink|sports|roast","text":"one short, very funny cameo line in that character's voice"}`;
+const ASIDE_RULE = ' Add 1-2 "aside" cameos per section, rotating between the four panel members so each appears several times across the report; never put an aside inside a sincere passage about a hard period.';
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rich = s => esc(s).replace(/\*\*([^*]+?)\*\*/g,'<b>$1</b>');
+const fmt = n => Math.round(n).toLocaleString('he-IL');
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const heDate = t => new Date(t).toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
+const heMY = t => new Date(t).toLocaleDateString('he-IL',{month:'long',year:'numeric'});
+const heMonth = t => new Date(t).toLocaleDateString('he-IL',{month:'short'});
+const hm = t => { const d=new Date(t); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const WD = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(_){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(_){ return false; } }, del(k){ try{ localStorage.removeItem(k); }catch(_){} } };
+function dur(ms){
+  const m = ms/60000;
+  if (m < 1) return Math.max(1,Math.round(ms/1000))+' שניות';
+  if (m < 60) return Math.round(m)+' דקות';
+  const h = m/60; if (h < 48) return (h<10? h.toFixed(1):Math.round(h))+' שעות';
+  return Math.round(h/24)+' ימים';
+}
+
+/* ================= parsing ================= */
+const INVIS = /[‎‏‪-‮⁦-⁩﻿]/g;
+const HEAD = /^\[?(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{2,4})[,\s]+(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\]?\s*[-–]?\s*(.*)$/;
+const MEDIA = /(<[^>]*(omitted|הושמט|לא נכלל)[^>]*>|^(image|video|audio|sticker|gif|document|contact card|photo) omitted|הושמט|הושמטה|\(file attached\)|\(הקובץ מצורף\)|קובץ מצורף)/i;
+const DELETED = /^(this message was deleted|you deleted this message|ההודעה נמחקה|מחקת את ההודעה|הודעה זו נמחקה)\.?$/i;
+const EDITED = /\s*<(this message was edited|ההודעה נערכה)>\s*$/i;
+function mediaType(t){
+  if (/audio|אודיו|\.opus|PTT-|קולית|הקלטה/i.test(t)) return 'audio';
+  if (/sticker|מדבקה|\.webp/i.test(t)) return 'sticker';
+  if (/video|וידאו|סרטון|\.mp4/i.test(t)) return 'video';
+  if (/gif/i.test(t)) return 'gif';
+  if (/image|photo|תמונה|\.jpe?g|\.png/i.test(t)) return 'image';
+  return 'other';
+}
+const MEDIA_HE = {audio:'🎤 הודעה קולית', sticker:'🏷️ מדבקה', video:'🎬 סרטון', gif:'GIF', image:'📷 תמונה', other:'📎 קובץ'};
+function parseChat(raw){
+  const lines = raw.replace(/\r\n?/g,'\n').split('\n');
+  let order = 'DMY';
+  { let a12=false,b12=false,y4=false,seen=0;
+    for (const L of lines){ const m = L.replace(INVIS,'').replace(/[  ]/g,' ').match(HEAD); if(!m) continue;
+      seen++; if (m[1].length===4) y4=true; if(+m[1]>12) a12=true; if(+m[2]>12) b12=true; if(seen>4000) break; }
+    order = y4 ? 'YMD' : (a12 ? 'DMY' : (b12 ? 'MDY' : 'DMY'));
+  }
+  const msgs = []; let cur = null;
+  for (const L0 of lines){
+    const rawLine = L0.replace(/[  ]/g,' ');
+    const L = rawLine.replace(INVIS,'');
+    const m = L.match(HEAD);
+    if (!m){ if (cur && L.trim()) cur.text += '\n'+L; continue; }
+    let [ , a,b,c,h,mi,s,ap,rest] = m;
+    let d,mo,y;
+    if (order==='YMD'){ y=+a; mo=+b; d=+c; } else if (order==='MDY'){ mo=+a; d=+b; y=+c; } else { d=+a; mo=+b; y=+c; }
+    if (y<100) y+=2000;
+    h=+h; if (ap){ const pm=/p/i.test(ap); if(pm && h<12) h+=12; if(!pm && h===12) h=0; }
+    const t = new Date(y,mo-1,d,h,+mi,+(s||0)).getTime();
+    if (isNaN(t)) { cur=null; continue; }
+    const idx = rest.indexOf(': ');
+    if (idx<=0 || idx>60){ cur=null; continue; }
+    const who = rest.slice(0,idx).replace(/^~\s*/,'').trim();
+    const rawRest = rawLine.slice(rawLine.indexOf(': ')+2);
+    let text = rest.slice(idx+2).replace(EDITED,'');
+    const sysMark = /^‎/.test(rawRest);
+    let kind='text', media=null;
+    if (DELETED.test(text.trim())) kind='deleted';
+    else if (MEDIA.test(text) && text.length<120){ kind='media'; media=mediaType(text); }
+    else if (sysMark) { cur=null; continue; }
+    if (/end-to-end|מקצה לקצה/i.test(text) && text.length<200) { cur=null; continue; }
+    cur = {t, who, text, kind, media};
+    msgs.push(cur);
+  }
+  msgs.sort((x,y)=>x.t-y.t);
+  return msgs;
+}
+function nameFromFile(fn){
+  fn = (fn||'').replace(/\.(txt|zip)$/i,'');
+  const m = fn.match(/WhatsApp Chat (?:with|-)\s*(.+)$/i) || fn.match(/צ.?אט (?:WhatsApp|וואטסאפ) עם\s*(.+)$/) || fn.match(/WhatsApp.*?עם\s*(.+)$/);
+  return m ? m[1].trim() : '';
+}
+
+/* ================= stats ================= */
+const STOP = new Set(('אני את אתה הוא היא אנחנו אתם אתן הם הן זה זאת זו של על עם לא כן מה מי איך למה כי אם או גם רק כל יש אין היה היתה הייתה להיות אבל עוד כבר פה שם אז עכשיו טוב אוקיי אוקי ממש סתם לי לך לו לה לנו לכם להם בו בה בי בך שלי שלך שלו שלה שלנו שלכם אותי אותך אותו אותה אותנו אל הזה הזאת היום מחר אחד אחת שזה מתי איפה כמו עד אחרי לפני בין יותר פחות הכי צריך רוצה אפשר יודע יודעת חושב חושבת נראה בסדר כאילו נו יאללה וואי אה אהה הא הנה ככה כך אותם עליו עליה עלי ואני וזה שאני שהוא שהיא שלא זהו עדיין בכלל אולי די איזה איזו תודה שיש שאין יהיה תהיה אתמול פשוט הולך הולכת מאוד כמה עושה עושים בא באה היי הי שאתה שאת ואז בטח מישהו משהו ' +
+ 'the a an to and is of in it you i that this for on me my be so but not are with just have was do at its it\'s im i\'m ok okay yes no u ur lol what we they he she him her them your if or as can will all get got like one too oh yeah').split(/\s+/));
+const EMO = /\p{Extended_Pictographic}(?:️|\p{EMod})?(?:‍\p{Extended_Pictographic}(?:️|\p{EMod})?)*/gu;
+const LAUGH = /ח{2,}|(?:ha){2,}|lol|😂|🤣|xD/giu;
+const LOVE = /אוהב|אוהבת|אוהבים|לאב|love|❤|😍|🥰|💕|😘|♥/iu;
+const SORRY = /סליחה|סורי|sorry|מצטער|מצטערת|סלחו/iu;
+const HOT = /אוהב|מתגעגע|סליחה|סורי|מצטער|כועס|כועסת|נעלב|נעלבת|למה את|למה אתה|די כבר|לא מאמין|לא מאמינה|מה?!|!!!|\?\?|😭|😡|🤬|💔|❤|😂|🤣|חחחח/u;
+function computeStats(msgs, chatName){
+  const people = {};
+  const P = n => people[n] ||= {name:n,count:0,words:0,chars:0,textCount:0,media:0,audio:0,stickers:0,images:0,deleted:0,laughs:0,night:0,morning:0,questions:0,love:0,sorry:0,emojis:0,emo:new Map(),wmap:new Map(),starts:0,replies:[],longestRun:0,longest:'',hours:new Array(24).fill(0)};
+  const hourDay = Array.from({length:7},()=>new Array(24).fill(0));
+  const days = new Map(), months = new Map(), words = new Map(), emojis = new Map();
+  let prev=null, run=0, runWho=null, runStart=0, runRec={n:0}, gap={ms:0};
+  for (const m of msgs){
+    const p = P(m.who); p.count++;
+    const d = new Date(m.t), h = d.getHours();
+    hourDay[d.getDay()][h]++; p.hours[h]++;
+    const dk = ymd(d); days.set(dk,(days.get(dk)||0)+1);
+    const mk = dk.slice(0,7); months.set(mk,(months.get(mk)||0)+1);
+    if (h<5) p.night++; else if (h<8) p.morning++;
+    if (m.kind==='media'){ p.media++; if(m.media==='audio')p.audio++; if(m.media==='sticker')p.stickers++; if(m.media==='image')p.images++; }
+    else if (m.kind==='deleted') p.deleted++;
+    else {
+      const tx = m.text; p.textCount++; p.chars += tx.length;
+      const toks = tx.replace(/https?:\/\/\S+/g,' ').toLowerCase().match(/[\p{L}']+/gu) || [];
+      p.words += toks.length;
+      for (const w of toks){ if (w.length<2 || STOP.has(w) || /^ח+$/.test(w) || /^(ha)+$/.test(w)) continue;
+        words.set(w,(words.get(w)||0)+1); p.wmap.set(w,(p.wmap.get(w)||0)+1); }
+      const L = tx.match(LAUGH); if (L) p.laughs += L.length;
+      if (tx.includes('?')) p.questions++;
+      if (LOVE.test(tx)) p.love++;
+      if (SORRY.test(tx)) p.sorry++;
+      const E = tx.match(EMO); if (E){ p.emojis+=E.length; for (const e of E){ emojis.set(e,(emojis.get(e)||0)+1); p.emo.set(e,(p.emo.get(e)||0)+1);} }
+      if (tx.length > p.longest.length && !/^https?:/.test(tx)) p.longest = tx;
+    }
+    if (!prev || m.t-prev.t > 4*3600e3) p.starts++;
+    if (prev && m.t-prev.t > gap.ms) gap = {ms:m.t-prev.t, from:prev.t, to:m.t, breaker:m.who};
+    if (prev && prev.who!==m.who && m.t-prev.t < 12*3600e3) p.replies.push(m.t-prev.t);
+    if (m.who===runWho) run++; else { run=1; runWho=m.who; runStart=m.t; }
+    if (run>p.longestRun) p.longestRun=run;
+    if (run>runRec.n) runRec={n:run, who:m.who, t:runStart};
+    prev = m;
+  }
+  const arr = Object.values(people).sort((a,b)=>b.count-a.count);
+  const total = msgs.length;
+  const totalW = [...words.values()].reduce((a,b)=>a+b,0)||1;
+  for (const p of arr){
+    p.share = p.count/total;
+    const r = p.replies.slice().sort((a,b)=>a-b);
+    p.medianReply = r.length ? r[Math.floor(r.length/2)] : null;
+    p.nReplies = r.length;
+    p.topEmoji = [...p.emo.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+    p.avgLen = p.textCount ? p.chars/p.textCount : 0;
+    p.peakHour = p.hours.indexOf(Math.max(...p.hours));
+    let best=null, bs=0; const pw=[...p.wmap.values()].reduce((a,b)=>a+b,0)||1;
+    for (const [w,c] of p.wmap){ if (c<3) continue; const all=words.get(w); const s=(c/pw)/(all/totalW)*Math.log(c+1)*(c/all); if (s>bs){bs=s;best=w;} }
+    p.sigWord = best; p.sigCount = best ? p.wmap.get(best) : 0;
+    p.longest = p.longest.slice(0,400);
+    delete p.wmap; delete p.emo; delete p.replies; delete p.hours;
+  }
+  const dayArr = [...days.entries()].sort();
+  const busiest = dayArr.reduce((a,b)=>b[1]>a[1]?b:a, ['',0]);
+  let streak={len:0}, s=0, sStart=null, last=null;
+  for (const [k] of dayArr){ const t=new Date(k+'T12:00').getTime();
+    if (last!==null && Math.round((t-last)/864e5)===1) s++; else { s=1; sStart=t; }
+    if (s>streak.len) streak={len:s, from:sStart, to:t}; last=t; }
+  const hourTot = new Array(24).fill(0); hourDay.forEach(r=>r.forEach((v,i)=>hourTot[i]+=v));
+  const wdTot = hourDay.map(r=>r.reduce((a,b)=>a+b,0));
+  const first = msgs[0]?.t, lastT = msgs[total-1]?.t;
+  const st = {
+    chatName, total, totalWords: arr.reduce((a,p)=>a+p.words,0), first, last:lastT,
+    spanDays: Math.max(1, Math.round((lastT-first)/864e5)+1), activeDays: days.size,
+    people: arr, isGroup: arr.length>2, hourDay, hourTot, wdTot,
+    peakHour: hourTot.indexOf(Math.max(...hourTot)), peakWd: wdTot.indexOf(Math.max(...wdTot)),
+    months: [...months.entries()].sort(), busiest:{date:busiest[0], n:busiest[1]}, streak, gap, runRec,
+    topEmojis: [...emojis.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8),
+    topWords: [...words.entries()].sort((a,b)=>b[1]-a[1]).slice(0,24),
+    media: arr.reduce((a,p)=>a+p.media,0), audio: arr.reduce((a,p)=>a+p.audio,0),
+    deleted: arr.reduce((a,p)=>a+p.deleted,0), laughs: arr.reduce((a,p)=>a+p.laughs,0),
+  };
+  if (!st.chatName) st.chatName = arr.length===2 ? arr[0].name+' ו'+arr[1].name : 'הקבוצה';
+  st.localAwards = localAwards(st);
+  return st;
+}
+function localAwards(st){
+  const ppl = st.people.filter(p=>p.count >= Math.max(5, st.total*0.02));
+  const out = [];
+  const top = (f, min=1) => { let b=null,bv=-1; for (const p of ppl){ const v=f(p); if (v!=null && v>bv){bv=v;b=p;} } return b && bv>=min ? [b,bv] : null; };
+  let r;
+  if ((r=top(p=>p.words))) out.push({title:'פרס החפירה', winner:r[0].name, why:fmt(r[1])+' מילים. זה כבר לא צ\'אט, זה ספר.'});
+  if ((r=top(p=>p.count>20 ? p.night/p.count : null, 0.01))) out.push({title:'פרס הינשוף', winner:r[0].name, why:Math.round(r[1]*100)+'% מההודעות נשלחו בין חצות לחמש בבוקר.'});
+  { const c = ppl.filter(p=>p.nReplies>=8 && p.medianReply!=null).sort((a,b)=>a.medianReply-b.medianReply);
+    if (c.length>1){ out.push({title:'פרס הברק', winner:c[0].name, why:'עונה בדרך כלל תוך '+dur(c[0].medianReply)+'.'});
+      out.push({title:'פרס הצב', winner:c[c.length-1].name, why:'זמן תגובה טיפוסי: '+dur(c[c.length-1].medianReply)+'. שווה לחכות. כנראה.'}); } }
+  if ((r=top(p=>p.starts, 3))) out.push({title:'פרס המצת', winner:r[0].name, why:'פתח/ה את השיחה '+fmt(r[1])+' פעמים אחרי שקט של כמה שעות.'});
+  if ((r=top(p=>p.count>20 ? p.laughs/p.count : null, 0.02))) out.push({title:'פרס הצחוק', winner:r[0].name, why:fmt(r[0].laughs)+' צחוקים (חחח, 😂 וחברים).'});
+  if ((r=top(p=>p.audio, 3))) out.push({title:'פרס הפודקאסט', winner:r[0].name, why:fmt(r[1])+' הודעות קוליות.'});
+  if ((r=top(p=>p.longestRun, 6))) out.push({title:'פרס המונולוג', winner:r[0].name, why:fmt(r[1])+' הודעות ברצף בלי שאף אחד ענה.'});
+  if ((r=top(p=>p.sorry, 3))) out.push({title:'פרס הסליחה', winner:r[0].name, why:'התנצל/ה '+fmt(r[1])+' פעמים.'});
+  if ((r=top(p=>p.emojis, 10))) out.push({title:'פרס האימוג\'י', winner:r[0].name, why:fmt(r[1])+' אימוג\'ים, האהוב: '+(r[0].topEmoji[0]||'')});
+  return out;
+}
+function investment(st){
+  if (st.people.length!==2) return null;
+  const [a,b] = st.people;
+  const msgS = a.count/(a.count+b.count);
+  const stS = (a.starts+b.starts) ? a.starts/(a.starts+b.starts) : .5;
+  let rS = .5; if (a.medianReply && b.medianReply) rS = b.medianReply/(a.medianReply+b.medianReply);
+  const wS = (a.words+b.words) ? a.words/(a.words+b.words) : .5;
+  return {a:a.name, b:b.name, va:Math.round((.3*msgS + .3*stS + .2*rS + .2*wS)*100)};
+}
+function statsBrief(st){
+  const ppl = st.people.slice(0,10).map(p=>`- ${p.name}: ${p.count} msgs (${Math.round(p.share*100)}%), ${p.words} words, avg ${Math.round(p.avgLen)} chars/msg, starts convos ${p.starts}x, typical reply ${p.medianReply?dur(p.medianReply):'n/a'}, night msgs (00-05) ${p.night}, voice notes ${p.audio}, laughs ${p.laughs}, questions ${p.questions}, sorry ${p.sorry}, love ${p.love}, deleted ${p.deleted}, top emoji ${p.topEmoji.join('')}, signature word "${p.sigWord||''}", longest solo streak ${p.longestRun}`).join('\n');
+  return `Chat: "${st.chatName}" (${st.isGroup?'group chat':'one-on-one chat'})
+Period: ${heDate(st.first)} → ${heDate(st.last)} (${st.spanDays} days, active on ${st.activeDays})
+Total: ${st.total} messages, ${st.totalWords} words, ${st.media} media, ${st.deleted} deleted
+Busiest day: ${st.busiest.date} (${st.busiest.n} msgs). Peak hour ${st.peakHour}:00. Peak weekday ${WD[st.peakWd]}.
+Longest silence: ${dur(st.gap.ms)} (${st.gap.from?heDate(st.gap.from):''} → ${st.gap.to?heDate(st.gap.to):''}), broken by ${st.gap.breaker}.
+Longest daily streak: ${st.streak.len} days. Longest solo monologue: ${st.runRec.n} msgs by ${st.runRec.who}.
+Top emojis: ${st.topEmojis.map(e=>e[0]+'×'+e[1]).join(' ')}
+Top words: ${st.topWords.slice(0,15).map(w=>w[0]).join(', ')}
+Participants (${st.people.length}):
+${ppl}`;
+}
+
+/* ================= reading plan ================= */
+function lineFor(m,i){
+  const d = new Date(m.t);
+  const body = m.kind==='media' ? '['+(m.media||'media')+']' : m.kind==='deleted' ? '[deleted]' : m.text.replace(/\n+/g,' / ').slice(0,300);
+  return '#'+i+' '+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)+' '+pad(d.getHours())+':'+pad(d.getMinutes())+' '+m.who+': '+body;
+}
+function buildChunks(msgs, budget=40000, maxChunks=14){
+  const rnd = mulberry32(msgs.length*7919 + (msgs[0]?.t||0)%100000);
+  const lines = msgs.map(lineFor);
+  const len = lines.map(l=>l.length+1);
+  const total = len.reduce((a,b)=>a+b,0);
+  const sess=[]; let s0=0;
+  for (let i=1;i<=msgs.length;i++){ if (i===msgs.length || msgs[i].t-msgs[i-1].t > 2*3600e3){ sess.push([s0,i]); s0=i; } }
+  const sChars = S => { let c=0; for (let i=S[0];i<S[1];i++) c+=len[i]; return c; };
+  const N = Math.max(1, Math.min(maxChunks, Math.ceil(total/budget)));
+  const per = total/N; const groups=[]; let cur=[], acc=0;
+  for (const S of sess){ cur.push(S); acc+=sChars(S); if (groups.length<N-1 && acc>=per*(groups.length+1)){ groups.push(cur); cur=[]; } }
+  if (cur.length) groups.push(cur);
+  return groups.map(g=>{
+    const gc = g.reduce((a,S)=>a+sChars(S),0);
+    let chosen = g, sampled = false;
+    if (gc > budget){
+      sampled = true;
+      const cap = budget/4;
+      const scored = g.map(S=>{ let hot=0, lau=0; for (let i=S[0];i<S[1];i++){ const m=msgs[i]; if (m.kind!=='text') continue; if (HOT.test(m.text)) hot++; if (/ח{3,}|😂|🤣/u.test(m.text)) lau++; if (m.text.length>160) hot+=.5; }
+        return {S, score: Math.log(1+S[1]-S[0])*2 + hot*1.5 + lau*.7 + rnd()*1.5}; }).sort((a,b)=>b.score-a.score);
+      chosen=[]; let used=0;
+      for (const x of scored){ if (used>=budget) break; const S=x.S; let c=0, e=S[0]; while (e<S[1] && c<cap){ c+=len[e]; e++; } chosen.push([S[0],e]); used+=c; }
+      chosen.sort((a,b)=>a[0]-b[0]);
+    }
+    const text = chosen.map(S=>lines.slice(S[0],S[1]).join('\n')).join('\n…\n');
+    const from = msgs[g[0][0]].t, to = msgs[g[g.length-1][1]-1].t;
+    return {text, from, to, sampled, label: heMY(from)===heMY(to) ? heMY(from) : heMY(from)+' – '+heMY(to)};
+  });
+}
+function chunkPrompt(st, ch, k, n, reader){
+  return `You are the research assistant for a hilarious, razor-accurate long-form report about a WhatsApp ${st.isGroup?'group':'private'} chat ("${st.chatName}"). Participants: ${st.people.slice(0,12).map(p=>p.name).join(', ')}.${reader?` The report is written for ${reader}.`:''}
+This is part ${k+1} of ${n}, covering ${ch.label}${ch.sampled?' (a selection of the liveliest conversations from this period)':''}. Each line: #id date time sender: text.
+
+Read carefully and take notes IN HEBREW. Be concrete and specific: names of third parties, places, sums of money, products, plans, nicknames, fights and what they were really about, apologies, sweet moments, embarrassing moments, habits (who's late, who cancels, who worries, who's always hungry, who sends voice notes at 2am), turning points in the relationship. Refer to messages ONLY by their #id numbers that appear below. Never invent ids.
+
+Reply with ONLY one JSON object:
+{"teaser":"one funny line (max 14 words) about this period, for a loading screen",
+"summary":"3-5 sentences: what happened in this period and how the dynamic looked",
+"events":[{"date":"dd/mm/yy","what":"specific event","ids":[123]}],
+"moments":[{"kind":"funny|sweet|fight|cringe|weird|telling","lol":1,"note":"what happens and why it's revealing or funny, plus the comic angle (the absurd detail, the gap, the irony)","ids":[120,121,122]}],
+"people":[{"name":"exact participant name","notes":"habits, catchphrases, role in this period, recurring behaviour (e.g. always proposes plans then cancels)","ids":[130]}],
+"glossary":[{"term":"private word, nickname or phrase this chat uses","meaning":"what it means here","ids":[140]}],
+"patterns":["behavioural pattern + who, with an example"],
+"jokes":["running jokes, nicknames, private words"],
+"facts":["specific facts: places, sums, names, dates, products"],
+"serious":"if this period contains something genuinely hard (war, reserve duty, injury, illness, loss, a breakup), describe it briefly and respectfully; otherwise empty string"}
+Hunt for comedy gold above all: absurd details, ironic gaps between what people say and do, exact times and sums, plans that collapse, dramatic overreactions, misunderstandings, typos that became legends. "lol" rates how funny a moment is (1-5); include at least 4 moments rated 4-5 if they exist. 3-8 events, 6-12 moments (each with 1-6 ids of consecutive messages that show it best), one "people" entry for every participant who is active in this part, up to 6 of each other list.
+
+=== CHAT PART ${k+1}/${n} ===
+${ch.text}`;
+}
+function castNames(st){
+  const min = st.isGroup ? Math.max(3, st.total*0.012) : 1;
+  return st.people.filter(p=>p.count>=min).slice(0, st.isGroup?12:2).map(p=>p.name);
+}
+function whoLine(st, reader, gender){
+  const g = gender==='f' ? 'feminine' : gender==='m' ? 'masculine' : 'gender-neutral where possible';
+  if (st.isGroup) return reader
+    ? `written for the members of the group, and especially ${reader} (who uploaded it). Open by greeting the group by its name ("שלום לחברי קבוצת ..."), address the group in second person plural, and turn to ${reader} directly (${g} forms) from time to time`
+    : 'written for the members of the group. Open by greeting the group by its name ("שלום לחברי קבוצת ..."), and address them in second person plural';
+  return reader ? `written for ${reader} (who uploaded it). Address ${reader} directly in the second person, ${g} Hebrew forms, and talk about the other person by name` : 'written for both people in the chat; address them in second person plural';
+}
+const SHARED_STYLE = (st, persona) => `STYLE (this is what matters most):
+- ${persona?.plural ? `First person plural, intimate, like a panel of sharp friends who read the whole thing ("קראנו את כל ${st.total.toLocaleString('en')} ההודעות", "מה שתפס אותנו כבר בעמודים הראשונים")` : `First person, intimate, like a sharp friend or star columnist who read the whole thing ("קראתי את כל ${st.total.toLocaleString('en')} ההודעות", "מה שתפס אותי כבר בעמודים הראשונים")`}.
+- Hyper-specific: real dates, places, sums, names, phrases. Every claim rests on a real moment. A line that could fit any other chat is a failure.
+- Setup, then evidence (real messages), then a twist or insight that makes the reader say "וואו, זה נכון". Under the jokes, real psychological insight: the roles people think they play vs. what's really going on, what they need from each other, the private language they built.
+- Funny through precision, timing, understatement and callbacks, not insults. Mix short punchy sentences with longer ones. Use **bold** for punchlines and reveals. Natural Israeli Hebrew; slang welcome. Never cruel about looks, body, health, religion or anything genuinely sensitive. Affection should be felt.
+- If the notes show a genuinely hard period (war, reserve duty, injury, illness, loss), it is never joked about. Wherever it comes up, the tone turns sincere and warm.
+- Evidence: embed real messages using "chat" blocks with ids from the MARKED MESSAGES list only (1-6 ids per block; a single short message on its own works great as a punchline). Never invent ids.
+
+THE GOAL IS LAUGH-OUT-LOUD. The reader must laugh out loud at least once per section and want to screenshot lines to the group. Comedy toolkit, use all of it:
+- Precision IS the joke: the exact time (03:12), the exact sum (134 ₪ לאדם), the exact wording, the exact gap between two messages ("שעה וארבעים דקות בין שתי ההודעות").
+- Deadpan after absurdity: quote something ridiculous, then one dry, short line. Never explain the joke.
+- Mock-serious framing: treat trivial chat drama as history, a military operation, a scientific study, a State Comptroller report, a court ruling, a nature documentary, a weather forecast.
+- Rule of three where the third item swerves ("הוא מביא גזייה, רמקול, וביטחון עצמי שאין לו כיסוי").
+- Callbacks: plant a detail early and pay it off later, especially in the last line of a section and in the signoff.
+- Israeli-specific comparisons and references everyone gets (תור בקופת חולים, ועד בית, מילואים, פקק באיילון, אמא פולנייה, דודה בשבת, אוטובוס של אגד, מבצע בשופרסל) — grounded, never forced.
+- Funny numbers: turn statistics into absurd comparisons ("יותר מילים מספר דברים").
+- End paragraphs on the laugh. Short punch after a long setup. Cut every sentence that is merely informative.
+- Roast the behaviour, love the people. The narrator has opinions, takes sides, gets "offended", has asides in parentheses.
+- Banned: generic praise, clichés like "קבוצה מיוחדת" / "חברות אמיתית" without a twist, the narrator writing "חחח", emoji in the middle of prose, explaining why something is funny.
+Tone reference (do NOT reuse these lines, match their sharpness): "ארבעה קילו. לארבעה אנשים. ליומיים. זה לא קניות, זה תיקון היסטורי." / "מסלולים לא משתנים, איתי." / "זה לא צ'אט. זו הצגה עם תסריט קבוע."`;
+// after the punch-up, message ids, block types, names and scores always come from the draft
+function lockFacts(v, d){
+  (d.sections||[]).forEach((s,i)=>{ const vs = v.sections?.[i]; if (!vs) return; (s.blocks||[]).forEach((b,j)=>{ const vb = vs.blocks?.[j]; if (!vb) return; vb.t = b.t; if ('ids' in b) vb.ids = b.ids; if ('who' in b) vb.who = b.who; if ('ordered' in b) vb.ordered = b.ordered; if (Array.isArray(b.items) && (!Array.isArray(vb.items) || vb.items.length!==b.items.length)) vb.items = b.items; if (b.t==='num') vb.value = b.value; }); if (!vs.icon) vs.icon = s.icon; });
+  (d.cast||[]).forEach((c,i)=>{ const vc = v.cast?.[i]; if (!vc) return; vc.name = c.name; vc.quoteIds = c.quoteIds; if (c.aside && vc.aside) vc.aside.who = c.aside.who; if (!Array.isArray(vc.paras) || !vc.paras.length) vc.paras = c.paras; if (c.list && !vc.list) vc.list = c.list; });
+  (d.awards||[]).forEach((a,i)=>{ if (v.awards?.[i]) v.awards[i].winner = a.winner; });
+  if (d.scores) v.scores = d.scores;
+  if (d.glossary && !Array.isArray(v.glossary)) v.glossary = d.glossary;
+  if (d.future && !Array.isArray(v.future)) v.future = d.future;
+  return v;
+}
+function punchPrompt(st, draft, part){
+  return `You are the head writer of a top Israeli satire writers' room, doing the final punch-up on a draft of a funny report about a WhatsApp chat ("${st.chatName}"). The draft is accurate and has good material, but it must become LAUGH-OUT-LOUD funny: the kind of text people screenshot and send to the group.
+
+Rewrite the Hebrew text fields to be much funnier, sharper and tighter:
+- Keep every fact, name, number, date and the JSON structure EXACTLY. Keep all "ids" and "quoteIds" arrays unchanged. Do not add or remove sections, blocks, cast members or list items.
+- Make each paragraph land on a punchline. Cut flat or merely informative sentences. Replace generic jokes with specific ones built from the facts in the draft. Add callbacks between sections. Sharpen every "after" line under the chat blocks into a killer one-liner. Make titles and the headline irresistible.
+- Use: deadpan, precision, mock-serious framing (history, military operation, court ruling, scientific study), rule of three with a swerve, Israeli references everyone gets, absurd comparisons.
+- Keep the narrator's voice and the affection. Never cruel about looks, body, health, religion or anything sensitive.
+- Any sincere passage about a genuinely hard period (war, reserve duty, injury, illness, loss) stays sincere: leave it as is.
+- Keep a similar length (it may get slightly shorter). Natural Israeli Hebrew.
+- Blocks with "t":"aside" are cameo lines by panel members (savta = loving nosy grandmother, shrink = over-serious therapist, sports = over-excited sports commentator, roast = merciless stand-up): keep "who" unchanged and make each line funnier in that character's voice.
+
+Reply with ONLY the improved JSON object, same shape as the draft.
+
+=== DRAFT (${part}) ===
+${JSON.stringify(draft)}`;
+}
+function finalPromptCast(st, notes, quoted, persona, reader, gender){
+  const names = castNames(st);
+  return `${persona.voice}
+
+You are writing part of a report for "רכילותא": a long-form, laugh-out-loud yet warm report about a WhatsApp ${st.isGroup?'group':'one-on-one'} chat called "${st.chatName}", ${whoLine(st, reader, gender)}. Another writer handles the main story sections; YOUR job is three things: the cast parade, the private dictionary, and the predictions.
+
+${SHARED_STYLE(st, persona)}
+
+Reply with ONLY one JSON object:
+{"castTitle":"title for the cast section, e.g. 'מצעד הדמויות: מי אתם באמת?'",
+"cast":[{"name":"exact participant name","title":"name + funny nickname/title + 1-2 emoji, e.g. 'משי – מלכת ה\\"הקיץ של אביב\\" 👑'","paras":["1-2 short paragraphs: who they really are in this chat, with specific facts"],"list":{"ordered":true,"items":["optional: a recurring pattern of theirs as 3-5 steps, or a few signature habits"]},"quoteIds":[123]${persona.plural?',"aside":{"who":"savta|shrink|sports|roast","text":"optional one-line cameo about this person, in that panel member\'s voice (for about half of the people, rotating the four)"}':''}}],
+"glossTitle":"title for the dictionary, e.g. 'המילון הפנימי: מושגי יסוד בדיאלקט של ...'",
+"glossary":[{"term":"private term, nickname or phrase","meaning":"funny, precise definition with context"}],
+"futureTitle":"title for predictions, e.g. 'תחזית לעתיד: לאן כל זה הולך?'",
+"futureIntro":"one sentence",
+"future":["one prediction per person, starting with their name, specific to them"],
+"futureOutro":"one closing sentence, warm"}
+
+Rules: "cast" covers exactly these people, in this order: ${names.join(', ')}. Each gets 1-2 paragraphs (${st.isGroup?'40-110':'90-160'} words total) and 1-3 quoteIds of their own best lines. Use "list" only where it truly adds (at most 3 people). 5-9 glossary terms that really recur in the chat. One future line per cast member${st.isGroup?'':', plus one about the two of them together'}.
+
+=== STATISTICS (accurate) ===
+${statsBrief(st)}
+
+=== READING NOTES, PERIOD BY PERIOD ===
+${notes}
+
+=== MARKED MESSAGES (exact text) ===
+${quoted}`;
+}
+function finalPrompt(st, notes, quoted, persona, reader, gender){
+  const names = castNames(st);
+  const who = whoLine(st, reader, gender);
+  return `${persona.voice}
+
+You are writing the main story of a report for "רכילותא": a long-form, laugh-out-loud yet warm and insightful report about a WhatsApp ${st.isGroup?'group':'one-on-one'} chat called "${st.chatName}", ${who}. You read EVERYTHING; below are your reading notes from every period of the chat, the exact text of the messages you marked, and precise statistics. (A separate writer handles a per-person cast parade, a private dictionary and per-person predictions, so do NOT write those sections.)
+
+${SHARED_STYLE(st, persona)}
+
+Reply with ONLY one JSON object:
+{"headline":"magazine-cover headline, max 16 words. A great pattern: the chat's name, a colon, and a funny subtitle that sums up the whole saga; may end with 1-3 emoji",
+"dek":"one-sentence subtitle",
+"intro":["2-3 short opening paragraphs: greet, say what you read (how many years and messages), and promise the truth"],
+"sections":[{"icon":"one emoji","title":"section title, can be long and funny","blocks":[
+  {"t":"p","text":"paragraph"},
+  {"t":"chat","ids":[1,2,3],"after":"optional one-line reaction"},
+  {"t":"reveal","text":"a short bombshell line"},
+  {"t":"list","ordered":false,"items":["a punchy list item, may start with a **bold term**"]},
+  {"t":"num","value":"e.g. 8,000 ₪ or 03:12","label":"what it means"}${persona.plural?ASIDE_SCHEMA:''}]}],
+"awards":[{"title":"funny award","winner":"exact participant name","why":"one sentence"}],
+"scores":{"drama":0,"love":0,"chaos":0,"cringe":0},
+"prediction":"one sentence about the future of the whole chat",
+"signoff":"one-line farewell in your voice"}
+
+STRUCTURE: 5-7 sections in a story arc, chronological where it makes sense. Ideas (adapt to THIS chat; rename freely, skip what doesn't fit): ${st.isGroup
+  ? 'the world the group lives in (the place, the setting, its absurd geography or logistics); the eternal plans that never happen and the rituals that always do; food, money and who owes whom; the alliances, feuds and the person everyone teases; the funniest moments; if there was a genuinely hard period (war, reserve duty, injury), a sincere "moment of truth" section that shows how the group showed up for each other, with no jokes at all; the numbers that tell the story'
+  : 'how it started and the first impressions; the roles you think you play vs. what is really happening; the biggest weakness of each of you; the biggest fight and what it was really about; the funniest moments; if there was a genuinely hard period, a sincere "moment of truth" section with no jokes; the numbers that tell the story'}. Each section: 2-5 paragraphs plus 1-3 chat blocks, and a reveal where it lands. Total about 1,400-1,900 words. 4-6 awards. Scores are integers 0-100.${persona.plural?ASIDE_RULE:''}
+
+=== STATISTICS (accurate; trust these over your own counting) ===
+${statsBrief(st)}
+
+=== READING NOTES, PERIOD BY PERIOD ===
+${notes}
+
+=== MARKED MESSAGES (exact text) ===
+${quoted}`;
+}
+function notesText(notes, chunks){
+  return notes.map((n,k)=>{ if (!n) return `--- ${chunks[k].label}: (not read) ---`;
+    const ev = (n.events||[]).map(e=>`• ${e.date||''} ${e.what||''} [${(e.ids||[]).map(i=>'#'+i).join(' ')}]`).join('\n');
+    const mo = (n.moments||[]).slice().sort((x,y)=>(+y.lol||0)-(+x.lol||0)).map(e=>`• (${e.kind||''}${e.lol?', lol '+e.lol:''}) ${e.note||''} [${(e.ids||[]).map(i=>'#'+i).join(' ')}]`).join('\n');
+    const pe = (n.people||[]).map(e=>`• ${e.name||''}: ${e.notes||''} [${(e.ids||[]).map(i=>'#'+i).join(' ')}]`).join('\n');
+    const gl = (n.glossary||[]).map(e=>`• "${e.term||''}" = ${e.meaning||''} [${(e.ids||[]).map(i=>'#'+i).join(' ')}]`).join('\n');
+    return capText(`--- ${chunks[k].label} ---\n${n.serious?'SERIOUS (handle with care, no jokes): '+n.serious+'\n':''}${n.summary||''}\nEvents:\n${ev}\nMoments:\n${mo}\nPeople:\n${pe}\nPrivate words:\n${gl}\nPatterns: ${(n.patterns||[]).join(' | ')}\nJokes: ${(n.jokes||[]).join(' | ')}\nFacts: ${(n.facts||[]).join(' | ')}`, Math.floor(52000/notes.length));
+  }).join('\n\n');
+}
+function markedIds(notes){
+  const s = new Set();
+  for (const n of notes){ if (!n) continue; for (const x of [...(n.events||[]), ...(n.moments||[]), ...(n.people||[]), ...(n.glossary||[])]) for (const i of (x?.ids||[])){ const v=parseInt(String(i).replace('#',''),10); if (!isNaN(v)) s.add(v); } }
+  return [...s].filter(i=>i>=0 && i<MSGS.length).sort((a,b)=>a-b);
+}
+function quotedText(ids, maxChars=55000){
+  // marked messages first, then one neighbour on each side for context, within a size budget
+  const set = new Set(); let used = 0;
+  const add = i => { if (i<0 || i>=MSGS.length || set.has(i)) return; const l = lineFor(MSGS[i],i).length+1; if (used+l > maxChars) return; set.add(i); used += l; };
+  ids.forEach(add); ids.forEach(i=>{ add(i-1); add(i+1); });
+  return [...set].sort((a,b)=>a-b).map(i=>lineFor(MSGS[i],i)).join('\n');
+}
+function capText(s, max){ return s.length<=max ? s : s.slice(0,max)+'\n…'; }
+function parseLoose(s){
+  const a = s.indexOf('{'); if (a<0) throw new Error('no json');
+  s = s.slice(a);
+  try { return JSON.parse(s.slice(0, s.lastIndexOf('}')+1)); } catch(_){}
+  const stack=[]; let inStr=false, e=false, safe=-1, safeStack=null;
+  for (let i=0;i<s.length;i++){ const c=s[i];
+    if (inStr){ if (e) e=false; else if (c==='\\') e=true; else if (c==='"') inStr=false; continue; }
+    if (c==='"'){ inStr=true; continue; }
+    if (c==='{'||c==='[') stack.push(c);
+    else if (c==='}'||c===']'){ stack.pop(); safe=i+1; safeStack=stack.slice(); }
+    else if (c===','){ safe=i; safeStack=stack.slice(); }
+  }
+  if (safe<0) throw new Error('no json');
+  let out = s.slice(0,safe).replace(/,\s*$/,'');
+  for (let k=safeStack.length-1;k>=0;k--) out += safeStack[k]==='{' ? '}' : ']';
+  return JSON.parse(out);
+}
+
+/* ================= capabilities ================= */
+const cap = {};
+function use(name){ if (!(name in cap)) cap[name] = (window.claude?.use ? window.claude.use(name) : Promise.resolve(null)).catch(()=>null); return cap[name]; }
+const ERR = {
+  not_granted:'לא אישרתם ל-Claude לקרוא, אז אין דוח הפעם. אפשר לנסות שוב ולאשר.',
+  sampling_disabled:'Claude לא זמין בחשבון הזה.',
+  rate_limited:'הגעתם למגבלת השימוש של Claude. נסו שוב בעוד כמה דקות.',
+  refused:'Claude סירב לכתוב על הצ\'אט הזה.',
+  invalid_json:'הדוח חזר משובש. אפשר לנסות שוב.',
+  prompt_too_large:'הצ\'אט ארוך מדי לקריאה אחת.',
+  session_expired:'צריך להתחבר מחדש ל-Claude.',
+};
+const errText = e => ERR[e?.code] || 'משהו השתבש בדרך ל-Claude. אפשר לנסות שוב.';
+
+/* ================= crypto: each saved report has its own key, carried only in its link ================= */
+const hex = b => [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const unhex = h => new Uint8Array(h.match(/../g).map(x=>parseInt(x,16)));
+const b64 = u8 => { let s=''; for (let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function streamBytes(u8, T){ const s = new Blob([u8]).stream().pipeThrough(T); return new Uint8Array(await new Response(s).arrayBuffer()); }
+async function encryptObj(obj){
+  const raw = crypto.getRandomValues(new Uint8Array(32)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
+  let data = new TextEncoder().encode(JSON.stringify(obj)), z = 0;
+  if (window.CompressionStream){ try{ data = await streamBytes(data, new CompressionStream('gzip')); z=1; }catch(_){} }
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, data));
+  return {keyHex:hex(raw), iv:b64(iv), ct:b64(ct), z};
+}
+async function decryptObj(rec, keyHex){
+  const key = await crypto.subtle.importKey('raw', unhex(keyHex), 'AES-GCM', false, ['decrypt']);
+  let data = new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(rec.iv)}, key, unb64(rec.ct)));
+  if (rec.z) data = await streamBytes(data, new DecompressionStream('gzip'));
+  return JSON.parse(new TextDecoder().decode(data));
+}
+
+/* ================= open links: the whole report travels inside the link (compressed), nothing is stored anywhere ================= */
+const B32 = '0123456789abcdefghijklmnopqrstuv';
+function toB32(u8){ let out='', bits=0, val=0; for (const b of u8){ val=((val<<8)|b)>>>0; bits+=8; while (bits>=5){ out+=B32[(val>>>(bits-5))&31]; bits-=5; } val &= (1<<bits)-1; } if (bits>0) out+=B32[(val<<(5-bits))&31]; return out; }
+function fromB32(s){ const out=[]; let bits=0, val=0; for (const c of s.toLowerCase()){ const v=B32.indexOf(c); if (v<0) continue; val=((val<<5)|v)>>>0; bits+=5; if (bits>=8){ out.push((val>>>(bits-8))&255); bits-=8; val &= (1<<bits)-1; } } return new Uint8Array(out); }
+function slimPack(){ const p = packReport(); const st = {...p.st, people: p.st.people.map(x=>({...x, longest: ''}))}; return {...p, st}; }
+async function makeOpenHash(){
+  let data = new TextEncoder().encode(JSON.stringify(slimPack())), z = 'p';
+  if (window.CompressionStream){ try { data = await streamBytes(data, new CompressionStream('gzip')); z='z'; } catch(_){} }
+  return 'x-' + z + toB32(data);
+}
+async function readOpenHash(h){
+  const z = h[2], body = fromB32(h.slice(3));
+  const data = z==='z' ? await streamBytes(body, new DecompressionStream('gzip')) : body;
+  return JSON.parse(new TextDecoder().decode(data));
+}
+
+/* ================= state ================= */
+let MSGS=null, ST=null, REP=null, NOTES=null, NOTES_TXT='';
+let RAW = {text:'', name:''}, ALIAS = {}, ST_ORIG = null;
+/* temporary in-browser storage of a report in progress, so leaving the screen never loses work; deleted when the report is ready */
+function idbOpen(){ return new Promise((res,rej)=>{ const r = indexedDB.open('rechiluta',1); r.onupgradeneeded = ()=>r.result.createObjectStore('kv'); r.onsuccess = ()=>res(r.result); r.onerror = ()=>rej(r.error); }); }
+async function idbSet(k,v){ try { const d = await idbOpen(); await new Promise((res,rej)=>{ const t = d.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete = res; t.onerror = ()=>rej(t.error); }); } catch(_){} }
+async function idbGet(k){ try { const d = await idbOpen(); return await new Promise(res=>{ const r = d.transaction('kv').objectStore('kv').get(k); r.onsuccess = ()=>res(r.result); r.onerror = ()=>res(null); }); } catch(_){ return null; } }
+async function idbDel(k){ try { const d = await idbOpen(); await new Promise(res=>{ const t = d.transaction('kv','readwrite'); t.objectStore('kv').delete(k); t.oncomplete = res; t.onerror = res; }); } catch(_){} }
+let VIEW = {persona:'neighbor', reader:'', gender:'', demo:true, saved:null};
+let setupSel = {reader:'', gender:''};
+
+/* ================= upload ================= */
+async function readFile(f){
+  if (/\.zip$/i.test(f.name) || f.type.includes('zip')){
+    if (!window.JSZip) throw new Error('לא הצלחנו לפתוח קבצי zip כאן. חלצו את הקובץ ‎_chat.txt והעלו אותו.');
+    const zip = await JSZip.loadAsync(f);
+    const txts = Object.values(zip.files).filter(z=>!z.dir && /\.txt$/i.test(z.name));
+    if (!txts.length) throw new Error('לא מצאנו קובץ טקסט בתוך ה-zip. ודאו שזה ייצוא צ\'אט מוואטסאפ.');
+    const pick = txts.find(z=>/_chat\.txt$/i.test(z.name)) || txts.sort((a,b)=>(b._data?.uncompressedSize||0)-(a._data?.uncompressedSize||0))[0];
+    return {text: await pick.async('string'), name: nameFromFile(f.name) || nameFromFile(pick.name)};
+  }
+  return {text: await f.text(), name: nameFromFile(f.name)};
+}
+async function handleFile(f){
+  $('#banner').innerHTML=''; $('#drop').classList.add('busy'); haptic(10);
+  try { await handleFile2(f); } finally { $('#drop').classList.remove('busy'); }
+}
+async function handleFile2(f){
+  let parsed;
+  try { parsed = await readFile(f); }
+  catch(e){ $('#banner').innerHTML = `<div class="err">${esc(e.message||'לא הצלחנו לקרוא את הקובץ.')}</div>`; toast('לא הצלחנו לקרוא את הקובץ','⚠️'); return; }
+  const msgs = parseChat(parsed.text);
+  if (msgs.length < 10){ $('#banner').innerHTML = `<div class="err">מצאנו רק ${msgs.length} הודעות בקובץ. ודאו שזה ייצוא צ'אט של וואטסאפ (קובץ ‎.txt או ‎.zip).</div>`; return; }
+  msgs.forEach(m=>m.o = m.who);
+  RAW = {text:parsed.text, name:parsed.name}; ALIAS = {};
+  MSGS = msgs; ST = ST_ORIG = computeStats(msgs, parsed.name); REP=null; NOTES=null;
+  const me = store.get('rk-me');
+  setupSel = {reader: me && ST.people.some(p=>p.name===me) ? me : '', gender: store.get('rk-gender') || ''};
+  showSetup();
+}
+function cleanName(n){
+  if (/^[+\d\s().\-‎‏]+$/.test(n)) return '';
+  let s = n.replace(EMO,'').replace(/[^\p{L}\p{N}\s'"׳״.\-]/gu,' ').replace(/\s+/g,' ').trim();
+  const w = s.split(' '); if (w.length>1 && [...w[0]].length>=2) s = w[0];
+  return s;
+}
+function applyNames(){
+  ALIAS = {};
+  document.querySelectorAll('#names input[data-orig]').forEach(i=>{ const v = i.value.trim(); if (v) ALIAS[i.dataset.orig] = v; });
+  MSGS.forEach(m=>{ m.who = ALIAS[m.o] || m.o; });
+  ST = computeStats(MSGS, RAW.name);
+}
+async function guessNames(){
+  const sample = await use('sample'); const note = $('#nameAI'); if (!sample || !note) { note?.remove(); return; }
+  const people = ST_ORIG.people.slice(0,12).map(p=>p.name);
+  const pool = MSGS.filter(m=>m.kind==='text'); const step = Math.max(1, Math.floor(pool.length/500));
+  let txt = ''; for (let i=0;i<pool.length && txt.length<18000;i+=step){ const m = pool[i]; txt += m.o+': '+m.text.replace(/\n+/g,' ').slice(0,160)+'\n'; }
+  try {
+    const r = await sample.json(`These are WhatsApp display names in a chat: ${JSON.stringify(people)}.\nFrom the messages below, figure out the first name each person is actually called by the others (how they address them, nicknames aside), written the way the chat writes it (Hebrew if they write Hebrew). If you can't tell, return a short clean version of the display name (first name only, no emoji, no surname). Never invent.\nReply with ONLY a JSON object mapping each display name to the first name.\n\n${txt}`, {modelTier:'quick'});
+    let n = 0;
+    document.querySelectorAll('#names input[data-orig]').forEach(i=>{ const g = r?.[i.dataset.orig]; if (g && typeof g==='string' && !i.dataset.touched && g.trim() && g.length<30){ i.value = g.trim(); i.dispatchEvent(new Event('input',{bubbles:true})); i.closest('.nm-row')?.classList.add('guessed'); n++; } });
+    note.innerHTML = n ? '✨ ניחשנו את השמות לפי איך שאתם פונים אחד לשני. אפשר לתקן.' : 'אפשר לכתוב לכל אחד את השם שלו.';
+  } catch(_){ note.textContent = 'אפשר לכתוב לכל אחד את השם שלו.'; }
+}
+function showSetup(){
+  if (ST_ORIG) ST = ST_ORIG;
+  const st = ST, el = $('#setup');
+  const chunks = buildChunks(MSGS).length;
+  const mins = Math.max(1, Math.round(chunks*0.5 + 1.5));
+  el.hidden = false; $('#report').innerHTML=''; $('#banner').innerHTML='';
+  el.className = 'setup';
+  el.innerHTML = `<div class="bubs" aria-hidden="true"></div><div class="label">הקובץ נקרא 🎉</div>
+    <h2><span class="num" data-count="${st.total}">0</span> הודעות, ${st.people.length} משתתפים, ${fmt(st.spanDays)} ימים.</h2>
+    <p class="meta">${esc(st.chatName)} · ${heDate(st.first)} – ${heDate(st.last)}</p>
+    <div class="label">איך קוראים להם באמת? <span class="lbl-sub">הדוח ישתמש בשמות האלה, לא בשמות מוואטסאפ</span></div>
+    <div class="names" id="names">${st.people.slice(0,12).map(p=>{ const c = cleanName(p.name); return `<label class="nm-row"><span class="av0" style="background:${nameColor(p.name)}">${esc([...(c||p.name).replace(/[^\p{L}\p{N}]/gu,'')][0]||'?')}</span><input type="text" data-orig="${esc(p.name)}" value="${esc(c)}" placeholder="שם" maxlength="24" aria-label="שם עבור ${esc(p.name)}"><small>${esc(p.name)}</small></label>`; }).join('')}</div>
+    <p class="note" id="nameAI"><span class="spin"></span> מנחשים את השמות האמיתיים מתוך הצ'אט...</p>
+    <div class="label">מי את/ה בצ'אט הזה?</div>
+    <div class="chips" id="readerChips">${st.people.slice(0,14).map(p=>`<button type="button" class="chip" data-r="${esc(p.name)}" aria-pressed="${p.name===setupSel.reader}"><span class="av0" style="background:${nameColor(p.name)}">${esc([...(cleanName(p.name)||p.name).replace(/[^\p{L}\p{N}]/gu,'')][0]||'?')}</span><span class="cn">${esc(cleanName(p.name)||p.name)}</span></button>`).join('')}<button type="button" class="chip" data-r="" aria-pressed="${!setupSel.reader}">אני לא בצ'אט / כולנו</button></div>
+    <div class="label">איך לפנות אליך?</div>
+    <div class="chips" id="genderChips"><button type="button" class="chip" data-g="f" aria-pressed="${setupSel.gender==='f'}">בלשון נקבה</button><button type="button" class="chip" data-g="m" aria-pressed="${setupSel.gender==='m'}">בלשון זכר</button><button type="button" class="chip" data-g="" aria-pressed="${!setupSel.gender}">לא משנה</button></div>
+    <div class="label">מי יקרא את הצ'אט?</div>
+    <div class="personas" id="personas">${Object.entries(PERSONAS).map(([k,p])=>`<button type="button" class="persona" data-k="${k}" aria-pressed="${k===personaKey}"><span class="av">${p.av}</span><span><b>${esc(p.name)}</b><small>${esc(p.short)}</small></span></button>`).join('')}</div>
+    <p class="note" id="aiNote">הקריאה נעשית ב-${chunks===1?'חלק אחד':chunks+' חלקים'} כדי לא לפספס כלום, ותיקח בערך ${mins} דקות. בינתיים תקבלו הצצות למה שנמצא.</p>
+    <button type="button" class="btn big" id="go">יאללה, שיתחיל לקרוא</button>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+  el.querySelectorAll('[data-count]').forEach(c=>countUp(c, +c.dataset.count));
+  bubbleRain(el.querySelector('.bubs')); enter(el); haptic(20);
+  el.querySelector('#names').addEventListener('input', e=>{ const i = e.target.closest('input[data-orig]'); if (!i) return; if (e.isTrusted) i.dataset.touched = '1';
+    const v = i.value.trim() || i.dataset.orig; const chip = el.querySelector(`#readerChips .chip[data-r="${CSS.escape(i.dataset.orig)}"]`);
+    if (chip){ chip.querySelector('.cn').textContent = v; chip.querySelector('.av0').textContent = [...v.replace(/[^\p{L}\p{N}]/gu,'')][0]||'?'; }
+    const av = i.closest('.nm-row').querySelector('.av0'); av.textContent = [...v.replace(/[^\p{L}\p{N}]/gu,'')][0]||'?'; });
+  guessNames();
+  use('sample').then(s=>{ if (!s){ $('#aiNote').textContent = 'הקריאה נעשית בעזרת Claude, וזה לא זמין בתצוגה הזו. תקבלו את הסטטיסטיקות והפרסים בלבד.'; $('#go').textContent='הראו לי את המספרים'; } });
+}
+
+/* ================= fun while waiting: a quiz about your own chat + rotating facts ================= */
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+function buildQuiz(st){
+  const P = st.people.filter(p=>p.count >= Math.max(3, st.total*0.01)).slice(0,8);
+  if (P.length < 2) return [];
+  const Q = [];
+  const opts = ans => shuffle([ans, ...shuffle(P.filter(p=>p.name!==ans)).slice(0,3).map(p=>p.name)]);
+  const best = (f, min=-Infinity) => { let b=null, bv=-Infinity; for (const p of P){ const v=f(p); if (v!=null && v>bv){ bv=v; b=p; } } return b && bv>min ? [b,bv] : null; };
+  const pq = (q, r, why) => { if (r) Q.push({q, a:r[0].name, o:opts(r[0].name), why:why(r[0], r[1])}); };
+  pq('מי שולח/ת הכי הרבה הודעות?', best(p=>p.count), (p,v)=>`${p.name}, עם ${fmt(v)} הודעות. ${Math.round(p.share*100)}% מכל הצ'אט.`);
+  pq('מי הינשוף? (הכי הרבה הודעות בין חצות לחמש בבוקר)', best(p=>p.night, 0), (p,v)=>`${p.name}: ${fmt(v)} הודעות לילה. מישהו פה לא ישן.`);
+  { const c = P.filter(p=>p.nReplies>=8 && p.medianReply).sort((a,b)=>a.medianReply-b.medianReply); if (c.length>1) Q.push({q:'מי עונה הכי מהר?', a:c[0].name, o:opts(c[0].name), why:`${c[0].name}. בדרך כלל תוך ${dur(c[0].medianReply)}.`}); }
+  pq('מי פותח/ת הכי הרבה שיחות אחרי שקט?', best(p=>p.starts, 1), (p,v)=>`${p.name}, ${fmt(v)} פעמים. בלי ${p.name} הצ'אט הזה היה מת מזמן.`);
+  pq('מי צוחק/ת הכי הרבה?', best(p=>p.laughs, 2), (p,v)=>`${p.name}: ${fmt(v)} צחוקים. הקהל הכי טוב בחדר.`);
+  pq('מי מתנצל/ת הכי הרבה?', best(p=>p.sorry, 1), (p,v)=>`${p.name}, ${fmt(v)} פעמים. על מה? זה כבר לדוח.`);
+  pq('מי שולח/ת הכי הרבה הודעות קוליות?', best(p=>p.audio, 2), (p,v)=>`${p.name}: ${fmt(v)} קוליות. פודקאסט בהתהוות.`);
+  pq('מי כותב/ת את ההודעות הכי ארוכות?', best(p=>p.textCount>10?p.avgLen:null), (p,v)=>`${p.name}, בממוצע ${Math.round(v)} תווים להודעה. מגילות.`);
+  if (st.runRec.n>=5 && P.some(p=>p.name===st.runRec.who)) Q.push({q:`מי כתב/ה ${fmt(st.runRec.n)} הודעות ברצף בלי שאף אחד ענה?`, a:st.runRec.who, o:opts(st.runRec.who), why:`${st.runRec.who}. מונולוג שלם. אף אחד לא ענה.`});
+  if (st.topEmojis.length>=4){ const e = st.topEmojis.slice(0,4).map(x=>x[0]); Q.push({q:'מה האימוג\'י הכי נפוץ בצ\'אט?', a:e[0], o:shuffle(e), big:true, why:`${e[0]}, ${fmt(st.topEmojis[0][1])} פעמים.`}); }
+  { const h = st.peakHour, cand = shuffle([...new Set([h, (h+6)%24, (h+12)%24, (h+18)%24])]); Q.push({q:'באיזו שעה הצ\'אט הכי פעיל?', a:pad(h)+':00', o:cand.map(x=>pad(x)+':00'), why:`${pad(h)}:00. ככה זה אצלכם.`}); }
+  { const d = st.peakWd, cand = shuffle([...new Set([d, (d+2)%7, (d+4)%7, (d+5)%7])]); Q.push({q:'באיזה יום בשבוע מדברים הכי הרבה?', a:'יום '+WD[d], o:cand.map(x=>'יום '+WD[x]), why:`יום ${WD[d]}.`}); }
+  { const t = st.total, r = n => n>=1000 ? Math.round(n/100)*100 : Math.max(1,Math.round(n)); const cand = shuffle([t, r(t*0.4), r(t*2.3), r(t*5.5)]); Q.push({q:'כמה הודעות יש בצ\'אט?', a:fmt(t), o:cand.map(fmt), why:`בדיוק ${fmt(t)}.`}); }
+  pq('מי שואל/ת הכי הרבה שאלות?', best(p=>p.questions, 2), (p,v)=>`${p.name}: ${fmt(v)} הודעות עם סימן שאלה. סקרנות או חקירה? תחליטו אתם.`);
+  pq('מי שולח/ת הכי הרבה אימוג\'ים?', best(p=>p.emojis, 3), (p,v)=>`${p.name}, ${fmt(v)} אימוג'ים. האהוב: ${p.topEmoji[0]||''}`);
+  pq('מי מוחק/ת הכי הרבה הודעות?', best(p=>p.deleted, 1), (p,v)=>`${p.name}: ${fmt(v)} הודעות נמחקו. מה היה שם? לא נדע לעולם.`);
+  pq('מי שולח/ת הכי הרבה תמונות ומדבקות?', best(p=>p.media, 3), (p,v)=>`${p.name}, ${fmt(v)} פעמים. למה לכתוב כשאפשר לשלוח?`);
+  pq('מי כותב/ת הכי הרבה מילות אהבה? ❤️', best(p=>p.love, 1), (p,v)=>`${p.name}: ${fmt(v)} הודעות עם אהבה. נמס.`);
+  pq('מי שולח/ת הודעות הכי מוקדם בבוקר? 🌅', best(p=>p.morning, 1), (p,v)=>`${p.name}: ${fmt(v)} הודעות בין 5 ל-8 בבוקר. מי עושה את זה?`);
+  if (st.gap.breaker && P.some(p=>p.name===st.gap.breaker)) Q.push({q:`מי שבר/ה את השקט הכי ארוך בצ'אט (${dur(st.gap.ms)})?`, a:st.gap.breaker, o:opts(st.gap.breaker), why:`${st.gap.breaker}. ${heDate(st.gap.to)}. גיבור/ת.`});
+  if (st.months.length>=4){ const top = st.months.slice().sort((a,b)=>b[1]-a[1]); const ml = k => heMY(new Date(k+'-15')); const cand = shuffle([top[0], ...shuffle(top.slice(1)).slice(0,3)]); Q.push({q:'באיזה חודש דיברתם הכי הרבה?', a:ml(top[0][0]), o:cand.map(x=>ml(x[0])), why:`${ml(top[0][0])}, עם ${fmt(top[0][1])} הודעות. מה קרה שם?`}); }
+  if (st.topWords.length>=4){ const w = st.topWords.slice(0,4).map(x=>x[0]); Q.push({q:'מה המילה הכי נפוצה בצ\'אט?', a:w[0], o:shuffle(w), why:`"${w[0]}", ${fmt(st.topWords[0][1])} פעמים.`}); }
+  for (const p of P.slice(0,3)) if (p.sigWord && p.sigCount>=3) Q.push({q:`של מי המילה "${p.sigWord}"?`, a:p.name, o:opts(p.name), why:`${p.name}. ${fmt(p.sigCount)} פעמים, יותר מכל אחד אחר.`});
+  // "who wrote this?" with real quotes from the chat
+  if (MSGS){
+    const names = new Set(P.map(p=>p.name));
+    const pool = MSGS.filter(m=>m.kind==='text' && names.has(m.who) && m.text.length>=16 && m.text.length<=110 && !/https?:/.test(m.text) && (m.text.match(/\p{L}/gu)||[]).length>=10);
+    const used = new Set();
+    for (let k=0; k<40 && Q.filter(q=>q.quote).length<6 && pool.length; k++){
+      const m = pool[Math.floor(Math.random()*pool.length)]; if (used.has(m.text)) continue; used.add(m.text);
+      Q.push({q:'מי כתב/ה את זה?', quote:m.text, a:m.who, o:opts(m.who), why:`${m.who}, ב-${heDate(m.t)}.`});
+    }
+  }
+  const quotes = Q.filter(q=>q.quote), facts = shuffle(Q.filter(q=>!q.quote));
+  const out = facts.slice(0, Math.max(9, 15-quotes.length)); out.push(...quotes.slice(0, 15-out.length));
+  return shuffle(out).slice(0,15);
+}
+function funFacts(st){
+  const F = [];
+  F.push(`${fmt(st.totalWords)} מילים. זה ${fmt(st.totalWords/220)} דקות קריאה רצופות.`);
+  if (st.busiest.n) F.push(`היום הכי עמוס: ${heDate(new Date(st.busiest.date+'T12:00'))}, עם ${fmt(st.busiest.n)} הודעות. מה קרה שם?`);
+  if (st.gap.ms) F.push(`השקט הכי ארוך נמשך ${dur(st.gap.ms)}. ${st.gap.breaker} שבר/ה אותו.`);
+  if (st.runRec.n>=4) F.push(`${st.runRec.who} כתב/ה פעם ${fmt(st.runRec.n)} הודעות ברצף, בלי שאף אחד ענה.`);
+  if (st.laughs) F.push(`${fmt(st.laughs)} צחוקים בסך הכול. חחח זה כמעט שפה רשמית אצלכם.`);
+  if (st.deleted) F.push(`${fmt(st.deleted)} הודעות נמחקו. אנחנו לא שופטים. (קצת כן.)`);
+  if (st.topWords[0]) F.push(`המילה הכי נפוצה: "${st.topWords[0][0]}". ${fmt(st.topWords[0][1])} פעמים.`);
+  if (st.topEmojis[0]) F.push(`האימוג'י הרשמי של הצ'אט: ${st.topEmojis[0][0]}`);
+  if (st.streak.len>2) F.push(`${fmt(st.streak.len)} ימים ברצף בלי יום אחד של שקט.`);
+  for (const p of st.people.slice(0,6)) if (p.sigWord) F.push(`המילה של ${p.name}: "${p.sigWord}". אף אחד אחר לא משתמש בה כמוהו/ה.`);
+  return shuffle(F);
+}
+let quizState = null;
+function startQuiz(st){
+  const qs = buildQuiz(st), box = $('#quiz'); if (!box) return;
+  if (!qs.length){ box.hidden = true; return; }
+  quizState = {qs, i:0, score:0};
+  renderQuiz();
+}
+function renderQuiz(){
+  const s = quizState, box = $('#quiz'); if (!s || !box) return;
+  if (s.i >= s.qs.length){
+    const r = s.score/s.qs.length;
+    box.innerHTML = `<div class="qk">החידון נגמר</div><div class="qscore">${s.score}/${s.qs.length}</div><p class="qq">${r>=.8?'וואו. את/ה מכיר/ה את הצ\'אט הזה יותר טוב מהטלפון שלך.':r>=.5?'לא רע בכלל. אבל יש פה כמה הפתעות שמחכות לך בדוח.':'אוקיי, מסתבר שיש לך הרבה מה לגלות. טוב שאנחנו פה.'}</p><button class="btn ghost" type="button" data-act="quizAgain">עוד סיבוב</button>`;
+    return;
+  }
+  const q = s.qs[s.i];
+  box.innerHTML = `<div class="qk">חידון בזמן ההמתנה · שאלה ${s.i+1} מתוך ${s.qs.length} · ${s.score} נקודות</div><div class="qdots">${s.qs.map((_,k)=>`<i class="${k<s.i?(s.res?.[k]?'ok':'no'):k===s.i?'now':''}"></i>`).join('')}</div><p class="qq">${esc(q.q)}</p>${q.quote?`<div class="qquote">${esc(q.quote)}</div>`:''}<div class="qopts ${q.big?'big':''}">${q.o.map(o=>`<button type="button" class="qo" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p class="qwhy" id="qwhy"></p>`;
+}
+function answerQuiz(btn){
+  const s = quizState; if (!s || btn.disabled) return;
+  const q = s.qs[s.i], ok = btn.dataset.o === q.a;
+  $('#quiz').querySelectorAll('.qo').forEach(b=>{ b.disabled = true; if (b.dataset.o===q.a) b.classList.add('right'); });
+  (s.res ||= [])[s.i] = ok;
+  if (ok){ s.score++; btn.classList.add('right'); burst(btn, ['🎉','✨','👏']); haptic(25); } else { btn.classList.add('wrong'); burst(btn, ['🙈']); haptic([30,40,30]); }
+  $('#qwhy').textContent = (ok ? 'צדקת! ' : 'לא בדיוק. ') + q.why;
+  setTimeout(()=>{ s.i++; renderQuiz(); }, 2600);
+}
+let tickerT = null;
+function startTicker(st){
+  const F = funFacts(st), el = $('#ticker'); if (!el || !F.length) return;
+  let i = 0; const show = ()=>{ el.classList.remove('in'); void el.offsetWidth; el.innerHTML = `<small>הידעת?</small>${esc(F[i % F.length])}`; el.classList.add('in'); i++; };
+  show(); clearInterval(tickerT); tickerT = setInterval(show, 6000);
+}
+
+
+/* ================= UX layer ================= */
+const haptic = (ms=8) => { try { navigator.vibrate?.(ms); } catch(_){} };
+function toast(msg, icon='✓'){
+  const box = $('#toasts'); if (!box) return;
+  const t = document.createElement('div'); t.className='toast'; t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
+  box.appendChild(t); while (box.children.length>3) box.firstChild.remove();
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(), 320); }, 2400);
+}
+function ripple(e){
+  const el = e.target.closest('.btn,.chip,.persona,.qo,.rx,.ib,.sugs button'); if (!el || el.disabled || reduceMotion()) return;
+  const r = el.getBoundingClientRect(), d = Math.max(r.width, r.height)*2.2, s = document.createElement('span');
+  s.className='ripple'; s.style.width=s.style.height=d+'px'; s.style.left=(e.clientX-r.left-d/2)+'px'; s.style.top=(e.clientY-r.top-d/2)+'px';
+  el.appendChild(s); setTimeout(()=>s.remove(), 650); haptic(6);
+}
+function enter(el){ if (!el || reduceMotion()) return; el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
+function btnBusy(b, on, label){ if (!b) return; if (on){ b.dataset.label = b.innerHTML; b.disabled = true; b.innerHTML = `<span class="spin"></span>${label?' '+esc(label):''}`; } else { b.disabled = false; if (b.dataset.label) b.innerHTML = b.dataset.label; } }
+function btnOk(b, label){ if (!b) return; const old = b.dataset.okOld || b.innerHTML; b.dataset.okOld = old; b.classList.add('ok'); b.innerHTML = '✓ '+esc(label); haptic(15); setTimeout(()=>{ b.classList.remove('ok'); b.innerHTML = old; delete b.dataset.okOld; }, 1800); }
+let revealIO = null;
+function revealify(root){
+  if (!root || reduceMotion() || !('IntersectionObserver' in window)) return;
+  revealIO?.disconnect();
+  revealIO = new IntersectionObserver(ents=>{ for (const en of ents){ if (!en.isIntersecting) continue; const el = en.target; revealIO.unobserve(el);
+      el.classList.add('shown'); el.classList.remove('pre');
+      if (el.classList.contains('wa')) playChat(el);
+      el.querySelectorAll?.('.stat b.num').forEach(n=>{ const v = +n.textContent.replace(/[^\d]/g,''); if (v) countUp(n, v); });
+    } }, {threshold:.18, rootMargin:'0px 0px -8% 0px'});
+  const H = innerHeight;
+  root.querySelectorAll('.sect-h,.prose>p,.wa,.reveal,.bignum,.aside,.plist,.gloss,.chars,.awards,.scores,.predict,.stats,.card,.chart,.facts,.emo,.words,.savebox,.react').forEach(el=>{
+    if (el.getBoundingClientRect().top < H*.92) return; // visible at rest stays as is
+    el.classList.add('pre'); if (el.classList.contains('wa')) el.querySelectorAll('.m').forEach(m=>m.classList.add('hide'));
+    revealIO.observe(el);
+  });
+}
+function playChat(wa){
+  const ms = [...wa.querySelectorAll('.m.hide')]; if (!ms.length) return;
+  const typing = document.createElement('div'); typing.className='typing'; typing.innerHTML='<i></i><i></i><i></i>';
+  wa.insertBefore(typing, ms[0]);
+  setTimeout(()=>{ typing.remove(); ms.forEach((m,i)=>setTimeout(()=>m.classList.remove('hide'), i*330)); }, 650);
+}
+function onScrollBar(){ const b = $('#readbar i'); if (!b) return; const show = !!$('#report .lr-h') && $('#hero').hidden; const h = document.documentElement.scrollHeight - innerHeight; b.style.width = (show && h>0 ? Math.min(100, scrollY/h*100) : 0)+'%'; }
+function setStep(n){ document.querySelectorAll('#steps .step').forEach((s,i)=>{ s.classList.toggle('done', i<n); s.classList.toggle('now', i===n); s.querySelector('b').textContent = i<n ? '✓' : String(i+1); }); }
+
+/* ================= theme ================= */
+function curTheme(){ return document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+function syncThemeBtn(){ const b = $('#themeBtn'); if (!b) return; const d = curTheme()==='dark'; b.classList.toggle('dark', d); b.setAttribute('aria-checked', String(d)); b.setAttribute('aria-label', d ? 'מעבר למצב בהיר' : 'מעבר למצב כהה'); b.querySelector('.knob').textContent = d ? '🌙' : '☀️'; }
+function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); syncThemeBtn(); }
+function toggleTheme(){
+  const next = curTheme()==='dark' ? 'light' : 'dark'; store.set('rk-theme', next); haptic(10);
+  const b = $('#themeBtn').getBoundingClientRect(), x = b.left+b.width/2, y = b.top+b.height/2;
+  if (document.startViewTransition && !reduceMotion()){
+    const end = Math.hypot(Math.max(x, innerWidth-x), Math.max(y, innerHeight-y));
+    const vt = document.startViewTransition(()=>applyTheme(next));
+    vt.ready.then(()=>document.documentElement.animate({clipPath:[`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`]}, {duration:600, easing:'cubic-bezier(.2,.8,.2,1)', pseudoElement:'::view-transition-new(root)'})).catch(()=>{});
+  } else applyTheme(next);
+  toast(next==='dark' ? 'מצב לילה. בשביל הינשופים 🦉' : 'מצב יום. בוקר טוב ☀️', next==='dark'?'🌙':'☀️');
+}
+
+/* ================= little celebrations ================= */
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function burst(el, emojis){
+  if (reduceMotion() || !el) return;
+  const r = el.getBoundingClientRect();
+  for (let k=0;k<9;k++){
+    const s = document.createElement('span'); s.className='floaty'; s.textContent = emojis[k%emojis.length];
+    s.style.left = (r.left + r.width/2 + (Math.random()-.5)*r.width*.8)+'px'; s.style.top = (r.top + r.height/2)+'px';
+    s.style.setProperty('--dx', ((Math.random()-.5)*140)+'px'); s.style.setProperty('--d', (900+Math.random()*700)+'ms');
+    document.body.appendChild(s); setTimeout(()=>s.remove(), 1700);
+  }
+}
+function confetti(){
+  if (reduceMotion()) return;
+  const c = document.createElement('canvas'); c.className='confetti'; document.body.appendChild(c);
+  const W = c.width = innerWidth, H = c.height = innerHeight, x = c.getContext('2d');
+  const cols = ['#E8285F','#FFC53D','#0E9E90','#5B3FE0','#9C88FF','#32D1C1'];
+  const P = Array.from({length:150}, ()=>({x:W/2+(Math.random()-.5)*W*.3, y:H*.35, vx:(Math.random()-.5)*14, vy:-Math.random()*14-4, r:4+Math.random()*6, c:cols[Math.floor(Math.random()*cols.length)], a:Math.random()*6, va:(Math.random()-.5)*.3}));
+  const t0 = performance.now();
+  const f = t => { const e = t-t0; x.clearRect(0,0,W,H);
+    for (const p of P){ p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; x.save(); x.translate(p.x,p.y); x.rotate(p.a); x.fillStyle=p.c; x.globalAlpha = Math.max(0, 1-e/2600); x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); x.restore(); }
+    if (e < 2600) requestAnimationFrame(f); else c.remove(); };
+  requestAnimationFrame(f);
+}
+function readySheet(){
+  confetti();
+  modal(`<div class="ready"><div class="readyic">🎉</div><h3>הדוח מוכן!</h3><p>${esc(REP?.headline||'')}</p><div class="actions"><button class="btn big" type="button" data-act="goStory">▶ לצפייה בסטורי</button><button class="btn ghost" type="button" data-act="mclose">ישר לדוח</button></div></div>`);
+}
+
+function bubbleRain(box){
+  if (!box || reduceMotion() || !MSGS) return;
+  const pool = MSGS.filter(m=>m.kind==='text' && m.text.length>2 && m.text.length<34);
+  for (let k=0;k<18 && pool.length;k++){
+    const m = pool[Math.floor(Math.random()*pool.length)], b = document.createElement('div');
+    b.className = 'bub' + (k%2?' in':''); b.textContent = m.text;
+    b.style.insetInlineStart = (Math.random()*55)+'%'; b.style.setProperty('--d', (2.6+Math.random()*2)+'s'); b.style.setProperty('--w', (k*.18)+'s');
+    box.appendChild(b);
+  }
+}
+
+/* ================= pipeline ================= */
+async function startReading(){
+  applyNames();
+  const reader = setupSel.reader ? (ALIAS[setupSel.reader] || setupSel.reader) : '';
+  store.set('rk-me', setupSel.reader); store.set('rk-gender', setupSel.gender);
+  const job = {v:1, t:Date.now(), text:RAW.text, name:RAW.name, alias:ALIAS, reader, gender:setupSel.gender, persona:personaKey, notes:null, A:null, B:null};
+  await idbSet('job', job);
+  runPipeline(job);
+}
+/* resilience: a request that fails while the page was in the background is retried once, after the viewer comes back */
+let hiddenDuring = false, RUNNING = false, wakeLock = null;
+document.addEventListener('visibilitychange', ()=>{ if (document.hidden){ if (RUNNING) hiddenDuring = true; } else { if (RUNNING) lockScreen(); if (document.title.startsWith('✅')) setTimeout(()=>{ document.title = 'רכילותא'; }, 4000); } });
+const waitVisible = () => document.hidden ? new Promise(r=>{ const f=()=>{ if (!document.hidden){ document.removeEventListener('visibilitychange', f); r(); } }; document.addEventListener('visibilitychange', f); }) : Promise.resolve();
+async function resilient(fn){
+  try { return await fn(); }
+  catch(e){
+    if (['cancelled','not_granted','sampling_disabled','rate_limited','session_expired','refused','prompt_too_large','not_declared'].includes(e?.code)) throw e;
+    if (!hiddenDuring && !document.hidden) throw e;
+    await waitVisible(); hiddenDuring = false;
+    const s=$('#lsub'); if (s) s.textContent = 'חזרתם! ממשיכים מאיפה שעצרנו...';
+    return await fn();
+  }
+}
+async function lockScreen(){ try { if (!wakeLock || wakeLock.released) wakeLock = await navigator.wakeLock?.request('screen'); } catch(_){} }
+function unlockScreen(){ try { wakeLock?.release(); } catch(_){} wakeLock = null; }
+
+async function runPipeline(job){
+  personaKey = PERSONAS[job.persona] ? job.persona : 'mix';
+  const persona = PERSONAS[personaKey], reader = job.reader, gender = job.gender;
+  $('#setup').hidden = true; $('#hero').hidden = true; $('#banner').innerHTML = '';
+  VIEW = {persona:personaKey, reader, gender, demo:false, saved:null};
+  const sample = await use('sample');
+  if (!sample){ REP = null; await idbDel('job'); renderReport(); return; }
+  const chunks = buildChunks(MSGS);
+  if (!Array.isArray(job.notes) || job.notes.length !== chunks.length) job.notes = new Array(chunks.length).fill(null);
+  const L = $('#loading'); L.hidden = false; $('#report').innerHTML = '';
+  L.innerHTML = `<div class="steps" id="steps"><span class="step"><b>1</b>קריאה</span><span class="step"><b>2</b>כתיבה</span><span class="step"><b>3</b>ליטוש הבדיחות</span><span class="step"><b>4</b>מוכן</span></div><div class="lhead"><div class="av">${persona.av}</div><div><b id="lline">${esc(persona.lines[0])}</b><span id="lsub">קורא חלק 1 מתוך ${chunks.length}</span></div></div>
+    <div class="prog"><i id="lbar"></i></div>
+    <p class="leave">📱 אפשר לצאת מהמסך ולחזור. ההתקדמות נשמרת, וכשתחזרו נמשיך מאיפה שעצרנו.</p>
+    <div id="headPrev"></div>
+    <div class="ticker" id="ticker" aria-live="polite"></div>
+    <div class="quiz" id="quiz"></div>
+    <div class="label">מה כבר נמצא בצ'אט</div><div class="feed" id="feed"><div class="ph">ההצצות הראשונות יגיעו עוד רגע...</div></div>
+    <div><button class="btn ghost" id="lstop" type="button">עצירה</button></div>`;
+  startQuiz(ST); startTicker(ST); setStep(0); enter(L);
+  L.scrollIntoView({behavior:'smooth', block:'start'});
+  RUNNING = true; hiddenDuring = false; lockScreen(); document.title = '⏳ קוראים את הצ\'אט · רכילותא';
+  let li=0; const lt = setInterval(()=>{ li=(li+1)%persona.lines.length; const x=$('#lline'); if (x) x.textContent=persona.lines[li]; }, 3200);
+  const ctl = new AbortController(); let stopped = false;
+  $('#lstop').onclick = ()=>{ stopped = true; ctl.abort(); };
+  const steps = chunks.length + 1.5;
+  let done = job.notes.filter(Boolean).length;
+  const bump = ()=>{ const b=$('#lbar'); if (b) b.style.width = Math.min(98, 4 + done/steps*94)+'%'; };
+  const addTeaser = (k, r) => { if (!r?.teaser) return; const f=$('#feed'); f?.querySelector('.ph')?.remove(); f?.insertAdjacentHTML('afterbegin', `<div><small>${esc(chunks[k].label)}</small>${esc(r.teaser)}</div>`); };
+  job.notes.forEach((n,k)=>addTeaser(k,n)); bump();
+  const save = () => { job.t = Date.now(); return idbSet('job', job); };
+  const todo = job.notes.map((n,k)=>n?null:k).filter(k=>k!==null);
+  let fatal = null, qi = 0;
+  const worker = async ()=>{
+    while (qi < todo.length && !fatal && !ctl.signal.aborted){
+      const k = todo[qi++];
+      try {
+        const r = await resilient(()=>sample.json(chunkPrompt(ST, chunks[k], k, chunks.length, reader), {signal:ctl.signal, modelTier:'default'}));
+        job.notes[k] = r; addTeaser(k, r); await save();
+      } catch(e){ if (['cancelled','not_granted','sampling_disabled','rate_limited','session_expired'].includes(e?.code)) { fatal = e; break; } }
+      done++; bump(); const s=$('#lsub'); if (s) s.textContent = `קרא ${Math.min(done,chunks.length)} מתוך ${chunks.length} חלקים`;
+    }
+  };
+  await Promise.all([worker(), worker()]);
+  if (!fatal && ctl.signal.aborted) fatal = {code:'cancelled'};
+  if (!fatal && job.notes.every(n=>!n)) fatal = {code:'upstream_error'};
+  if (!fatal){
+    const notes = job.notes; NOTES = notes; NOTES_TXT = notesText(notes, chunks);
+    const s=$('#lsub'); if (s) s.textContent = 'כותב את הדוח. זה החלק הארוך, שווה לחכות.'; setStep(1);
+    try {
+      const quoted = quotedText(markedIds(notes));
+      if (!job.A){
+        let shown = false, lenA = 0, lenB = 0;
+        const prog = ()=>{ done = chunks.length + Math.min(1.4, (lenA+lenB)/16000); bump(); };
+        const pA = resilient(()=>sample(finalPrompt(ST, NOTES_TXT, quoted, persona, reader, gender), {signal:ctl.signal, modelTier:'complex', onText:({text})=>{
+          lenA = text.length; prog();
+          if (!shown){ const m = text.match(/"headline"\s*:\s*"((?:[^"\\]|\\.)+)"/); if (m){ shown=true; try{ $('#headPrev').innerHTML = `<div class="label">הכותרת כבר מוכנה:</div><div class="headprev">${esc(JSON.parse('"'+m[1]+'"'))}</div>`; }catch(_){} } }
+        }}));
+        const pB = resilient(()=>sample(finalPromptCast(ST, NOTES_TXT, quoted, persona, reader, gender), {signal:ctl.signal, modelTier:'complex', onText:({text})=>{ lenB = text.length; prog(); }}))
+          .then(r=>{ try { return parseLoose(r.text); } catch(_){ return null; } }).catch(e=>{ if (e?.code==='cancelled') throw e; return null; });
+        const [ra, rb] = await Promise.all([pA, pB]);
+        job.A = parseLoose(ra.text); job.B = rb; await save();
+      }
+      let A = job.A, Bd = job.B;
+      setStep(2); { const s=$('#lsub'); if (s) s.textContent = 'עורך הקומדיה מחדד את הבדיחות...'; const l=$('#lline'); if (l) l.textContent = 'כמעט מוכן. עכשיו זה נהיה מצחיק באמת.'; }
+      done = chunks.length + 1.4; bump();
+      let lenP1 = 0, lenP2 = 0; const totalLen = (JSON.stringify(A).length + (Bd?JSON.stringify(Bd).length:0)) || 1;
+      const prog2 = ()=>{ done = chunks.length + 1.4 + Math.min(.1, (lenP1+lenP2)/totalLen*.1); bump(); };
+      const punch = (draft, part, ok, set) => resilient(()=>sample(punchPrompt(ST, draft, part), {signal:ctl.signal, modelTier:'complex', onText:({text})=>{ set(text.length); prog2(); }}))
+        .then(r=>{ try { const v = parseLoose(r.text); return ok(v) ? lockFacts(v, draft) : draft; } catch(_){ return draft; } })
+        .catch(e=>{ if (e?.code==='cancelled') throw e; return draft; });
+      const okA = v => Array.isArray(v?.sections) && v.sections.length===(A.sections||[]).length && v.sections.every((s,i)=>Array.isArray(s.blocks) && s.blocks.length===(A.sections[i].blocks||[]).length) && v.headline;
+      const okB = v => Array.isArray(v?.cast) && v.cast.length===(Bd.cast||[]).length;
+      [A, Bd] = await Promise.all([ punch(A, 'main story', okA, n=>lenP1=n), Bd ? punch(Bd, 'cast, dictionary and predictions', okB, n=>lenP2=n) : Promise.resolve(null) ]);
+      REP = normalizeReport(A, Bd);
+      if (!REP.sections.length) throw {code:'invalid_json'};
+    } catch(e){ fatal = e?.code ? e : {code:'invalid_json'}; }
+  }
+  RUNNING = false; unlockScreen();
+  clearInterval(lt); clearInterval(tickerT); quizState = null; L.hidden = true; L.innerHTML = '';
+  if (fatal){
+    REP = null; document.title = 'רכילותא';
+    if (stopped) await idbDel('job');
+    const canResume = !stopped;
+    $('#banner').innerHTML = fatal.code==='cancelled'
+      ? `<div class="err">עצרתם את הקריאה. בינתיים, הנה המספרים. <button class="btn" type="button" data-act="again" style="margin-inline-start:8px;padding:6px 14px">להתחיל שוב</button></div>`
+      : `<div class="err">${esc(errText(fatal))} ${canResume?'ההתקדמות נשמרה.':''} <button class="btn" type="button" data-act="${canResume?'resume':'again'}" style="margin-inline-start:8px;padding:6px 14px">${canResume?'להמשיך מאיפה שעצרנו':'לנסות שוב'}</button></div>`;
+    renderReport(); return;
+  }
+  await idbDel('job');
+  store.set('rk-last', packReport());
+  document.title = '✅ הדוח מוכן! · רכילותא';
+  setStep(4); renderReport(); window.scrollTo({top:0}); readySheet(); haptic([20,60,40]);
+}
+async function resumeJob(){
+  const job = await idbGet('job'); if (!job?.text){ toast('לא נמצא דוח באמצע הכנה','🤷'); return; }
+  const msgs = parseChat(job.text); msgs.forEach(m=>m.o=m.who);
+  RAW = {text:job.text, name:job.name}; ALIAS = job.alias || {};
+  msgs.forEach(m=>{ m.who = ALIAS[m.o] || m.o; });
+  MSGS = msgs; ST = computeStats(msgs, job.name); REP = null; NOTES = null;
+  runPipeline(job);
+}
+async function checkPendingJob(){
+  const job = await idbGet('job');
+  if (!job?.text) return;
+  if (Date.now() - (job.t||0) > 3*864e5){ idbDel('job'); return; }
+  if (location.hash.replace('#','').startsWith('x-') || location.hash.replace('#','').startsWith('r-')) return;
+  const n = (job.notes||[]).filter(Boolean).length;
+  $('#banner').innerHTML = `<div class="banner"><span><b>יש דוח באמצע הכנה.</b> ${n?`כבר נקראו ${n} חלקים. `:''}להמשיך מאיפה שעצרנו?</span><span class="actions"><button class="btn light" type="button" data-act="resume">להמשיך</button><button class="btn ghost" type="button" data-act="dropJob" style="color:#fff">לבטל</button></span></div>`;
+}
+function normalizeReport(a, B){
+  const arr = x => Array.isArray(x) ? x : [];
+  const clamp = v => Math.max(0,Math.min(100,Math.round(+v||0)));
+  const msgOf = i => { const m = MSGS[i]; return m ? {who:m.who, text:m.kind==='text'?m.text.slice(0,900):'', t:m.t, kind:m.kind, media:m.media} : null; };
+  const ids = x => arr(x).map(v=>parseInt(String(v).replace('#',''),10)).filter(v=>!isNaN(v) && v>=0 && v<MSGS.length);
+  const sections = arr(a.sections).slice(0,10).map(s=>({
+    icon: String(s.icon||'✦').slice(0,8), title: String(s.title||''),
+    blocks: arr(s.blocks).map(b=>{
+      const t = b?.t || b?.type;
+      if (t==='chat'){ const I = [...new Set(ids(b.ids))].sort((x,y)=>x-y).slice(0,8); const msgs = I.map(msgOf).filter(Boolean); return msgs.length ? {t:'chat', msgs, after:String(b.after||'')} : null; }
+      if (t==='reveal') return b.text ? {t:'reveal', text:String(b.text)} : null;
+      if (t==='num') return b.value ? {t:'num', value:String(b.value), label:String(b.label||'')} : null;
+      if (t==='aside'){ const w = String(b.who||''); return (b.text && PERSONAS[w] && w!=='mix') ? {t:'aside', who:w, text:String(b.text)} : null; }
+      if (t==='list'){ const items = arr(b.items).map(String).filter(Boolean).slice(0,12); return items.length ? {t:'list', ordered:!!b.ordered, items} : null; }
+      return b?.text ? {t:'p', text:String(b.text)} : null;
+    }).filter(Boolean)
+  })).filter(s=>s.title && s.blocks.length);
+  // second writer: cast parade, private dictionary, per-person predictions
+  let cast = [];
+  if (B && typeof B==='object'){
+    cast = arr(B.cast).slice(0,14).map(c=>{
+      const qs = [...new Set(ids(c.quoteIds))].slice(0,3).map(msgOf).filter(m=>m && m.kind==='text');
+      const aw = String(c.aside?.who||''); const aside = (c.aside?.text && PERSONAS[aw] && aw!=='mix') ? {t:'aside', who:aw, text:String(c.aside.text)} : null;
+      return {name:String(c.name||''), title:String(c.title||c.name||''), paras:arr(c.paras).map(String).filter(Boolean), list: arr(c.list?.items).length ? {ordered:!!c.list.ordered, items:arr(c.list.items).map(String).slice(0,8)} : null, quotes:qs, aside};
+    }).filter(c=>c.name && c.paras.length);
+    const castSec = cast.length ? {icon:'🎭', title:String(B.castTitle||'מצעד הדמויות: מי אתם באמת?'), blocks: cast.flatMap(c=>[
+      {t:'h', text:c.title}, ...c.paras.map(p=>({t:'p', text:p})), ...(c.list?[{t:'list', ordered:c.list.ordered, items:c.list.items}]:[]), ...(c.quotes.length?[{t:'chat', msgs:c.quotes, after:''}]:[]), ...(c.aside?[c.aside]:[])
+    ])} : null;
+    const gloss = arr(B.glossary).map(g=>({term:String(g.term||''), meaning:String(g.meaning||'')})).filter(g=>g.term && g.meaning).slice(0,12);
+    const glossSec = gloss.length ? {icon:'📖', title:String(B.glossTitle||'המילון הפנימי'), blocks:[{t:'gloss', items:gloss}]} : null;
+    const fut = arr(B.future).map(String).filter(Boolean).slice(0,14);
+    const futSec = fut.length ? {icon:'🔮', title:String(B.futureTitle||'תחזית לעתיד: לאן כל זה הולך?'), blocks:[...(B.futureIntro?[{t:'p', text:String(B.futureIntro)}]:[]), {t:'list', ordered:false, items:fut}, ...(B.futureOutro?[{t:'p', text:String(B.futureOutro)}]:[])]} : null;
+    if (castSec) sections.splice(Math.min(sections.length, sections.length>3?2:1), 0, castSec);
+    if (glossSec) sections.push(glossSec);
+    if (futSec) sections.push(futSec);
+  }
+  return {
+    headline:String(a.headline||''), dek:String(a.dek||''), intro:arr(a.intro).map(String),
+    sections, cast: cast.map(c=>({name:c.name, title:c.title, para:c.paras[0]||''})),
+    characters: arr(a.characters).slice(0,6).map(c=>{ const q = ids([c.quoteId])[0]; return {name:String(c.name||''), role:String(c.role||''), bio:String(c.bio||''), superpower:String(c.superpower||''), redflag:String(c.redflag||''), quote: q!=null && MSGS[q]?.kind==='text' ? MSGS[q].text.slice(0,240) : ''}; }),
+    awards: arr(a.awards).slice(0,6).map(x=>({title:String(x.title||''), winner:String(x.winner||''), why:String(x.why||'')})),
+    scores: {drama:clamp(a.scores?.drama), love:clamp(a.scores?.love), chaos:clamp(a.scores?.chaos), cringe:clamp(a.scores?.cringe)},
+    prediction:String(a.prediction||''), signoff:String(a.signoff||''),
+  };
+}
+function packReport(){ return {v:2, created:Date.now(), persona:VIEW.persona, reader:VIEW.reader, gender:VIEW.gender, st:ST, rep:REP}; }
+function loadPack(p, saved){ ST=p.st; REP=p.rep; VIEW={persona:p.persona||'neighbor', reader:p.reader||'', gender:p.gender||'', demo:false, saved:saved||null}; MSGS=null; NOTES=null; }
+
+/* ================= render ================= */
+const SCORE_LABELS = {drama:'דרמה', love:'אהבה', chaos:'כאוס', cringe:'קרינג\''};
+function findPerson(name){ if (!ST || !name) return null; return ST.people.find(p=>p.name===name) || ST.people.find(p=>p.name.includes(name)||name.includes(p.name)) || null; }
+const NAME_COLORS = ['#C2185B','#00796B','#5E35B1','#E65100','#1565C0','#6D4C41'];
+const nameColor = n => NAME_COLORS[Math.abs([...n].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7))%NAME_COLORS.length];
+function waBlock(msgs){
+  const reader = VIEW.reader; const showNames = ST.isGroup || !reader;
+  let h = '<div class="wa">', lastDay='', lastWho='';
+  for (const m of msgs){
+    const day = new Date(m.t).toDateString();
+    if (day!==lastDay){ h += `<span class="day">${heDate(m.t)}</span>`; lastDay=day; lastWho=''; }
+    const out = !!reader && m.who===reader;
+    const body = m.kind==='media' ? (MEDIA_HE[m.media]||'📎') : m.kind==='deleted' ? '🚫 ההודעה נמחקה' : esc(m.text);
+    h += `<div class="m ${out?'out':'in'}${m.kind!=='text'?' media':''}">${!out && showNames && m.who!==lastWho?`<span class="n" style="color:${nameColor(m.who)}">${esc(m.who)}</span>`:''}${body}<span class="tm">${hm(m.t)}${out?'<em>✓✓</em>':''}</span></div>`;
+    lastWho = m.who;
+  }
+  return h + '</div>';
+}
+function blockHTML(b){
+  if (b.t==='p') return `<p>${rich(b.text)}</p>`;
+  if (b.t==='reveal') return `<div class="reveal">${rich(b.text)}</div>`;
+  if (b.t==='num') return `<div class="bignum"><b class="num">${esc(b.value)}</b><span>${rich(b.label)}</span></div>`;
+  if (b.t==='chat') return waBlock(b.msgs) + (b.after?`<p class="after">${rich(b.after)}</p>`:'');
+  if (b.t==='h') return `<h3 class="sub">${rich(b.text)}</h3>`;
+  if (b.t==='aside'){ const p = PERSONAS[b.who]; return p ? `<div class="aside" data-w="${b.who}"><i>${p.av}</i><div><b>${esc(p.name)}</b><span>${rich(b.text)}</span></div></div>` : ''; }
+  if (b.t==='list'){ const tag = b.ordered?'ol':'ul'; return `<${tag} class="plist">${b.items.map(x=>`<li>${rich(x)}</li>`).join('')}</${tag}>`; }
+  if (b.t==='gloss') return `<dl class="gloss">${b.items.map(g=>`<div><dt>${esc(g.term)}</dt><dd>${rich(g.meaning)}</dd></div>`).join('')}</dl>`;
+  return '';
+}
+function renderReport(){
+  const st=ST, rep=REP, persona=PERSONAS[VIEW.persona]||PERSONAS.neighbor;
+  const verb = readVerb(persona);
+  if (VIEW.demo) $('#banner').innerHTML = `<div class="banner"><span><b>זו דוגמה.</b> קבוצה מומצאת, "הטיול לגולן", והדוח נכתב לנועה. העלו צ'אט משלכם למעלה.</span><button class="btn light" type="button" data-act="story">▶ סטורי</button></div>`;
+  else if (!$('#banner .err')) $('#banner').innerHTML = '';
+  let h = '<article class="lr">';
+  const byLine = `<div class="by"><i>${persona.av}</i><span>${esc(persona.name)} ${verb} את כל ${fmt(st.total)} ההודעות של "${esc(st.chatName)}"</span></div>`;
+  if (rep){
+    h += `<header class="cover"><span class="stamp">דוח מסווג 🔒</span>${byLine}<h1 class="lr-h">${esc(rep.headline)}</h1>${rep.dek?`<p class="lr-dek">${rich(rep.dek)}</p>`:''}
+      <div class="meta-row"><span>${heDate(st.first)} – ${heDate(st.last)}</span><span>${fmt(st.total)} הודעות</span>${VIEW.reader?`<span>נכתב בשביל ${esc(VIEW.reader)}</span>`:''}</div>
+      <div class="actions">${actionsHTML()}</div></header>
+      <div class="prose">${rep.intro.map(p=>`<p>${rich(p)}</p>`).join('')}</div>`;
+    for (const s of rep.sections){
+      h += `<section class="sect"><div class="sect-h"><span class="ic">${esc(s.icon)}</span><h2>${esc(s.title)}</h2></div><div class="prose">${s.blocks.map(blockHTML).join('')}</div><div class="react" aria-label="תגובות">${['😂','😱','❤️','💀'].map(e=>`<button type="button" class="rx" data-e="${e}">${e}<small></small></button>`).join('')}</div></section>`;
+    }
+    if (rep.characters.length) h += `<section class="sect"><div class="sect-h"><span class="ic">🎭</span><h2>הדמויות</h2></div><div class="chars">${rep.characters.map(charHTML).join('')}</div></section>`;
+    const aw = rep.awards.length ? rep.awards : st.localAwards.slice(0,6);
+    h += `<section class="sect"><div class="sect-h"><span class="ic">🏆</span><h2>טקס הפרסים</h2></div><div class="awards">${aw.map(a=>`<div class="award"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div>
+      ${rep.awards.length && st.localAwards.length?`<div class="label">ופרסים שחושבו מהנתונים</div><div class="awards">${st.localAwards.slice(0,6).map(a=>`<div class="award data"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div>`:''}</section>`;
+    h += `<section class="sect"><div class="sect-h"><span class="ic">📊</span><h2>המדדים הרשמיים</h2></div><div class="scores">${Object.entries(rep.scores).map(([k,v])=>`<div class="score"><span>${SCORE_LABELS[k]}</span><div class="bar"><i style="width:${v}%"></i></div><b class="num">${v}</b></div>`).join('')}</div>
+      ${rep.prediction?`<div class="predict"><b>התחזית</b><p>${rich(rep.prediction)}</p>${rep.signoff?`<p class="so">${persona.av} ${rich(rep.signoff)}</p>`:''}</div>`:''}</section>`;
+  } else {
+    h += `<header class="cover">${byLine}<h1 class="lr-h">${esc(st.chatName)}: כל המספרים</h1><div class="actions">${actionsHTML()}</div></header>`;
+    if (st.localAwards.length) h += `<section class="sect"><div class="sect-h"><span class="ic">🏆</span><h2>פרסים לפי הנתונים</h2></div><div class="awards">${st.localAwards.map(a=>`<div class="award data"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div></section>`;
+  }
+  h += appendixHTML(st);
+  if (rep && !VIEW.demo && MSGS && NOTES) h += askHTML(persona);
+  if (rep && !VIEW.demo) h += `<section class="savebox"><h3>${VIEW.saved && !VIEW.saved.isNew ? 'שלחו את זה הלאה' : 'לשלוח את זה לחברים'}</h3><p>${VIEW.saved ? 'אותו קישור עובד לכל מי שתשלחו לו, גם בלי חשבון Claude.' : 'לוחצים "שיתוף" ומקבלים קישור שנפתח לכל אחד, גם בלי חשבון Claude.'}</p><div class="actions"><button class="btn" type="button" data-act="share">שיתוף</button>${VIEW.saved?.isNew?'<button class="btn ghost" type="button" data-act="delThis">מחיקת הדוח</button>':''}</div></section>`;
+  if (VIEW.saved && !VIEW.saved.isNew) h += `<section class="savebox"><h3>רוצים גם?</h3><p>הדוח הזה נכתב ברכילותא. מי שיש לו Claude יכול להעלות צ'אט משלו בדף הבית.</p><div class="actions"><button class="btn ghost" type="button" data-act="gohome">לדף הבית</button></div></section>`;
+  h += '</article>';
+  $('#report').innerHTML = h;
+  const away = $('#hero').hidden; $('#newChat').hidden = !away; $('#mastNote').hidden = away;
+  enter($('#report')); revealify($('#report')); onScrollBar();
+  if (rep && !VIEW.demo && MSGS && NOTES) setupAsk();
+}
+function actionsHTML(){
+  return `<button class="btn" type="button" data-act="story">▶ סטורי</button>${(REP && !VIEW.demo)?'<button class="btn dark" type="button" data-act="share">שיתוף</button>':''}<button class="btn ghost" type="button" data-act="poster">פוסטר</button>`;
+}
+function charHTML(c){
+  const p = findPerson(c.name);
+  return `<article class="char"><div class="nm">${esc(c.name)}</div>${c.role?`<span class="role">${esc(c.role)}</span>`:''}
+    ${c.bio?`<p>${rich(c.bio)}</p>`:''}
+    ${(c.superpower||c.redflag)?`<dl>${c.superpower?`<dt>כוח-על</dt><dd>${esc(c.superpower)}</dd>`:''}${c.redflag?`<dt>דגל אדום</dt><dd>${esc(c.redflag)}</dd>`:''}</dl>`:''}
+    ${c.quote?`<q>${esc(c.quote)}</q>`:''}
+    ${p?`<div class="mini">${fmt(p.count)} הודעות${p.medianReply?' · עונה תוך '+dur(p.medianReply):''}${p.sigWord?' · המילה: "'+esc(p.sigWord)+'"':''}${p.topEmoji[0]?' · '+p.topEmoji.join(''):''}</div>`:''}
+  </article>`;
+}
+function appendixHTML(st){
+  const maxS = st.people[0].count, inv = investment(st);
+  return `<section class="apx"><h2>הנספח: המספרים</h2>
+    <div class="stats">
+      <div class="stat"><b class="num">${fmt(st.total)}</b><span>הודעות</span></div>
+      <div class="stat"><b class="num">${fmt(st.totalWords)}</b><span>מילים, ${fmt(st.totalWords/220)} דקות קריאה</span></div>
+      <div class="stat"><b class="num">${fmt(st.spanDays)}</b><span>ימים, ${fmt(st.activeDays)} עם הודעות</span></div>
+      <div class="stat"><b class="num">${fmt(st.laughs)}</b><span>צחוקים</span></div>
+      <div class="stat"><b class="num">${fmt(st.media)}</b><span>תמונות, קוליות ומדבקות</span></div>
+      <div class="stat"><b class="num">${fmt(st.deleted)}</b><span>הודעות שנמחקו (מעניין)</span></div>
+    </div>
+    <div class="card"><b>מי מדבר הכי הרבה</b><div class="share">${st.people.slice(0,10).map(p=>`<div class="row"><b>${esc(p.name)}</b><div class="bar"><i style="width:${(p.count/maxS*100).toFixed(1)}%"></i></div><span class="num">${Math.round(p.share*100)}%</span></div>`).join('')}</div></div>
+    ${inv?`<div class="card"><b>מי יותר בעניין?</b><div class="tug"><div style="width:${inv.va}%">${esc(inv.a)} ${inv.va}%</div><div style="width:${100-inv.va}%">${100-inv.va}% ${esc(inv.b)}</div></div><span class="mini">שקלול של כמות הודעות, מי פותח שיחות, מהירות תגובה ואורך הודעות.</span></div>`:''}
+    <div class="chart"><h3>הודעות לפי חודש</h3>${monthsSVG(st)}</div>
+    <div class="chart"><h3>לפי יום ושעה</h3>${heatSVG(st)}</div>
+    <div class="facts">
+      <div class="fact"><b>${pad(st.peakHour)}:00</b>השעה הכי פעילה</div>
+      <div class="fact"><b>יום ${WD[st.peakWd]}</b>היום הכי פעיל בשבוע</div>
+      <div class="fact"><b>${st.busiest.date ? heDate(new Date(st.busiest.date+'T12:00')) : '-'}</b>היום הכי עמוס: ${fmt(st.busiest.n)} הודעות</div>
+      <div class="fact"><b>${fmt(st.streak.len)} ימים</b>הרצף הכי ארוך בלי יום שקט</div>
+      <div class="fact"><b>${dur(st.gap.ms)}</b>השקט הכי ארוך. ${esc(st.gap.breaker||'')} שבר/ה אותו</div>
+      <div class="fact"><b>${fmt(st.runRec.n||0)} ברצף</b>${esc(st.runRec.who||'')} כתב/ה בלי שאף אחד ענה</div>
+    </div>
+    ${st.topEmojis.length?`<div class="emo">${st.topEmojis.map(e=>`<div><span>${e[0]}</span><small class="num">${fmt(e[1])}</small></div>`).join('')}</div>`:''}
+    <div class="words">${st.topWords.map(w=>`<span>${esc(w[0])} <small class="num">${fmt(w[1])}</small></span>`).join('')}</div>
+  </section>`;
+}
+function monthsSVG(st){
+  const ms = st.months; if (!ms.length) return '';
+  const W=640,H=180,pl=40,pb=26,pt=10; const max=Math.max(...ms.map(m=>m[1]));
+  const bw=(W-pl-8)/ms.length;
+  const mag = 10**Math.floor(Math.log10(max)); const nice = max<=10 ? Math.max(1,max) : Math.ceil(max/mag)*mag;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="הודעות לפי חודש" dir="ltr">`;
+  for (let i=0;i<=2;i++){ const v=nice*i/2, y=H-pb-(v/nice)*(H-pb-pt); s+=`<line x1="${pl}" x2="${W-4}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${pl-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmt(v)}</text>`; }
+  const step = Math.ceil(ms.length/12);
+  ms.forEach(([k,v],i)=>{ const h=(v/nice)*(H-pb-pt); const x=pl+i*bw+bw*.15;
+    s+=`<rect x="${x}" y="${H-pb-h}" width="${bw*.7}" height="${h}" rx="3" fill="var(--pink)"><title>${k}: ${v}</title></rect>`;
+    if (i%step===0) s+=`<text x="${x+bw*.35}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)">${heMonth(new Date(k+'-15'))}${ms.length>12||i===0?' '+k.slice(2,4):''}</text>`; });
+  return s+'</svg>';
+}
+function heatSVG(st){
+  const W=640, cell=(W-60)/24, H=7*cell+24; const max=Math.max(1,...st.hourDay.flat());
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="מפת חום של שעות וימים" dir="ltr">`;
+  st.hourDay.forEach((row,d)=>{ s+=`<text x="${W-4}" y="${d*cell+cell*.68}" text-anchor="end" font-size="11" fill="var(--muted)">${WD[d]}</text>`;
+    row.forEach((v,h)=>{ const o = v? .12+.88*(v/max) : .04; s+=`<rect x="${4+h*cell}" y="${d*cell}" width="${cell-2}" height="${cell-2}" rx="3" fill="var(--violet)" fill-opacity="${o.toFixed(2)}"><title>${WD[d]} ${h}:00 · ${v}</title></rect>`; }); });
+  for (let h=0;h<24;h+=3) s+=`<text x="${4+h*cell+cell/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--muted)">${pad(h)}</text>`;
+  return s+'</svg>';
+}
+
+/* ================= save & share ================= */
+const shareLink = hash => ((hash.startsWith('x-') && SITE_URL) ? SITE_URL : APP_URL) + '#' + hash;
+async function isOwner(){ const db = await use('db'); if (!db) return false; const user = await use('user'); try { return user ? !!(await user.isOwner()) : true; } catch(_){ return false; } }
+function modal(html){ pause(); const m=$('#modal'); m.hidden=false; m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; return m; }
+function closeModal(){ const m=$('#modal'); if (m.hidden) return; if (reduceMotion()){ m.hidden=true; m.innerHTML=''; resume(); return; } m.classList.add('closing'); setTimeout(()=>{ m.classList.remove('closing'); m.hidden=true; m.innerHTML=''; resume(); }, 190); }
+async function saveReport(){
+  const db = await use('db'); if (!db) throw {code:'unavailable'};
+  const enc = await encryptObj(packReport());
+  const id = hex(crypto.getRandomValues(new Uint8Array(5)));
+  await db.doc('reports/'+id).set({iv:enc.iv, ct:enc.ct, z:enc.z, t:Date.now(), v:2});
+  const hash = 'r-'+id+'-'+enc.keyHex;
+  rememberMine(hash);
+  store.del('rk-last');
+  VIEW.saved = {hash, isNew:true};
+  try { history.replaceState(null,'','#'+hash); } catch(_){}
+  renderReport();
+  return hash;
+}
+function shareSheet(hash, title){
+  const link = shareLink(hash), open = hash.startsWith('x-');
+  const waText = encodeURIComponent((title||'הדוח שלנו')+' 👀\n'+link);
+  modal(`<h3>שיתוף הדוח 🎉</h3>
+    <p>${open ? 'הקישור פתוח לכולם: אפשר לפתוח אותו גם בלי חשבון Claude ובלי להתחבר לשום דבר. כל הדוח נמצא בתוך הקישור עצמו, אז הוא לא נשמר באף שרת.' : 'קישור קצר. מי שמקבל אותו צריך להיות מחובר ל-Claude (חשבון חינמי מספיק). אפשר למחוק אותו מדף הבית, ואז הוא מפסיק לעבוד.'}</p>
+    <div class="actions"><a class="btn big" href="https://wa.me/?text=${waText}" target="_blank" rel="noopener">שליחה בוואטסאפ</a><button class="btn ghost" type="button" data-act="copy">העתקת הקישור</button></div>
+    <input id="shareIn" readonly value="${esc(link)}" aria-label="קישור לדוח" class="linkin">
+    ${REP?'<div class="actions"><button class="btn ghost" type="button" data-act="export">הורדה כקובץ</button>'+(open && !VIEW.demo?'<button class="btn ghost" type="button" data-act="shortLink">קישור קצר במקום</button>':'')+'</div>':''}
+    <p class="fine">${open ? 'שימו לב: קישור פתוח אי אפשר לבטל אחרי ששלחתם אותו, כי הדוח נמצא בתוכו. כדי שהקישור ייפתח, בתפריט השיתוף של האפליקציה צריך להיות מסומן שכל מי שיש לו קישור יכול לצפות.' : 'בתפריט השיתוף של האפליקציה צריך להיות מסומן שכל מי שיש לו קישור יכול לצפות.'}</p>
+    <div class="actions"><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`);
+}
+function rememberMine(hash){
+  const mine = (store.get('rk-mine') || []).filter(x=>x.hash!==hash);
+  mine.unshift({hash, title:REP.headline, chat:ST.chatName, t:Date.now()});
+  store.set('rk-mine', mine.slice(0,30));
+}
+async function openShare(){
+  if (!REP || VIEW.demo) return;
+  if (VIEW.saved){ shareSheet(VIEW.saved.hash, REP.headline); return; }
+  modal(`<h3><span class="spin"></span> אורזים את הדוח...</h3><p>דוחסים את כל הדוח לתוך קישור אחד.</p>`);
+  try {
+    const hash = await makeOpenHash();
+    rememberMine(hash); store.del('rk-last');
+    VIEW.saved = {hash, isNew:true, open:true};
+    try { history.replaceState(null,'','#'+hash); } catch(_){}
+    renderReport();
+    shareSheet(hash, REP.headline);
+  } catch(_){
+    modal(`<h3>לא הצלחנו ליצור קישור</h3><p>אפשר להוריד את הדוח כקובץ ולשלוח אותו בוואטסאפ.</p><div class="actions"><button class="btn" type="button" data-act="export">הורדה כקובץ</button><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`);
+  }
+}
+async function makeShortLink(){
+  if (!(await isOwner())){ modal(`<h3>קישור קצר</h3><p>קישור קצר זמין רק לבעלים של האפליקציה. הקישור הפתוח עובד לכולם.</p><div class="actions"><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`); return; }
+  modal(`<h3><span class="spin"></span> מצפין ושומר...</h3><p>רגע אחד.</p>`);
+  try { const hash = await saveReport(); shareSheet(hash, REP.headline); }
+  catch(e){ modal(`<h3>השמירה לא הצליחה</h3><p>${e?.code==='quota_exceeded'?'נגמר המקום לדוחות שמורים. מחקו דוחות ישנים מדף הבית.':'הקישור הפתוח עדיין עובד. אפשר להשתמש בו.'}</p><div class="actions"><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`); }
+}
+function askDelete(hash){
+  const open = hash.startsWith('x-');
+  modal(`<h3>למחוק את הדוח?</h3><p>${open ? 'הדוח יימחק מהרשימה שלכם. קישור פתוח שכבר שלחתם ימשיך לעבוד אצל מי שקיבל אותו, כי הדוח נמצא בתוך הקישור.' : 'הדוח יימחק לגמרי, והקישור הקצר יפסיק לעבוד גם אצל מי ששלחתם לו.'} אי אפשר לבטל את זה.</p><div class="actions"><button class="btn" type="button" data-act="delYes" data-h="${esc(hash)}">כן, למחוק</button><button class="btn ghost" type="button" data-act="mclose">ביטול</button></div>`);
+}
+async function deleteReport(hash){
+  if (hash.startsWith('r-')){ const db = await use('db'); if (db) await db.doc('reports/'+hash.split('-')[1]).delete(); }
+  store.set('rk-mine', (store.get('rk-mine')||[]).filter(x=>x.hash!==hash));
+}
+function askWipe(){
+  modal(`<h3>למחוק את כל המידע?</h3><p>זה ימחק את רשימת הדוחות שלכם, קישורים קצרים ששמרתם (הם יפסיקו לעבוד), את הדוח האחרון שלא נשמר, ואת כל מה שהאפליקציה זוכרת בדפדפן הזה. אי אפשר לבטל את זה.</p><div class="actions"><button class="btn" type="button" data-act="wipeYes">כן, למחוק הכול</button><button class="btn ghost" type="button" data-act="mclose">ביטול</button></div>`);
+}
+async function wipeAll(){
+  modal(`<h3><span class="spin"></span> מוחק...</h3><p>רגע אחד.</p>`);
+  let n = 0, failed = false;
+  try {
+    if (await isOwner()){
+      const db = await use('db');
+      const snap = await db.collection('reports').limit(1000).get();
+      for (const d of snap.docs){ try { await db.doc('reports/'+d.id).delete(); n++; } catch(_){ failed = true; } }
+    } else {
+      for (const x of (store.get('rk-mine')||[])){ try { await deleteReport(x.hash); n++; } catch(_){ failed = true; } }
+    }
+  } catch(_){ failed = true; }
+  try { Object.keys(localStorage).filter(k=>k.startsWith('rk-')).forEach(k=>localStorage.removeItem(k)); } catch(_){}
+  await idbDel('job');
+  MSGS=null; NOTES=null; NOTES_TXT=''; REP=null; askTurns=[]; personaKey='neighbor';
+  try { history.replaceState(null,'',location.pathname+location.search); } catch(_){}
+  closeModal(); goHome(); toast(failed?'חלק מהמידע לא נמחק':'הכול נמחק', failed?'⚠️':'🧹');
+  $('#banner').innerHTML = `<div class="err">${failed ? 'חלק מהמידע לא נמחק. נסו שוב בעוד רגע.' : `נמחק הכול. ${n ? (n===1?'דוח שמור אחד נמחק':n+' דוחות שמורים נמחקו')+', וגם' : 'לא היו דוחות שמורים. נמחק'} כל מה שהאפליקציה זכרה בדפדפן הזה.`}</div>`;
+}
+async function openSaved(hash){
+  const m = hash.match(/^r-([0-9a-f]{10})-([0-9a-f]{64})$/); if (!m) return false;
+  closeStory();
+  $('#hero').hidden = true; $('#setup').hidden = true; $('#banner').innerHTML='';
+  $('#report').innerHTML = `<div class="loading"><div class="lhead"><div class="av">🪟</div><div><b>פותח את הדוח...</b><span>רגע אחד</span></div></div></div>`;
+  const db = await use('db');
+  if (!db){ $('#report').innerHTML = `<div class="err">כדי לקרוא את הדוח צריך להיות מחוברים ל-Claude (חשבון חינמי מספיק). התחברו ופתחו שוב את הקישור.</div>`; return true; }
+  try {
+    const snap = await Promise.race([db.doc('reports/'+m[1]).get(), new Promise((_,rej)=>setTimeout(()=>rej({code:'timeout'}),12000))]);
+    if (!snap.exists) throw {code:'missing'};
+    const p = await decryptObj(snap.data(), m[2]);
+    const mine = (store.get('rk-mine') || []).some(x=>x.hash===hash);
+    loadPack(p, {hash, isNew:mine, fresh:false});
+    renderReport(); window.scrollTo({top:0});
+  } catch(e){
+    $('#report').innerHTML = `<div class="err">${e?.code==='missing' ? 'הדוח הזה לא נמצא. אולי הוא נמחק.' : e?.code==='timeout' ? 'לא הצלחנו להגיע לדוח כרגע. נסו לרענן בעוד רגע.' : 'לא הצלחנו לפתוח את הדוח. ודאו שהעתקתם את הקישור המלא.'}</div>`;
+  }
+  return true;
+}
+function renderSavedList(){
+  const mine = store.get('rk-mine') || [], last = store.get('rk-last');
+  if (!mine.length && !last){ $('#savedList').innerHTML=''; return; }
+  $('#savedList').innerHTML = `<div class="saved"><div class="label">הדוחות שלך</div>${last?`<div class="srow"><a href="#" data-act="openLast"><span>${esc(last.rep?.headline||'הדוח האחרון')}</span><small>עוד לא נשמר</small></a></div>`:''}${mine.map(x=>`<div class="srow"><a href="#${esc(x.hash)}"><span>${esc(x.title)}</span><small>${heDate(x.t)}</small></a><button type="button" class="ib" data-act="shareSaved" data-h="${esc(x.hash)}" data-t="${esc(x.title)}" aria-label="שיתוף">שיתוף</button><button type="button" class="ib" data-act="delSaved" data-h="${esc(x.hash)}" aria-label="מחיקה">מחיקה</button></div>`).join('')}</div>`;
+}
+
+/* ================= export as a standalone file ================= */
+async function exportFile(){
+  const css = document.getElementById('rk-css').textContent;
+  const art = $('#report article').cloneNode(true);
+  art.querySelectorAll('.actions,.savebox,#askSec,#saveSec,#shareSlot,.react,.typing').forEach(x=>x.remove());
+  art.querySelectorAll('.pre,.hide,.shown,.enter').forEach(x=>x.classList.remove('pre','hide','shown','enter'));
+  const html = `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(REP?.headline||ST.chatName)} · רכילותא</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Karantina:wght@700&family=Rubik:wght@400;500;700;800&display=swap"><style>${css}</style></head><body><div id="app" dir="rtl"><header class="mast"><span class="logo">רכילות<span>א</span></span><small>דוח פרטי. נשלח אליך באהבה.</small></header>${art.outerHTML}</div></body></html>`;
+  const fn = 'rechiluta-'+(ST.chatName||'chat').replace(/[^\p{L}\p{N}]+/gu,'-').slice(0,40)+'.html';
+  const dl = await use('downloads');
+  if (!dl){ showMsg('הורדת קבצים לא זמינה בתצוגה הזו.'); return; }
+  try { await dl.save({filename:fn, data:new Blob([html],{type:'text/html'})}); toast('הקובץ ירד. אפשר לשלוח אותו בוואטסאפ','📄'); }
+  catch(e){ if (e?.code!=='declined') toast('ההורדה לא הצליחה','⚠️'); }
+}
+function showMsg(t){ const m=$('#saveMsg'); if (m) m.textContent=t; else $('#banner').innerHTML=`<div class="err">${esc(t)}</div>`; }
+
+/* ================= ask ================= */
+function askHTML(persona){
+  const sugs = ST.isGroup ? ['מי הכי נעלב/ת בקבוצה?','מי היה/תה עוזב/ת ראשון/ה?','מה הרגע הכי מביך?','תכתוב שיר על הקבוצה'] : ['מי יותר בעניין?','על מה אנחנו הכי רבים?','מה הרגע הכי מביך?','תכתוב שיר עלינו'];
+  return `<section class="sect" id="askSec"><div class="sect-h"><span class="ic">${persona.av}</span><h2>שאלו את ${esc(persona.name)}</h2></div>
+    <div class="ask"><div class="thread" id="thread"></div><div class="sugs" id="sugs">${sugs.map(s=>`<button type="button">${esc(s)}</button>`).join('')}</div>
+    <form class="askrow" id="askForm"><input id="askIn" placeholder="למשל: מי תמיד מאחר/ת?" autocomplete="off" aria-label="שאלה על הצ'אט"><button class="btn" type="submit" id="askBtn">שאלו</button></form></div></section>`;
+}
+let askTurns = [];
+async function setupAsk(){
+  askTurns = []; const sample = await use('sample'); if (!sample){ $('#askSec')?.remove(); return; }
+  const form=$('#askForm'), inp=$('#askIn'); if (!form) return;
+  $('#sugs').onclick = e=>{ const b=e.target.closest('button'); if(b){ inp.value=b.textContent; form.requestSubmit(); } };
+  form.onsubmit = async e=>{
+    e.preventDefault(); const q=inp.value.trim(); if(!q) return; inp.value='';
+    const persona = PERSONAS[VIEW.persona];
+    const th=$('#thread'); th.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div>`);
+    const a=document.createElement('div'); a.className='msg a'; a.textContent='חושב...'; th.appendChild(a); th.scrollTop=th.scrollHeight;
+    const rules = `${persona.voice}\nYou read this whole WhatsApp chat${VIEW.reader?`; you are talking with ${VIEW.reader}`:''}. Answer questions about it IN HEBREW, in your voice, concise (under 130 words unless asked for a poem or list), specific, grounded in the notes and messages below. Funny and kind. If the material doesn't show it, say so in character.\n\n=== STATISTICS ===\n${statsBrief(ST)}\n\n=== READING NOTES ===\n${NOTES_TXT}\n\n=== MARKED MESSAGES ===\n${quotedText(markedIds(NOTES)).slice(0,60000)}`;
+    askTurns.push({role:'user',content:q}); if (askTurns.length>12) askTurns = askTurns.slice(-12); if (askTurns[0].role!=='user') askTurns.shift();
+    $('#askBtn').disabled=true;
+    try { const {text} = await sample([{role:'user',content:rules},...askTurns], {cache:false, onText:({text})=>{a.textContent=text; th.scrollTop=th.scrollHeight;}}); a.textContent=text; askTurns.push({role:'assistant',content:text}); }
+    catch(err){ a.textContent = err?.text || errText(err); askTurns.pop(); }
+    $('#askBtn').disabled=false; inp.focus();
+  };
+}
+
+/* ================= story ================= */
+const TH = {plum:{bg:'#22163F',fg:'#F4EEFF'}, yolk:{bg:'#FFC53D',fg:'#22163F'}, pink:{bg:'#E8285F',fg:'#FFFFFF'}, teal:{bg:'#0E9E90',fg:'#FFFFFF'}, violet:{bg:'#5B3FE0',fg:'#FFFFFF'}, ink:{bg:'#0E0A18',fg:'#F4EEFF'}, mint:{bg:'#C9F2E3',fg:'#22163F'}, wa:{bg:'#0B141A',fg:'#E9EDEF'}};
+function firstSentences(t, max=240){ t = String(t||''); if (t.length<=max) return t; const cut = t.slice(0,max); const i = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! ')); return i>80 ? cut.slice(0,i+1) : cut.replace(/\s+\S*$/,'')+'…'; }
+function buildSlides(){
+  const st=ST, rep=REP, persona=PERSONAS[VIEW.persona]||PERSONAS.neighbor, verb = readVerb(persona);
+  const S=[]; const add=(theme,html,ms=6500)=>S.push({theme,html,ms});
+  let i=0; const I=()=>`style="--i:${i++}"`; const R=()=>{i=0};
+  R(); add('plum',`<div class="s-av pop" ${I()}>${persona.av}</div><p class="s-p pop" ${I()}>${esc(persona.name)} ${verb} את כל ${fmt(st.total)} ההודעות של</p><div class="s-t pop" ${I()}>${esc(st.chatName)}</div><p class="s-s pop" ${I()}>${VIEW.reader?esc(VIEW.reader)+', כדאי לשבת.':'כדאי לשבת.'}</p>`,4800);
+  if (rep){ R(); add('violet',`<div class="s-k pop" ${I()}>הכותרת</div><div class="s-t pop" ${I()}>${esc(rep.headline)}</div><p class="s-p pop" ${I()}>${rich(rep.dek)}</p>`,7000); }
+  R(); add('yolk',`<div class="s-k pop" ${I()}>בסך הכול</div><div class="s-h num pop" ${I()} data-count="${st.total}">0</div><p class="s-p pop" ${I()}>הודעות. ${fmt(st.totalWords)} מילים.</p><div class="s-card pop" ${I()}><p class="s-s">${fmt(st.totalWords/220)} דקות קריאה רצופות, על פני ${fmt(st.spanDays)} ימים.</p></div>`);
+  const maxS = st.people[0].count;
+  R(); add('pink',`<div class="s-k pop" ${I()}>מי מחזיק את המיקרופון</div><div class="s-t pop" ${I()}>${esc(st.people[0].name)}</div><p class="s-p pop" ${I()}>${Math.round(st.people[0].share*100)}% מכל ההודעות.</p><div class="s-rows pop" ${I()}>${st.people.slice(0,6).map(p=>`<div class="s-row"><b>${esc(p.name)}</b><div class="s-bar"><i style="--v:${(p.count/maxS*100).toFixed(1)}%"></i></div><span class="num">${fmt(p.count)}</span></div>`).join('')}</div>`);
+  const inv = investment(st);
+  if (inv){ const lead = inv.va>=50 ? inv.a : inv.b, pc = Math.max(inv.va,100-inv.va);
+    R(); add('mint',`<div class="s-k pop" ${I()}>מדד ההשקעה</div><p class="s-p pop" ${I()}>מי יותר בעניין?</p><div class="s-h num pop" ${I()}>${pc}%</div><div class="s-t pop" ${I()}>${esc(lead)}</div><p class="s-s pop" ${I()}>לפי מי כותב יותר, מי פותח שיחות ומי עונה מהר. אל תהרגו את השליח.</p>`); }
+  if (rep){
+    const themes = ['ink','teal','plum','pink','wa','violet','yolk','mint'];
+    rep.sections.forEach((s,k)=>{
+      if (s.blocks.some(b=>b.t==='h')) return; // the cast gets its own slides below
+      const rev = s.blocks.find(b=>b.t==='reveal'), para = s.blocks.find(b=>b.t==='p'), chat = s.blocks.find(b=>b.t==='chat');
+      const list = s.blocks.find(b=>b.t==='list'), gloss = s.blocks.find(b=>b.t==='gloss');
+      if ((gloss || (list && !para && !rev))){ R();
+        const items = gloss ? gloss.items.slice(0,4).map(g=>`<b>${esc(g.term)}</b>: ${rich(firstSentences(g.meaning,110))}`) : list.items.slice(0,5).map(x=>rich(firstSentences(x,130)));
+        add(themes[k%themes.length], `<div class="s-av pop" ${I()} style="font-size:56px">${esc(s.icon)}</div><div class="s-t pop" ${I()} style="font-size:clamp(26px,7vw,36px)">${esc(s.title)}</div>${items.map(x=>`<div class="s-card pop" ${I()}><p class="s-s">${x}</p></div>`).join('')}`, 11000);
+        return; }
+      R();
+      add(themes[k%themes.length], `<div class="s-av pop" ${I()} style="font-size:56px">${esc(s.icon)}</div><div class="s-t pop" ${I()} style="font-size:clamp(26px,7vw,36px)">${esc(s.title)}</div>${rev?`<p class="s-p pop" ${I()} style="font-size:22px;font-weight:800">${rich(rev.text)}</p>`: para?`<p class="s-p pop" ${I()}>${rich(firstSentences(para.text))}</p>`:''}${chat?`<div class="s-wa pop" ${I()}>${chat.msgs.slice(0,3).map(m=>`<div class="m ${VIEW.reader&&m.who===VIEW.reader?'out':''}"><small>${esc(m.who)}</small>${m.kind==='text'?esc(firstSentences(m.text,140)):(MEDIA_HE[m.media]||'')}</div>`).join('')}</div>`:''}`, 8500 + ((rev?.text||para?.text||'').length)*18);
+    });
+    (rep.cast||[]).forEach((c,k)=>{ R();
+      add(['teal','yolk','pink','violet','mint','plum'][k%6],`<div class="s-k pop" ${I()}>מצעד הדמויות · ${k+1} מתוך ${rep.cast.length}</div><div class="s-t pop" ${I()} style="font-size:clamp(32px,9vw,48px)">${rich(c.title)}</div><p class="s-p pop" ${I()}>${rich(firstSentences(c.para,300))}</p>`, 8000 + Math.min(300,c.para.length)*18);
+    });
+    rep.characters.forEach((c,k)=>{ R();
+      add(['teal','yolk','pink','violet','mint','plum'][k%6],`<div class="s-k pop" ${I()}>הדמויות</div><div class="s-t pop" ${I()} style="font-size:clamp(44px,13vw,72px)">${esc(c.name)}</div>${c.role?`<span class="s-chip pop" ${I()}>${esc(c.role)}</span>`:''}${c.bio?`<p class="s-p pop" ${I()}>${rich(c.bio)}</p>`:''}${(c.superpower||c.redflag)?`<div class="s-card pop" ${I()}><p class="s-s">${c.superpower?'<b>כוח-על:</b> '+esc(c.superpower)+'<br>':''}${c.redflag?'<b>דגל אדום:</b> '+esc(c.redflag):''}</p></div>`:''}`, 7500 + c.bio.length*18);
+    });
+  }
+  const owl = st.people.filter(p=>p.count>20).sort((a,b)=>b.night/b.count-a.night/a.count)[0];
+  R(); add('ink',`<div class="s-k pop" ${I()}>השעון הביולוגי</div><p class="s-p pop" ${I()}>הכי הרבה הודעות נשלחות ב-</p><div class="s-h num pop" ${I()}>${pad(st.peakHour)}:00</div>${owl&&owl.night?`<div class="s-card pop" ${I()}><p class="s-s">הינשוף: <b>${esc(owl.name)}</b>, ${fmt(owl.night)} הודעות בין חצות לחמש.</p></div>`:''}<div class="s-card pop" ${I()}><p class="s-s">השקט הכי ארוך: ${dur(st.gap.ms)}. מי שבר/ה אותו? <b>${esc(st.gap.breaker||'')}</b>.</p></div>`);
+  if (st.topEmojis.length){ R(); add('yolk',`<div class="s-k pop" ${I()}>השפה הרשמית</div><div class="s-emo pop" ${I()}>${st.topEmojis.slice(0,5).map(e=>`<div>${e[0]}<small class="num">${fmt(e[1])}</small></div>`).join('')}</div><p class="s-p pop" ${I()}>ו-${fmt(st.laughs)} צחוקים בסך הכול.</p>`); }
+  const awards = (rep?.awards?.length ? rep.awards : st.localAwards).slice(0,5);
+  if (awards.length){ R(); add('pink',`<div class="s-k pop" ${I()}>טקס הפרסים</div>${awards.map(a=>`<div class="s-card pop" ${I()}><p class="s-s"><b>${esc(a.title)}</b>: ${esc(a.winner)}<br><span style="opacity:.85">${esc(a.why)}</span></p></div>`).join('')}`, 10000); }
+  if (rep){ R(); add('violet',`<div class="s-k pop" ${I()}>המדדים</div><div class="s-rows pop" ${I()}>${Object.entries(rep.scores).map(([k,v])=>`<div class="s-row" style="grid-template-columns:4.5em 1fr 2.5em"><b>${SCORE_LABELS[k]}</b><div class="s-bar"><i style="--v:${v}%"></i></div><span class="num">${v}</span></div>`).join('')}</div>`); }
+  R(); add('plum',`<div class="s-av pop" ${I()}>${persona.av}</div>${rep?.prediction?`<div class="s-k pop" ${I()}>התחזית</div><p class="s-p pop" ${I()}>${rich(rep.prediction)}</p>`:''}${rep?.signoff?`<p class="s-p pop" ${I()} style="font-weight:800">${rich(rep.signoff)}</p>`:''}<div class="s-btns pop" ${I()}>${rep && !VIEW.demo?'<button class="btn" type="button" data-act="share">שיתוף</button>':''}<button class="btn light" type="button" data-act="close">לדוח המלא</button><button class="btn ghost" type="button" data-act="poster" style="color:#fff">פוסטר לשיתוף</button><button class="btn ghost" type="button" data-act="replay" style="color:#fff">מההתחלה</button></div>`, 60000);
+  return S;
+}
+let story = null;
+function openStory(){
+  const slides = buildSlides();
+  const el = $('#story'); el.hidden=false; document.body.style.overflow='hidden';
+  el.innerHTML = `<div class="stage"><div class="bars">${slides.map(()=>'<i><b></b></i>').join('')}</div><button class="x" type="button" data-act="close" aria-label="סגירה">×</button>${slides.map(s=>`<section class="slide" style="background:${TH[s.theme].bg};color:${TH[s.theme].fg}">${s.html}</section>`).join('')}<div class="hint">הקישו בצד שמאל להמשך, לחיצה ארוכה עוצרת</div></div>`;
+  story = {slides, idx:-1, t0:0, el, paused:false, elapsedBefore:0, raf:0};
+  go(0); tick();
+}
+function closeStory(){ if(!story) return; cancelAnimationFrame(story.raf); $('#story').hidden=true; $('#story').innerHTML=''; document.body.style.overflow=''; story=null; }
+function go(n){
+  const s=story; if(!s) return;
+  if (n<0) n=0; if (n>=s.slides.length){ closeStory(); return; }
+  s.idx=n; s.t0=performance.now(); s.elapsedBefore=0;
+  const secs = s.el.querySelectorAll('.slide'); secs.forEach((x,k)=>x.classList.toggle('on',k===n));
+  s.el.querySelectorAll('.bars b').forEach((b,k)=>b.style.width = k<n?'100%':'0%');
+  secs[n].querySelectorAll('[data-count]').forEach(c=>countUp(c, +c.dataset.count));
+}
+function countUp(el, to){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=fmt(to); return; }
+  const t0=performance.now(), D=1400;
+  const f=t=>{ const p=Math.min(1,(t-t0)/D); el.textContent=fmt(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(f); }; requestAnimationFrame(f);
+}
+function tick(){
+  const s=story; if(!s) return;
+  const sl=s.slides[s.idx];
+  const el = s.paused ? s.elapsedBefore : s.elapsedBefore + (performance.now()-s.t0);
+  const p = Math.min(1, el/sl.ms);
+  const bar = s.el.querySelectorAll('.bars b')[s.idx]; if (bar) bar.style.width=(p*100)+'%';
+  if (p>=1 && s.idx < s.slides.length-1) go(s.idx+1);
+  s.raf = requestAnimationFrame(tick);
+}
+function pause(){ const s=story; if(!s||s.paused) return; s.elapsedBefore += performance.now()-s.t0; s.paused=true; }
+function resume(){ const s=story; if(!s||!s.paused) return; s.t0=performance.now(); s.paused=false; }
+
+/* ================= poster ================= */
+function wrap(ctx, text, maxW){ const words = String(text).split(/\s+/); const lines=[]; let line=''; for (const w of words){ const t=line?line+' '+w:w; if (ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; } else line=t; } if (line) lines.push(line); return lines; }
+async function makePoster(){
+  const st=ST, rep=REP, persona=PERSONAS[VIEW.persona]||PERSONAS.neighbor;
+  try{ await document.fonts.load('900 100px "Frank Ruhl Libre"'); await document.fonts.load('700 100px Karantina'); await document.fonts.load('700 40px Rubik'); }catch(_){}
+  const W=1080,H=1350; const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  x.fillStyle='#22163F'; x.fillRect(0,0,W,H);
+  x.fillStyle='#5B3FE0'; x.beginPath(); x.arc(W-40,110,250,0,Math.PI*2); x.fill();
+  x.fillStyle='#E8285F'; x.beginPath(); x.arc(60,H-80,210,0,Math.PI*2); x.fill();
+  x.direction='rtl'; x.textAlign='right'; const R=W-80, maxW=W-160;
+  x.fillStyle='#FFC53D'; x.font='700 38px Rubik, sans-serif'; x.fillText(persona.av+'  '+persona.name+' '+readVerb(persona)+' את', R, 125);
+  x.fillStyle='#F4EEFF'; x.font='500 34px Rubik, sans-serif'; x.fillText(st.chatName.slice(0,40), R, 175);
+  x.font='900 86px "Frank Ruhl Libre", serif'; x.fillStyle='#FFFFFF';
+  let y=300; for (const l of wrap(x, rep?.headline||st.chatName, maxW).slice(0,5)){ x.fillText(l,R,y); y+=100; }
+  if (rep?.dek){ x.font='500 36px Rubik, sans-serif'; x.fillStyle='#E4DCF7'; y+=6; for (const l of wrap(x, rep.dek, maxW).slice(0,3)){ x.fillText(l,R,y); y+=50; } }
+  y+=26;
+  const boxes=[[fmt(st.total),'הודעות'],[fmt(st.totalWords),'מילים'],[fmt(st.spanDays),'ימים']]; const bw=(maxW-40)/3;
+  boxes.forEach((b,k)=>{ const bx=R-k*(bw+20); x.fillStyle='rgba(255,255,255,.1)'; x.beginPath(); x.roundRect(bx-bw,y,bw,140,24); x.fill();
+    x.fillStyle='#FFC53D'; x.font='700 80px Karantina, Rubik, sans-serif'; x.fillText(b[0],bx-24,y+86); x.fillStyle='#F4EEFF'; x.font='500 27px Rubik, sans-serif'; x.fillText(b[1],bx-24,y+122); });
+  y+=180;
+  if (rep){ Object.entries(rep.scores).forEach(([k,v],j)=>{ if (y>H-200) return; x.fillStyle='#F4EEFF'; x.font='700 30px Rubik, sans-serif'; x.textAlign='right'; x.fillText(SCORE_LABELS[k],R,y+25);
+      const bx0=R-170, bL=maxW-230; x.fillStyle='rgba(255,255,255,.15)'; x.beginPath(); x.roundRect(bx0-bL,y,bL,28,14); x.fill();
+      x.fillStyle=['#E8285F','#32D1C1','#9C88FF','#FFC53D'][j]; x.beginPath(); x.roundRect(bx0-bL*(v/100),y,Math.max(28,bL*(v/100)),28,14); x.fill();
+      x.fillStyle='#F4EEFF'; x.textAlign='left'; x.fillText(String(v),80,y+25); y+=54; }); }
+  x.fillStyle='#FFC53D'; x.font='700 92px Karantina, Rubik, sans-serif'; x.textAlign='left'; x.fillText('רכילותא',80,H-70);
+  return new Promise(r=>c.toBlob(r,'image/png'));
+}
+async function showPoster(){
+  if (!ST) return; pause();
+  const m=$('#modal'); m.hidden=false; m.innerHTML='<p>מכינים פוסטר...</p>';
+  const blob = await makePoster(); const url = URL.createObjectURL(blob);
+  const dl = await use('downloads');
+  m.innerHTML = `<img src="${url}" alt="פוסטר של ${esc(ST.chatName)}"><p>${dl?'':'לחיצה ארוכה על התמונה כדי לשמור אותה.'}</p><div class="actions">${dl?'<button class="btn" type="button" data-act="psave">שמירת תמונה</button>':''}<button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`;
+  m._blob = blob;
+}
+
+/* ================= events ================= */
+function goHome(){ closeStory(); $('#hero').hidden=false; $('#setup').hidden=true; $('#loading').hidden=true; $('#banner').innerHTML=''; renderSavedList(); bootDemo(); window.scrollTo({top:0}); }
+async function route(){
+  const h = location.hash.replace(/^#/,'');
+  if (h.startsWith('r-')) { await openSaved(h); return true; }
+  if (h.startsWith('x-')) {
+    closeStory(); $('#hero').hidden = true; $('#setup').hidden = true; $('#banner').innerHTML='';
+    try {
+      const p = await readOpenHash(h);
+      const mine = (store.get('rk-mine')||[]).some(x=>x.hash===h);
+      loadPack(p, {hash:h, isNew:mine, open:true});
+      renderReport(); window.scrollTo({top:0});
+      if (!mine) setTimeout(()=>{ confetti(); }, 300);
+    } catch(_){ $('#report').innerHTML = `<div class="err">לא הצלחנו לפתוח את הדוח. נראה שהקישור נחתך בדרך. בקשו מהשולח/ת לשלוח שוב, או לשלוח את הדוח כקובץ.</div>`; }
+    return true;
+  }
+  return false;
+}
+function bindEvents(){
+  const drop = $('#drop');
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); if (!drop.classList.contains('over')){ drop.classList.add('over'); drop.querySelector('.big').textContent='שחררו! 👇'; }}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,()=>{ drop.querySelector('.big').textContent='גררו לכאן'; }));
+  document.addEventListener('pointerdown', ripple, {passive:true});
+  addEventListener('scroll', onScrollBar, {passive:true});
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+  drop.addEventListener('drop', e=>{ const f=e.dataTransfer.files[0]; if(f) handleFile(f); });
+  $('#file').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) handleFile(f); e.target.value=''; });
+  let pdT=0, pdX=0;
+  const SE = $('#story');
+  SE.addEventListener('pointerdown', e=>{ if(e.target.closest('button')) return; pdT=performance.now(); pdX=e.clientX; pause(); });
+  SE.addEventListener('pointerup', e=>{ if(!story || e.target.closest('button')) return; resume();
+    if (performance.now()-pdT < 280){ const r=story.el.querySelector('.stage').getBoundingClientRect(); const x=(pdX-r.left)/r.width; if (x < 0.66) go(story.idx+1); else go(story.idx-1); } });
+  SE.addEventListener('pointercancel', resume);
+  document.addEventListener('keydown', e=>{ if(!story) return; if(e.key==='ArrowLeft'||e.key===' '){ e.preventDefault(); go(story.idx+1);} else if(e.key==='ArrowRight') go(story.idx-1); else if(e.key==='Escape') closeStory(); });
+  $('#modal').addEventListener('click', async e=>{
+    const b=e.target.closest('[data-act]'); const m=$('#modal');
+    if (!b){ if (e.target===m){ closeModal(); } return; }
+    const act = b.dataset.act;
+    if (act==='mclose') closeModal();
+    if (act==='goStory'){ closeModal(); openStory(); }
+    if (act==='copy'){ const inp=$('#shareIn'); try{ await navigator.clipboard.writeText(inp.value); btnOk(b,'הועתק'); toast('הקישור הועתק. עכשיו רק להדביק בוואטסאפ','📋'); }catch(_){ inp.select(); b.textContent='סמנו והעתיקו'; } }
+    if (act==='export') exportFile();
+    if (act==='shortLink') makeShortLink();
+    if (act==='wipeYes') wipeAll();
+    if (act==='delYes'){ const h=b.dataset.h; b.disabled=true;
+      try { await deleteReport(h); closeModal(); const viewing = VIEW.saved?.hash===h; if (viewing){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){} goHome(); } else renderSavedList(); toast('הדוח נמחק','🗑️'); }
+      catch(_){ b.disabled=false; b.textContent='המחיקה לא הצליחה, נסו שוב'; } }
+    if (b.dataset.act==='psave'){ const dl=await use('downloads'); b.disabled=true;
+      try{ await dl.save({filename:'rechiluta-'+(ST.chatName||'chat').replace(/[^\p{L}\p{N}]+/gu,'-').slice(0,40)+'.png', data:m._blob}); b.textContent='נשמר'; }
+      catch(err){ b.disabled=false; b.textContent = err?.code==='declined'?'שמירת תמונה':'לא נשמר, נסו לחיצה ארוכה'; } }
+  });
+  document.addEventListener('click', async e=>{
+    const r = e.target.closest('#readerChips .chip'); if (r){ setupSel.reader = r.dataset.r; r.parentElement.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed', String(c===r))); return; }
+    const g = e.target.closest('#genderChips .chip'); if (g){ setupSel.gender = g.dataset.g; g.parentElement.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed', String(c===g))); return; }
+    const p = e.target.closest('#personas .persona'); if (p){ personaKey = p.dataset.k; store.set('rk-persona', personaKey); p.parentElement.querySelectorAll('.persona').forEach(c=>c.setAttribute('aria-pressed', String(c===p))); return; }
+    if (e.target.closest('#go')){ startReading(); return; }
+    const qo = e.target.closest('.qo'); if (qo){ answerQuiz(qo); return; }
+    const rx = e.target.closest('.rx'); if (rx){ burst(rx, [rx.dataset.e]); const n = rx.querySelector('small'); n.textContent = (+n.textContent||0)+1; rx.classList.add('on'); rx.classList.remove('bump'); void rx.offsetWidth; rx.classList.add('bump'); haptic(12); return; }
+    const b = e.target.closest('[data-act]'); if (!b || b.closest('#modal')) return;
+    const a = b.dataset.act;
+    if (a==='story') openStory();
+    else if (a==='close') closeStory();
+    else if (a==='replay') go(0);
+    else if (a==='poster') showPoster();
+    else if (a==='share'){ closeStory(); openShare(); }
+    else if (a==='export') exportFile();
+    else if (a==='wipe') askWipe();
+    else if (a==='resume') resumeJob();
+    else if (a==='dropJob'){ await idbDel('job'); $('#banner').innerHTML=''; toast('בוטל','🗑️'); }
+    else if (a==='quizAgain'){ quizState = {qs:buildQuiz(ST), i:0, score:0}; renderQuiz(); }
+    else if (a==='delThis' && VIEW.saved) askDelete(VIEW.saved.hash);
+    else if (a==='delSaved') askDelete(b.dataset.h);
+    else if (a==='shareSaved') shareSheet(b.dataset.h, b.dataset.t);
+    else if (a==='again' && MSGS){ await idbDel('job'); showSetup(); }
+    else if (a==='gohome'){ e.preventDefault(); try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){} goHome(); }
+    else if (a==='openLast'){ e.preventDefault(); const pk=store.get('rk-last'); if (pk){ loadPack(pk, null); $('#hero').hidden=true; $('#banner').innerHTML=''; renderReport(); window.scrollTo({top:0}); } }
+  });
+  $('#home').addEventListener('click', e=>{ e.preventDefault(); try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){} goHome(); });
+  window.addEventListener('hashchange', route);
+}
+
+/* ================= demo ================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function makeDemoChat(){
+  const R = mulberry32(7); const pick = a => a[Math.floor(R()*a.length)];
+  const L = {
+    'נועה':['אנשים!!! תענו לסקר 🙏','מי מביא מה? אני פותחת רשימה','יש לי אקסל לזה, אל תדאגו','אפשר להחליט על תאריך כבר??','אני מזכירה שוב שצריך לשלם על הצימר עד חמישי','חמודים אני לא אמא שלכם אבל','מעדכנת: הזמנתי. אין דרך חזרה','מי אוכל צמחוני? לשאלה הזאת יש תשובה נכונה אחת רון','חחח אתם בלתי אפשריים','עשיתי טבלה של מי חייב למי, תסתכלו','זה הסקר השלישי השבוע ואני לא מתביישת','אוקיי אז סגרנו?','מישהו קורא את מה שאני כותבת פה?'],
+    'איתי':['חחחחחחחחח','אחי','מי ער?','שלחתי לכם מסלול, סמכו עליי','המפה אומרת שזה 20 דקות הליכה','אני לא הלכתי לאיבוד, המסלול השתנה','יאללה אני בפנים','ראיתם את הסרטון ששלחתי? בדיוק אנחנו 😂','אני מביא גזייה ואת הרמקול','חחחחח מתתי','3 בלילה ואני מתכנן מסלולים, זה נורמלי?','מצאתי מעיין סודי, אף אחד לא מכיר'],
+    'מאיה':['סורי ראיתי עכשיו 🙈','אני בפנים!! 🥹','רגע מה פספסתי','חחחח אני לא מאמינה 😂😂','האוהל שלי בסדר גמור, הוא פשוט עקום','אפשר שמישהו יעשה לי סיכום?','אוהבת אתכם 💕','אני מאחרת קצת, תתחילו בלעדיי','מה זה האקסל הזה נועה 😂','אני מביאה שוקולד, זה התרומה שלי','🥹🥹🥹'],
+    'רון':['מי מביא את המנגל?','שקשוקה בבוקר זה לא נתון למשא ומתן','אני על האוכל, תסמכו עליי','קניתי 4 קילו קבב, זה מספיק?','צמחוני זה מצב רוח','בפעם הקודמת שכחתי את המנגל, אני יודע, די','מישהו יודע איפה יש חומוס טוב בקצרין?','אחרי הטיול הזה אני בדיאטה','יש לי מתכון למרינדה שישנה לכם את החיים','רעב.','חחח נכון','אני מביא את הצידנית הגדולה 🍖'],
+  };
+  const names = Object.keys(L), w=[.31,.27,.17,.25];
+  const who = () => { let r=R(), a=0; for (let k=0;k<4;k++){ a+=w[k]; if(r<a) return names[k]; } return names[3]; };
+  const out=[]; const line = (t,n,tx) => { const d=new Date(t); return `[${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}] ${n}: ${tx}`; };
+  const start = new Date(2026,6,1).getTime();
+  for (let day=0; day<112; day++){
+    const trip = day>=50 && day<=53;
+    const sessions = trip ? 4 : (R()<0.72 ? 1+Math.floor(R()*2.4) : 0);
+    for (let s=0; s<sessions; s++){
+      const night = R()<0.14;
+      let t = start + day*864e5 + (night ? (R()*3+0.2) : (8+R()*15))*3600e3;
+      const n = trip ? 18+Math.floor(R()*16) : 3+Math.floor(R()*14);
+      for (let k=0;k<n;k++){
+        let p = k===0 ? (night?'איתי':(R()<.45?'נועה':who())) : who(); if (night && R()<.5) p='איתי';
+        let tx; if (p==='איתי' && R()<.12) tx='‎audio omitted'; else if (p==='מאיה' && R()<.08) tx='‎sticker omitted'; else if (trip && R()<.2) tx='‎image omitted'; else tx = pick(L[p]);
+        out.push(line(t,p,tx)); t += (p==='מאיה'? 4 : 1) * (0.2 + R()*R()*25) * 60e3;
+      }
+    }
+  }
+  return out.join('\n');
+}
+const D = (s,who,text) => ({t:new Date(s.replace(' ','T')).getTime(), who, text, kind:'text', media:null});
+const DEMO_REP = {
+  headline:'שלושה חודשים, ארבעה אנשים וארבעה קילו קבב: הסאגה של הטיול לגולן 🏕️🍖',
+  dek:'קראנו כל הודעה בקבוצה. נועה, אנחנו צריכים לדבר על האקסל.',
+  intro:[
+    'נועה, נגיד את זה בעדינות: את לא בקבוצת וואטסאפ. את מנכ"לית של חברה עם שלושה עובדים, אפס משכורת, ושיעור היענות לסקרים של מפלגה שלא עברה את אחוז החסימה.',
+    'קראנו את כל ההודעות, מהסקר הראשון ביולי ועד טבלת החובות של אוקטובר. ובאמצע, איפשהו בין המנגל שנשכח למסלול ש"השתנה", מסתתר פה סיפור אהבה. לא רומנטי. **ארבעה אנשים שהחליטו שהם משפחה, ושכחו להגיד את זה בקול.**'
+  ],
+  sections:[
+    {icon:'📋', title:'איך זה התחיל: סקר, שקט, ועוד סקר', blocks:[
+      {t:'p', text:'הקבוצה נפתחה בתחילת יולי, בשעת ערב. לקח בדיוק שלוש דקות עד הסקר הראשון. ושלוש שעות עד הסקר השני, כי לראשון ענה אדם אחד: נועה.'},
+      {t:'chat', msgs:[D('2026-07-01 20:17','נועה','אנשים!!! תענו לסקר 🙏'), D('2026-07-01 23:02','נועה','אפשר להחליט על תאריך כבר??'), D('2026-07-02 09:41','מאיה','סורי ראיתי עכשיו 🙈'), D('2026-07-02 09:43','איתי','חחחחחחחחח')], after:'שימי לב למבנה. הוא יחזור על עצמו כל השבוע, כל החודש, כל הקיץ.'},
+      {t:'aside', who:'shrink', text:'מה שאנחנו רואים כאן הוא "תסמונת הסקר המופקר": מצב שבו אדם אחד מצביע, ושלושה חווים את זה כהטרדה.'},
+      {t:'p', text:'כבר בעמוד הראשון רואים את כל הדינמיקה בקטן: את שואלת, מאיה מתנצלת, איתי צוחק, ורון, איפשהו ברקע, שואל מי מביא מנגל. **זה לא צ\'אט. זו הצגה עם תסריט קבוע, ואת הבמאית, המפיקה והשחקנית הראשית.**'}
+    ]},
+    {icon:'🎭', title:'התפקיד שאתם חושבים שאתם משחקים (לעומת מה שקורה באמת)', blocks:[
+      {t:'p', text:'את בטוחה שאת המארגנת. איתי בטוח שהוא הנווט. רון בטוח שהוא השף. ומאיה בטוחה שהיא רק "קצת מאחרת".'},
+      {t:'p', text:'אבל כשקוראים את זה ברצף, מתגלה משהו אחר לגמרי.'},
+      {t:'reveal', text:'נועה, את לא המארגנת. את הדבק.'},
+      {t:'p', text:'כל פעם שהקבוצה שותקת יותר מיום, את זאת שמחזירה אותה לחיים. הסקרים הם רק התירוץ. מה שאת באמת כותבת, שוב ושוב, זה "אני רוצה שנישאר ביחד". ואת עושה את זה בטון של מישהי שמזכירה תשלום על צימר:'},
+      {t:'chat', msgs:[D('2026-08-11 21:30','נועה','חמודים אני לא אמא שלכם אבל'), D('2026-08-11 21:30','נועה','אני מזכירה שוב שצריך לשלם על הצימר עד חמישי'), D('2026-08-11 22:58','רון','חחח נכון')], after:'"חחח נכון". שעה וחצי אחרי. ובלי לשלם.'}
+    ]},
+    {icon:'🧭', title:'החולשה הכי גדולה של איתי (רמז: שלוש בלילה)', blocks:[
+      {t:'p', text:'איתי שולח יותר הודעות אחרי חצות מכל שאר הקבוצה ביחד. בשעות שבהן אנשים נורמליים ישנים, ואנשים לא נורמליים גוללים טיקטוק, איתי עושה משהו מסוכן הרבה יותר: מתכנן.'},
+      {t:'chat', msgs:[D('2026-08-02 03:12','איתי','3 בלילה ואני מתכנן מסלולים, זה נורמלי?'), D('2026-08-02 03:14','איתי','מצאתי מעיין סודי, אף אחד לא מכיר')]},
+      {t:'p', text:'"מעיין שאף אחד לא מכיר" זה בדרך כלל קוד ל"אין אליו שביל". ואכן, ביום הטיול עצמו:'},
+      {t:'chat', msgs:[D('2026-08-21 11:05','איתי','המפה אומרת שזה 20 דקות הליכה'), D('2026-08-21 12:47','איתי','אני לא הלכתי לאיבוד, המסלול השתנה')], after:'שעה וארבעים דקות בין שתי ההודעות. מסלולים לא משתנים, איתי.'},
+      {t:'aside', who:'sports', text:'ועכשיו לבדיקת VAR: הכדור, סליחה, הקבוצה, הייתה מחוץ למסלול כבר בדקה העשרים. השופט מאשר. אין שער. יש שלפוחיות.'},
+      {t:'p', text:'**החולשה של איתי היא לא חוש הכיוון. זה שהוא לא מסוגל להגיד "אני לא יודע".** והוא מפצה על זה בהתלהבות, ברמקול ובגזייה. וזה, בכנות, עובד.'}
+    ]},
+    {icon:'🍖', title:'רון והמנגל: טרגדיה בשלוש מערכות', blocks:[
+      {t:'p', text:'יש בקבוצה הזאת פצע ישן. הוא לא מוזכר הרבה, אבל הוא שם, כמו ריח של פחמים: בטיול הקודם, רון שכח את המנגל.'},
+      {t:'chat', msgs:[D('2026-07-19 18:20','רון','בפעם הקודמת שכחתי את המנגל, אני יודע, די'), D('2026-08-14 13:06','רון','קניתי 4 קילו קבב, זה מספיק?')], after:'ארבעה קילו. לארבעה אנשים. ליומיים. זה לא קניות. זה תיקון היסטורי.'},
+      {t:'num', value:'1 ק״ג', label:'קבב לאדם. רון לא בא לטייל, רון בא לכפר על חטא.'},
+      {t:'reveal', text:'רון לא אובססיבי לאוכל. רון אובססיבי לא לאכזב שוב.'},
+      {t:'aside', who:'savta', text:'אוי, מאמי, ארבעה קילו זה בדיוק מה שצריך. ולמה אין סלט? מי יאכל סלט? תביא סלט.'}
+    ]},
+    {icon:'🙈', title:'מאיה, או: איך לאחר בכל פעם ולהיות האהובה של כולם', blocks:[
+      {t:'p', text:'מאיה כותבת הכי מעט בקבוצה, ועונה הכי לאט. ובכל זאת, כשקוראים את הכול, היא הכוח השקט שמונע מהקבוצה להתפרק.'},
+      {t:'chat', msgs:[D('2026-08-16 22:40','מאיה','רגע מה פספסתי'), D('2026-08-16 22:41','מאיה','אפשר שמישהו יעשה לי סיכום?'), D('2026-08-16 22:44','נועה','סיכום עד עכשיו:\nאוהלים - רון\nגזייה - איתי\nמאיה - רק תגיעי בזמן בבקשה 🙏'), D('2026-08-16 23:30','מאיה','אוהבת אתכם 💕')], after:'ואת, נועה, עושה לה סיכום. כל פעם. עם נקודות.'},
+      {t:'aside', who:'roast', text:'מאיה היא היחידה בעולם שמקבלת תקציר פרקים קודמים לקבוצת וואטסאפ של ארבעה אנשים.'},
+      {t:'p', text:'**אף ויכוח בקבוצה הזאת לא מחזיק יותר משתי הודעות, כי תמיד מגיעה מאיה עם 🥹 אחד והכול נסלח.** היא לא מאחרת לשיחות. היא מגיעה בדיוק כשצריך מישהו שירכך.'}
+    ]},
+    {icon:'📖', title:'המילון הפנימי: מושגי יסוד בדיאלקט של הטיול לגולן', blocks:[
+      {t:'p', text:'כדי שכולם יישרו קו, הנה הטרמינולוגיה שהמצאתם בלי לשים לב:'},
+      {t:'gloss', items:[
+        {term:'"המסלול השתנה"', meaning:'הלכנו לאיבוד, אבל באופן שמאפשר לאיתי לשמור על כבודו.'},
+        {term:'"אני מעדכנת"', meaning:'נועה כבר החליטה. העדכון הוא מחווה דמוקרטית בלבד.'},
+        {term:'"קצת מאחרת"', meaning:'יחידת זמן של מאיה. שווה ערך לשעה וחצי עד יום שלם.'},
+        {term:'"אני על האוכל"', meaning:'הצהרת כוונות של רון שכוללת לפחות 4 קילו בשר וסיכון ממשי לשכוח את המנגל.'},
+        {term:'"האקסל"', meaning:'מסמך מכונן. איש לא קרא אותו, וכולם חוששים ממנו.'}
+      ]}
+    ]},
+    {icon:'🔮', title:'תחזית לעתיד: לאן כל זה הולך?', blocks:[
+      {t:'p', text:'הסתכלנו לכם בעיניים (בהודעות, אבל עדיין). זה מה שאנחנו רואים:'},
+      {t:'list', ordered:false, items:[
+        '**נועה** תפתח סקר לטיול הבא עוד לפני שכולם החזירו את הכסף על הקודם.',
+        '**איתי** ישלח מסלול חדש בשלוש בלילה, עם המילים "אף אחד לא מכיר".',
+        '**מאיה** תענה "אני בפנים!! 🥹" יומיים אחרי שהכול כבר סגור, ותקבל סיכום.',
+        '**רון** כבר יודע מה הוא מביא, וזה לא סלט.'
+      ]},
+      {t:'p', text:'ובאמת? תמשיכו בדיוק ככה. **רוב הקבוצות מתות אחרי הטיול. שלכם רק התחילה.**'}
+    ]}
+  ],
+  characters:[
+    {name:'נועה', role:'שרת הלוגיסטיקה', bio:'פותחת סקר לפני שמישהו פתח את הפה. מחזיקה את הקבוצה ביד אחת ואת האקסל ביד השנייה.', superpower:'אקסל שמסדר גם מריבות', redflag:'"אני לא אמא שלכם אבל"', quote:'זה הסקר השלישי השבוע ואני לא מתביישת'},
+    {name:'איתי', role:'הנווט הלילי', bio:'ער כשכולם ישנים ובטוח שהוא יודע את הדרך. המפה לא תמיד מסכימה.', superpower:'התלהבות שמכסה על כל טעות ניווט', redflag:'"המסלול השתנה"', quote:'אני לא הלכתי לאיבוד, המסלול השתנה'},
+    {name:'רון', role:'שר המנגלים', bio:'כל שיחה, לא משנה על מה, מגיעה אצלו לקבב. שכח פעם אחת את המנגל ועד היום משלם על זה.', superpower:'מרינדה שמשנה חיים (לטענתו)', redflag:'"אחרי הטיול הזה אני בדיאטה"', quote:'שקשוקה בבוקר זה לא נתון למשא ומתן'},
+    {name:'מאיה', role:'נסיכת הסורי', bio:'רואה הודעות שלוש שעות אחרי, מבקשת סיכום ושולחת לב. וכולם סולחים לה.', superpower:'להפוך כל ויכוח לחיבוק עם 🥹 אחד', redflag:'האוהל ה"עקום"', quote:'האוהל שלי בסדר גמור, הוא פשוט עקום'},
+  ],
+  awards:[
+    {title:'פרס המנגל הנשכח', winner:'רון', why:'יש דברים שהקבוצה הזאת לא שוכחת, גם אם הוא מאוד היה רוצה.'},
+    {title:'מדליית הסקר השבועי', winner:'נועה', why:'דמוקרטיה זה יפה, אבל שלושה סקרים בשבוע זה כבר ענף ספורט.'},
+    {title:'פרס המצפן השבור', winner:'איתי', why:'"20 דקות הליכה". תשאלו את הרגליים של כולם.'},
+    {title:'פרס "מה פספסתי?"', winner:'מאיה', why:'השאלה שנשאלת הכי הרבה בקבוצה, וגם הכי מתוקה.'},
+  ],
+  scores:{drama:34,love:88,chaos:71,cringe:42},
+  prediction:'עוד חודשיים יהיה סקר חדש, מסלול חדש בשלוש בלילה, וארבעה קילו קבב. אולי חמישה.',
+  signoff:'שלכם, כל הפאנל של רכילותא. (סבתא פנינה מבקשת שתאכלו משהו לפני הטיול הבא.)',
+};
+let demoCache = null;
+function bootDemo(){
+  if (!demoCache) demoCache = computeStats(parseChat(makeDemoChat()), 'הטיול לגולן 🏕️');
+  ST = demoCache; REP = DEMO_REP; MSGS = null; NOTES = null; VIEW = {persona:'mix', reader:'נועה', gender:'f', demo:true, saved:null};
+  renderReport();
+}
+
+/* ================= boot ================= */
+(async function boot(){
+  if (HOSTED) document.body.classList.add('hosted');
+  const k = store.get('rk-persona'); if (k && PERSONAS[k]) personaKey = k;
+  const th = store.get('rk-theme'); if (th==='dark' || th==='light') applyTheme(th); else syncThemeBtn();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', syncThemeBtn);
+  $('#themeBtn').addEventListener('click', toggleTheme);
+  bindEvents();
+  renderSavedList();
+  bootDemo();
+  (await route()) || checkPendingJob();
+})();
+</script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-g8gwKYIySTm5O80XSw8J5LKln98cwLa9wEljct9BubQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-uXbTbVJhuBixi3yyxlyfRZ31dsaXYUdlp73MQTtqX5I='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -327,7 +327,7 @@ button{font:inherit;cursor:pointer}
 .qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .qopts.big .qo{font-size:30px;padding:10px}
 .qo{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px;font-weight:700;font-size:15.5px;transition:transform .12s,background .2s,border-color .2s;min-width:0;overflow-wrap:anywhere}
-.qo:not(:disabled):hover{transform:translateY(-2px);border-color:var(--violet)}
+@media (hover:hover) and (pointer:fine){.qo:not(:disabled):hover{transform:translateY(-2px);border-color:var(--violet)}}
 .qo:not(:disabled):active{transform:scale(.97)}
 .qo.right{background:#D9FDD3;border-color:#25A55F;color:#14532D}
 .qo.wrong{background:var(--pink-soft);border-color:var(--pink);animation:shake .4s}
@@ -697,21 +697,39 @@ const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(
 function dur(ms){
   const m = ms/60000;
   if (m < 1) return Math.max(1,Math.round(ms/1000))+' שניות';
+  if (m < 1.5) return 'דקה';
   if (m < 60) return Math.round(m)+' דקות';
-  const h = m/60; if (h < 48) return (h<10? h.toFixed(1):Math.round(h))+' שעות';
+  const h = m/60; if (h < 1.25) return 'שעה'; if (h < 2.5 && h >= 1.75) return 'שעתיים'; if (h < 48) return (h<10? String(Math.round(h*10)/10):Math.round(h))+' שעות';
   return Math.round(h/24)+' ימים';
 }
 
 /* ================= parsing ================= */
 const INVIS = /[‎‏‪-‮⁦-⁩﻿]/g;
 const HEAD = /^\[?(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{2,4})[,\s]+(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\]?\s*[-–]?\s*(.*)$/;
-const MEDIA = /(<[^>]*(omitted|הושמט|לא נכלל)[^>]*>|^(image|video|audio|sticker|gif|document|contact card|photo) omitted|הושמט|הושמטה|\(file attached\)|\(הקובץ מצורף\)|קובץ מצורף)/i;
-const DELETED = /^(this message was deleted|you deleted this message|ההודעה נמחקה|מחקת את ההודעה|הודעה זו נמחקה)\.?$/i;
+const MEDIA = /(<[^>]*(omitted|הושמט|לא נכלל)[^>]*>|^(image|video|audio|sticker|gif|document|contact card|photo|video note|voice message) omitted|^(ה?תמונה|ה?ווידאו|ה?וידאו|ה?סרטון|ה?אודיו|ה?הקלטה|ה?מדבקה|ה-?GIF|ה?מסמך|כרטיס איש ה?קשר|הערת ה?וידאו|הערת ה?ווידאו|הודעת ה?וידאו|הודעת ה?ווידאו|הודעה קולית|ה?קובץ)\s+(לא\s+נכלל|הושמט)|הושמט|הושמטה|\(file attached\)|\(הקובץ מצורף\)|קובץ מצורף)/i;
+const SYSTEM = new RegExp([
+  // Hebrew lines that only WhatsApp writes (anchored at the start, or in WhatsApp's own "/ה" form)
+  '^(הקבוצה נוצרה|צורפת|הוספת את|הצטרפת|יצאת|שינית את|הוסרת|שיחה שלא נענתה|שיחת וידאו שלא נענתה|שיחה קולית שלא נענתה|שיחה קולית$|שיחת וידאו$|ההודעות והשיחות|הודעות ושיחות|הודעות זמניות|זו קבוצה חדשה|קוד האבטחה|אתה עכשיו מנהל|את עכשיו מנהלת|ההודעה נעוצה)',
+  '(יצר|צירף|הוסיף|שינה|יצא|הסיר|הצטרף|הפך|נעץ|עזב|מחק)\\/(ה|תה|כה)(\\s|$)',
+  '^\\S+(\\s\\S+){0,3}\\s(יצר|יצרה) את הקבוצה',
+  '^\\S+(\\s\\S+){0,3}\\s(הצטרף|הצטרפה) (באמצעות|לקבוצה)',
+  '^\\S+(\\s\\S+){0,3}\\s(יצא|יצאה|עזב|עזבה)( מהקבוצה)?$',
+  '^\\S+(\\s\\S+){0,3}\\s(שינה|שינתה) את (נושא|סמל|תיאור|הגדרות) הקבוצה',
+  'מוצפנות מקצה לקצה|מספר הטלפון (שלו|שלה)? ?(השתנה|שונה)',
+  // English
+  '^(.+\\s)?(created group|created this group)',
+  '^(you were added|you added|you joined|you left|you removed|you changed)',
+  "^\\S+(\\s\\S+){0,3}\\s(added|removed)\\s\\S+",
+  "^\\S+(\\s\\S+){0,3}\\s(left|joined using this group's invite link)$",
+  "changed the subject|changed this group's (icon|description|settings)|changed the group (description|name)",
+  'missed (voice|video) call|^(voice|video) call$|end-to-end encrypted|disappearing messages|pinned a message|changed their phone number|security code (changed|with)|is now an admin|no longer an admin'
+].join('|'), 'iu');
+const DELETED = /^(this message was deleted|you deleted this message|ההודעה נמחקה|מחקת את ההודעה|מחקת את ההודעה הזו|הודעה זו נמחקה|ההודעה הזו נמחקה)\.?$/i;
 const EDITED = /\s*<(this message was edited|ההודעה נערכה)>\s*$/i;
 function mediaType(t){
   if (/audio|אודיו|\.opus|PTT-|קולית|הקלטה/i.test(t)) return 'audio';
   if (/sticker|מדבקה|\.webp/i.test(t)) return 'sticker';
-  if (/video|וידאו|סרטון|\.mp4/i.test(t)) return 'video';
+  if (/video|וידאו|ווידאו|סרטון|\.mp4/i.test(t)) return 'video';
   if (/gif/i.test(t)) return 'gif';
   if (/image|photo|תמונה|\.jpe?g|\.png/i.test(t)) return 'image';
   return 'other';
@@ -745,9 +763,10 @@ function parseChat(raw){
     let text = rest.slice(idx+2).replace(EDITED,'');
     const sysMark = /^‎/.test(rawRest);
     let kind='text', media=null;
-    if (DELETED.test(text.trim())) kind='deleted';
-    else if (MEDIA.test(text) && text.length<120){ kind='media'; media=mediaType(text); }
-    else if (sysMark) { cur=null; continue; }
+    const plain = text.replace(INVIS,'').trim();
+    if (DELETED.test(plain)) kind='deleted';
+    else if (MEDIA.test(plain) && plain.length<120){ kind='media'; media=mediaType(plain); }
+    else if (sysMark || (plain.length<160 && SYSTEM.test(plain))) { cur=null; continue; }
     if (/end-to-end|מקצה לקצה/i.test(text) && text.length<200) { cur=null; continue; }
     cur = {t, who, text, kind, media};
     msgs.push(cur);
@@ -1334,7 +1353,7 @@ function renderQuiz(){
   const s = quizState, box = $('#quiz'); if (!s || !box) return;
   if (s.i >= s.qs.length){
     const r = s.score/s.qs.length;
-    box.innerHTML = `<div class="qk">החידון נגמר</div><div class="qscore">${s.score}/${s.qs.length}</div><p class="qq">${r>=.8?'וואו. את/ה מכיר/ה את הצ\'אט הזה יותר טוב מהטלפון שלך.':r>=.5?'לא רע בכלל. אבל יש פה כמה הפתעות שמחכות לך בדוח.':'אוקיי, מסתבר שיש לך הרבה מה לגלות. טוב שאנחנו פה.'}</p>${VIEW.quick && !QUICK_READY ? '<button class="btn big" type="button" data-act="toReport">לדוח שלי 🎉</button>' : '<button class="btn ghost" type="button" data-act="quizAgain">עוד סיבוב</button>'}`;
+    box.innerHTML = `<div class="qk">החידון נגמר</div><div class="qscore">${s.score}/${s.qs.length}</div><p class="qq">${r>=.8?(VIEW.gender==='f'?'וואו. את מכירה':VIEW.gender==='m'?'וואו. אתה מכיר':'וואו. את/ה מכיר/ה')+' את הצ\'אט הזה יותר טוב מהטלפון שלך.':r>=.5?'לא רע בכלל. אבל יש פה כמה הפתעות שמחכות לך בדוח.':'אוקיי, מסתבר שיש לך הרבה מה לגלות. טוב שאנחנו פה.'}</p>${VIEW.quick && !QUICK_READY ? '<button class="btn big" type="button" data-act="toReport">לדוח שלי 🎉</button>' : '<button class="btn ghost" type="button" data-act="quizAgain">עוד סיבוב</button>'}`;
     if (r>=.6) confetti();
     return;
   }
@@ -1451,8 +1470,12 @@ function quickReport(msgs, st, reader, readerGender){
   const findIdx = t => msgs.findIndex(m=>m.t===t);
   const ago = t => { const d = (st.last - t)/864e5; return d<45 ? `${Math.max(1,Math.round(d))} ימים` : d<540 ? `${Math.round(d/30)} חודשים` : `${(d/365).toFixed(1).replace('.0','')} שנים`; };
   const chat = st.chatName, two = !st.isGroup && P.length===2;
+  const chatB = chat==='הקבוצה' ? 'בקבוצה' : 'ב'+chat, chatL = chat==='הקבוצה' ? 'לקבוצה' : 'ל'+chat;
   const first = s => String(s).split(/\s+/)[0];
   const facts = [];   // [strength, headline variants]
+  const SHORT = new Set(['כן','לא','אוקי','אוקיי','סבבה','טוב','בסדר','יאללה','ok','okay','k','👍','חח','אחלה','מגניב','נו','קניתי','תכף']);
+  // the chat's own everyday line (its "did you buy milk?"), used to set up the contrast with the moments that matter
+  let daily = 'נו?'; { const c = {}; for (const m of msgs){ if (!isText(m) || isLaugh(m.text) || /https?:/.test(m.text)) continue; const t = m.text.trim(); if (t.length<6 || t.length>26 || SHORT.has(t.toLowerCase())) continue; c[t]=(c[t]||0)+1; } const top = Object.entries(c).sort((x,y)=>y[1]-x[1])[0]; if (top && top[1]>=3) daily = top[0].replace(/[.!]+$/,''); }
 
   /* ===== 1. how it all began ===== */
   const origin = [];
@@ -1466,13 +1489,14 @@ function quickReport(msgs, st, reader, readerGender){
   for (const [k,v] of Object.entries(pair)){ const [x,y]=k.split('→'); const back = pair[y+'→'+x]; if (!back || v.length<12 || back.length<12) continue; const mx=med(v), my=med(back); const ratio = Math.max(mx,my)/Math.max(30e3,Math.min(mx,my)); if (ratio>=2.2 && (!asym || ratio>asym.ratio)) asym = mx<my ? {fast:x, slow:y, f:mx, s:my, ratio} : {fast:y, slow:x, f:my, s:mx, ratio}; }
 
   /* ===== 3. who makes whom laugh ===== */
-  const caused = {}, moments = [];
+  const caused = {}, moments = [], fan = {};
   for (let i=0;i<msgs.length-1;i++){
     const m = msgs[i]; if (!isText(m) || m.text.length<8 || isLaugh(m.text) || !inP.has(m.who) || /https?:/.test(m.text)) continue;
     const resp = [];
     for (let j=i+1;j<Math.min(msgs.length,i+4);j++){ const r=msgs[j]; if (r.t-m.t>3*60e3) break; if (r.who===m.who) break; if (isText(r) && isLaugh(r.text)) resp.push(j); }
     if (!resp.length) continue;
     const laughers = new Set(resp.map(j=>msgs[j].who)); caused[m.who] = (caused[m.who]||0) + laughers.size;
+    for (const l of laughers) if (l!==m.who && inP.has(l)) (fan[l] ||= {})[m.who] = (fan[l][m.who]||0)+1;
     const power = resp.reduce((a,j)=>a+Math.min(14,hCount(msgs[j].text)) + (/😂|🤣/.test(msgs[j].text)?3:0), 0);
     moments.push({i, last:resp[resp.length-1], score: laughers.size*6 + power + Math.min(6, m.text.length/30) + rnd()*3});
   }
@@ -1482,21 +1506,32 @@ function quickReport(msgs, st, reader, readerGender){
   let longLaugh = null;
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who)) return; const c=hCount(m.text); if (c>=10 && (!longLaugh || c>longLaugh.c)) longLaugh = {i, c}; });
 
+  /* names, nicknames and surnames: words from the participants' names, and words people use to call each other ("ביבי, ..." / "...ביבי?") */
+  const nameTok = new Set(st.people.flatMap(p=>p.name.toLowerCase().replace(/[^\p{L}\s'"]/gu,' ').split(/\s+/)).filter(w=>w.length>=2));
+  const voc = {}, tokUse = {};
+  for (const m of msgs){ if (!isText(m)) continue; const t = m.text.trim().toLowerCase();
+    for (const w of (t.match(/[\p{L}'"]+/gu)||[])) tokUse[w]=(tokUse[w]||0)+1;
+    let mm = t.match(/^([\p{L}'"]{2,})\s*,/u) || t.match(/,\s*([\p{L}'"]{2,})\s*[!?.]*$/u) || t.match(/^([\p{L}'"]{2,})\s*[?!]{1,}$/u) || t.match(/^([\p{L}'"]{2,})\s*[?!]+\s/u) || t.match(/^(?:היי|הי|אהלן|יא|נו|בוקר טוב|ערב טוב|מזל טוב)\s+([\p{L}'"]{2,})/u) || t.match(/@\s?([\p{L}'"]{2,})/u);
+    if (mm) voc[mm[1]]=(voc[mm[1]]||0)+1; }
+  const bases = w => [w, w.replace(/^[ושלבהכמ]/,''), w.replace(/י$/,''), w.replace(/^[ושלבהכמ]/,'').replace(/י$/,'')];
+  const isNameish = w => bases(w).some(x => x.length>=2 && (nameTok.has(x) || ((voc[x]||0)>=3 && (voc[x]||0)/Math.max(1,tokUse[x]||1) >= .12)));
+
   /* ===== 4. the private language: words and phrases the chat invented, with the moment each one was born ===== */
   const ph = new Map();
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who) || /https?:/.test(m.text) || isLaugh(m.text) && m.text.length<12) return;
-    const w = (m.text.toLowerCase().match(/[\p{L}']+/gu)||[]).filter(x=>!/^ח+$/.test(x));
     const seen = new Set();
+    for (const sent of m.text.toLowerCase().split(/[.!?,\n:;()]+/)){ const w = (sent.match(/[\p{L}']+/gu)||[]).filter(x=>!/^ח+$/.test(x));
     for (let L=1; L<=3; L++) for (let k=0;k+L<=w.length;k++){ const gr=w.slice(k,k+L);
       if (gr.some(x=>x.length<2) || gr.every(x=>STOP.has(x)||COMMON_HE.has(x)) || STOP.has(gr[0]) || STOP.has(gr[gr.length-1])) continue;
       if (L===1 && (gr[0].length<4 || COMMON_HE.has(gr[0]))) continue;
+      if (gr.some(isNameish)) continue;
       const key = gr.join(' '); if (seen.has(key)) continue; seen.add(key);
       let o = ph.get(key); if (!o){ o = {key, c:0, who:{}, days:new Set(), firstI:i, idx:[]}; ph.set(key,o); }
-      o.c++; if (o.idx.length<400) o.idx.push(i); o.who[m.who]=(o.who[m.who]||0)+1; o.days.add(ymd(new Date(m.t))); } });
+      o.c++; if (o.idx.length<400) o.idx.push(i); o.who[m.who]=(o.who[m.who]||0)+1; o.days.add(ymd(new Date(m.t))); } } });
   const nameWords = new Set(P.flatMap(p=>p.name.toLowerCase().split(/\s+/)));
   let jokes = [...ph.values()].filter(o=>{ const users=Object.keys(o.who).length, days=o.days.size; const span = msgs[msgs.length-1].t - msgs[o.firstI].t;
       const born = msgs[o.firstI].t - msgs[0].t;
-      if (!o.key.includes(' ') && (o.c<7 || days<4)) return false;
+      if (!o.key.includes(' ')) return false;
       return o.c>=5 && days>=3 && span>=10*864e5 && born>=2*864e5 && o.c/msgs.length < .012 && (users>=2 || st.people.length===1) && !o.key.split(' ').some(w=>nameWords.has(w)); })
     .map(o=>({...o, users:Object.keys(o.who).length, score: o.c * Math.log(o.days.size+1) * (Object.keys(o.who).length>=2?1.6:1) * (o.key.includes(' ')?1.5:1)}))
     .sort((a,b)=>b.score-a.score);
@@ -1505,13 +1540,12 @@ function quickReport(msgs, st, reader, readerGender){
   /* ===== 5. catchphrases one person owns ===== */
   const catch_ = {};
   for (const o of ph.values()){ if (!o.key.includes(' ') && (o.key.length<5 || COMMON_HE.has(o.key))) continue; for (const [who,c] of Object.entries(o.who)) if (c>=5 && c/o.c>=.75 && !jokes.some(j=>j.key===o.key)) (catch_[who] ||= []).push({key:o.key, c}); }
-  for (const who in catch_){ const arr = catch_[who].sort((a,b)=>b.c-a.c || b.key.length-a.key.length); const kept=[]; for (const x of arr){ if (kept.some(k=>k.key.includes(x.key)||x.key.includes(k.key))) continue; kept.push(x); if (kept.length>=2) break; } catch_[who]=kept; }
-  const SHORT = new Set(['כן','לא','אוקי','אוקיי','סבבה','טוב','בסדר','יאללה','ok','okay','k','👍','חח','אחלה','מגניב','נו','קניתי','תכף']);
+  for (const who in catch_){ const arr = catch_[who].sort((a,b)=>b.c-a.c || b.key.length-a.key.length); const kept=[]; for (const x of arr){ if (kept.some(k=>{ if (k.key.includes(x.key)||x.key.includes(k.key)) return true; const a=ph.get(k.key)?.idx||[], b=new Set(ph.get(x.key)?.idx||[]); return a.filter(i=>b.has(i)).length/Math.max(1,a.length) > .5; })) continue; kept.push(x); if (kept.length>=2) break; } catch_[who]=kept; }
   const shortBy = {}; for (const m of msgs){ if (!isText(m) || !inP.has(m.who)) continue; const t=m.text.trim().toLowerCase(); if (SHORT.has(t)){ const o = shortBy[m.who] ||= {}; o[t]=(o[t]||0)+1; } }
   let shortKing = null; for (const [who,o] of Object.entries(shortBy)){ const [w,c] = Object.entries(o).sort((a,b)=>b[1]-a[1])[0]; if (c>=10 && (!shortKing || c>shortKing.c)) shortKing = {who, w, c}; }
 
   /* ===== 6. the heart: messages that carried real feeling, and how they were received ===== */
-  const FEEL = [[/אוהב(?:ת)? אות/u,3],[/מתגעגע/u,3],[/גאה ב/u,4],[/תודה ש|תודה על/u,3],[/בזכותך/u,4],[/מזל שיש/u,4],[/הדבר הכי טוב/u,5],[/חשוב לי/u,3],[/לא יודע(?:ת)? מה הייתי/u,5],[/קשה לי/u,4],[/עצוב|עצובה/u,3],[/בוכה|דמעות|בכיתי/u,4],[/מרגש|ריגשת|התרגשתי/u,4],[/סליחה ש|מצטער(?:ת)? ש|מצטער(?:ת)?\b/u,3],[/יום הולדת שמח|מזל טוב/u,2],[/לנצח|כל החיים|לתמיד/u,3],[/🥹|😭|🤍/u,2],[/❤/u,1]];
+  const FEEL = [[/אוהב(?:ת)? אות/u,3],[/מתגעגע/u,3],[/גאה ב/u,4],[/תודה ש|תודה על/u,3],[/בזכותך/u,4],[/מזל שיש/u,4],[/הדבר הכי טוב/u,5],[/חשוב לי/u,3],[/לא יודע(?:ת)? מה הייתי/u,5],[/קשה לי/u,4],[/עצוב|עצובה/u,3],[/בוכה|דמעות|בכיתי/u,4],[/מרגש|ריגשת|התרגשתי/u,4],[/סליחה ש|מצטער(?:ת)? ש|מצטער(?:ת)?\b/u,3],[/יום הולדת שמח|מזל טוב/u,2],[/לנצח|כל החיים|לתמיד/u,3],[/מתחתנ|התארס|הצעת נישואין|נולד לנו|נולדה לנו|נולד לי|בהריון|קיבלתי את העבודה|התקבלתי|סיימתי את התואר|עברתי את המבחן|הדירה שלנו|הבית שלנו/u,5],[/האנשים הכי|הכי טובים שיש|אוהב(?:ת)? אתכם|אתם הכי|בלעדיכם|מזל שיש לי אתכם|תודה לכולם|גאה בכם|גאה בך|מגיע לך הכי/u,4],[/🥹|😭|🤍/u,2],[/❤/u,1]];
   const hearts = [];
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who) || isLaugh(m.text) && m.text.length<40) return;
     let s = 0; for (const [re,w] of FEEL) if (re.test(m.text)) s += w;
@@ -1521,7 +1555,8 @@ function quickReport(msgs, st, reader, readerGender){
     if (m.text.length < 25 && !replies.length) return;
     hearts.push({i, s, replies});
   });
-  for (let k=hearts.length-1;k>=0;k--){ const h=hearts[k]; if (msgs[h.i].text.length<30 || h.s<9) hearts.splice(k,1); }
+  const LIFE = /מתחתנ|התארס|הצעת נישואין|נולד לנו|נולדה לנו|נולד לי|בהריון|קיבלתי את העבודה|התקבלתי|סיימתי את התואר|עברתי את המבחן/u;
+  for (let k=hearts.length-1;k>=0;k--){ const h=hearts[k], t=msgs[h.i].text; const keep = LIFE.test(t) && h.replies.length>=2 || (t.length>=30 && h.s>=9) || (t.length>=80 && h.s>=6); if (!keep) hearts.splice(k,1); }
   hearts.sort((a,b)=>b.s-a.s);
   const topHearts = []; for (const h of hearts){ if (topHearts.every(x=>Math.abs(msgs[x.i].t-msgs[h.i].t)>3*864e5)) topHearts.push(h); if (topHearts.length>=2) break; }
 
@@ -1577,7 +1612,63 @@ function quickReport(msgs, st, reader, readerGender){
   const sorryTop = P.filter(p=>p.sorry>=4).sort((a,b)=>b.sorry-a.sorry)[0];
   const mono = P.slice().sort((a,b)=>(b.longest||'').length-(a.longest||'').length)[0];
 
+  /* ===== 11. fans: for each person, who laughs at them the most ===== */
+  const fans = [];
+  for (const [l,o] of Object.entries(fan)) for (const [a,c] of Object.entries(o)){ const totL = Object.values(o).reduce((x,y)=>x+y,0); if (c>=4) fans.push({fan:l, of:a, c, share:c/Math.max(1,totL)}); }
+  fans.sort((x,y)=>y.c*(.5+y.share)-x.c*(.5+x.share));
+  const fanPairs = []; for (const f of fans){ if (fanPairs.some(x=>x.fan===f.fan || x.of===f.of)) continue; fanPairs.push(f); if (fanPairs.length>=(st.isGroup?3:2)) break; }
+
+  /* ===== 12. the hidden couples of a group: who answers whom far more than chance ===== */
+  let duos = [], strangers = null;
+  if (st.isGroup && P.length>=3){
+    const rc = {}, rTot = {}, aTot = {}; let tot = 0;
+    for (let i=1;i<msgs.length;i++){ const a=msgs[i-1], b=msgs[i]; if (a.who===b.who || !inP.has(a.who) || !inP.has(b.who) || b.t-a.t>10*60e3) continue; const k=[a.who,b.who].sort().join('|'); rc[k]=(rc[k]||0)+1; rTot[b.who]=(rTot[b.who]||0)+1; aTot[a.who]=(aTot[a.who]||0)+1; tot++; }
+    const cand = [];
+    for (let x=0;x<P.length;x++) for (let y=x+1;y<P.length;y++){ const A=P[x].name, Bn=P[y].name, k=[A,Bn].sort().join('|'); const obs = rc[k]||0;
+      const exp = tot ? ((rTot[A]||0)*(aTot[Bn]||0) + (rTot[Bn]||0)*(aTot[A]||0)) / tot : 0; if (exp<8) continue; cand.push({a:A, b:Bn, obs, exp, lift: obs/exp}); }
+    duos = cand.filter(c=>c.lift>=1.45 && c.obs>=25).sort((a,b)=>b.lift-a.lift);
+    { const kept=[]; for (const d of duos){ if (kept.some(k=>k.a===d.a||k.b===d.b||k.a===d.b||k.b===d.a)) continue; kept.push(d); if (kept.length>=2) break; } duos = kept; }
+    strangers = cand.filter(c=>c.lift<=.45 && c.exp>=25).sort((a,b)=>a.lift-b.lift)[0] || null;
+  }
+
+  /* ===== 13. the bomb: one message that set the chat on fire ===== */
+  let bomb = null;
+  for (let i=3;i<msgs.length-3;i++){ const m = msgs[i]; if (!isText(m) || !inP.has(m.who) || m.text.length<6 || isLaugh(m.text) || /https?:/.test(m.text)) continue;
+    let quiet = 0; for (let j=i-1;j>=0 && m.t-msgs[j].t<40*60e3;j--) quiet++;
+    if (quiet>2) continue;
+    let k=i+1, who = new Set(); while (k<msgs.length && msgs[k].t-m.t<15*60e3){ if (msgs[k].who!==m.who) who.add(msgs[k].who); k++; }
+    const burst = k-i-1; if (burst>=12 && who.size>=(st.isGroup?3:1) && (!bomb || burst>bomb.burst)) bomb = {i, burst, people: who.size, end:k}; }
+
+  /* ===== 14. the ghost: present, silent, reading everything ===== */
+  const ghost = st.isGroup && st.people.length>=5 ? st.people.filter(p=>p.count>=3 && p.share<.025).sort((a,b)=>a.count-b.count)[0] : null;
+  let ghostLast = -1; if (ghost){ let best=-1; msgs.forEach((m,i)=>{ if (m.who===ghost.name && isText(m) && !/https?:/.test(m.text)){ let sc = Math.min(200, m.text.length); for (const [re,w] of FEEL) if (re.test(m.text)) sc += w*25; if (sc>best){ best=sc; ghostLast=i; } } }); }
+
+  /* ===== 15. eras: the hottest months, and what they were about ===== */
+  let eras = [];
+  if (st.spanDays >= 120){
+    const mon = {}; msgs.forEach(m=>{ const k = ymd(new Date(m.t)).slice(0,7); (mon[k] ||= []).push(m); });
+    const keys = Object.keys(mon).sort(), avg = msgs.length/keys.length;
+    const glob = {}; for (const m of msgs) if (isText(m)) for (const w of (m.text.toLowerCase().match(/[\p{L}']+/gu)||[])) glob[w]=(glob[w]||0)+1;
+    const hot = keys.filter(k=>mon[k].length>=avg*1.6 && mon[k].length>=60).sort((a,b)=>mon[b].length-mon[a].length);
+    for (const k of hot){ if (eras.some(e=>Math.abs(new Date(e.k+'-15') - new Date(k+'-15')) < 75*864e5)) continue;
+      const loc = {}; for (const m of mon[k]) if (isText(m)) for (const w of new Set(m.text.toLowerCase().match(/[\p{L}']+/gu)||[])){ if (w.length<3 || STOP.has(w) || COMMON_HE.has(w) || /^ח+$/.test(w) || isNameish(w)) continue; loc[w]=(loc[w]||0)+1; }
+      const kw = Object.entries(loc).filter(([w,c])=>c>=4).map(([w,c])=>[w, c/(glob[w]||1)*Math.log(c+1)]).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+      if (kw.length) eras.push({k, n: mon[k].length, x: mon[k].length/avg, kw});
+      if (eras.length>=3) break; }
+    eras.sort((a,b)=>a.k.localeCompare(b.k));
+  }
+
   /* ======================= writing ======================= */
+  const used = (i) => (makeup && i>=makeup.from-2 && i<=makeup.ok+3) || (silenceBreak>=0 && i>=silenceBreak && i<=silenceBreak+4);
+  for (let k=topHearts.length-1;k>=0;k--) if (used(topHearts[k].i)) topHearts.splice(k,1);
+  if (topHearts.length<2) for (const h of hearts){ if (topHearts.length>=2) break; if (used(h.i) || topHearts.some(x=>Math.abs(msgs[x.i].t-msgs[h.i].t)<3*864e5)) continue; topHearts.push(h); }
+  topHearts.sort((a,b)=>b.s-a.s);
+  // every moment is told once, in its strongest place: a moment of truth beats the bomb, the bomb beats "the craziest day"
+  const dayOf = i => ymd(new Date(msgs[i].t));
+  const heartDays = new Set(topHearts.map(h=>dayOf(h.i)));
+  if (bomb && heartDays.has(dayOf(bomb.i))) bomb = null;
+  if (bigDay && (heartDays.has(bigDay.dk) || (bomb && dayOf(bomb.i)===bigDay.dk) || (makeup && dayOf(makeup.i)===bigDay.dk))) bigDay = null;
+  if (ghost && ghostLast>=0) for (let k=topHearts.length-1;k>=0;k--) if (topHearts[k].i===ghostLast) topHearts.splice(k,1);
   const S = { open:[], comedy:[], roast:[], heart:[], end:[] };
   const add = (act, sec) => S[act].push(sec);
 
@@ -1650,7 +1741,7 @@ function quickReport(msgs, st, reader, readerGender){
     const d = new Date(bigDay.dk+'T12:00').getTime();
     facts.push([bigDay.x/5, pick([`${n(bigDay.n)} הודעות ביום אחד. מה קרה ב-${heDate(d)}?`, `היום שבו ${chat} התפוצץ: ${n(bigDay.n)} הודעות`])]);
     add('roast', {icon:'💥', title: pick(['היום שבו הצ\'אט התפוצץ', `${heDate(d)}: יום שלא נשכח`, 'יום אחד, אינסוף הודעות']), blocks:[
-      {t:'num', value:n(bigDay.n), label:`הודעות ב-${WD[new Date(d).getDay()]}, ${heDate(d)}. פי ${n(bigDay.x)} מיום רגיל.`},
+      {t:'num', value:n(bigDay.n), label:`הודעות ביום ${WD[new Date(d).getDay()]}, ${heDate(d)}. פי ${n(bigDay.x)} מיום רגיל.`},
       {t:'p', text: bigDay.kw.length ? pick([`מה קרה שם? לפי המילים שחזרו הכי הרבה באותו יום: ${bigDay.kw.map(w=>B(w)).join(', ')}. תרכיבו לבד את הסיפור. הנה טעימה:`, `המילים של היום: ${bigDay.kw.map(w=>B(w)).join(', ')}. זה כל מה שצריך לדעת. וגם זה:`]) : 'הנה טעימה מאותו יום:'},
       ...(bigDay.snip.length ? [{t:'chat', msgs: bigDay.snip.map(msgOf), after: pick(['וזה רק דקה אחת מתוך יום שלם כזה.', 'דמיינו עוד מאות הודעות בדיוק כאלה.', ''])}] : [])
     ]});
@@ -1676,6 +1767,43 @@ function quickReport(msgs, st, reader, readerGender){
   }
   if (star && star[1]>=8){
     add('roast', {icon:'🌟', title:`מרכז העולם: ${star[0]}`, blocks:[{t:'p', text: pick([`השם של ${B(star[0])} הוזכר בהודעות של אחרים ${B(times(star[1]))}. לא משנה מה קורה פה, איכשהו זה תמיד מגיע ל${first(star[0])}.`, `${times(star[1])} מישהו פה כתב את השם ${B(first(star[0]))}. ${star[0]}, ${g(star[0],'אתה','את')} לא בצ'אט. ${g(star[0],'אתה','את')} הנושא.`])}]});
+  }
+
+  if (fanPairs.length){
+    const f0 = fanPairs[0];
+    add('comedy', {icon:'📣', title: pick(['המעריצים', `${g(f0.fan,'המעריץ','המעריצה')} מספר 1 של ${f0.of}`, 'מי צוחק ממי']), blocks:[
+      {t:'p', text: pick([`לכל קומיקאי יש קהל. אבל יש קהל, ויש ${g(f0.fan,'מעריץ','מעריצה')}. ${B(f0.fan)} ${g(f0.fan,'צחק','צחקה')} מהודעות של ${B(f0.of)} ${B(times(f0.c))}.${f0.share>=.4?` זה ${Math.round(f0.share*100)}% מכל הצחוקים של ${f0.fan} בצ'אט הזה. כל השאר פשוט פחות מצחיקים, כנראה.`:''}`, `בדקנו מי צוחק למי. התשובה הכי ברורה: ${B(f0.fan)} על ${B(f0.of)}, ${B(times(f0.c))}. אם ${f0.of} ${g(f0.of,'יפתח','תפתח')} מופע סטנדאפ, יש כבר כרטיס אחד שנמכר.`])},
+      ...(fanPairs.length>1 ? [{t:'list', ordered:false, items: fanPairs.slice(1).map(f=>`${B(f.fan)} ${g(f.fan,'צוחק','צוחקת')} מ${f.of}: ${times(f.c)}`)}] : [])
+    ]});
+  }
+  if (duos.length){
+    const d = duos[0];
+    add('roast', {icon:'👯', title: pick(['הזוגות הסודיים של הקבוצה', 'מי באמת מדבר עם מי', 'קבוצה בתוך קבוצה']), blocks:[
+      {t:'p', text: pick([`על הנייר זו קבוצה של ${n(st.people.length)} אנשים. בפועל? יש פה כמה שיחות פרטיות שמתנהלות בפומבי. ${B(d.a)} ו${B(d.b)} עונים אחד לשני ${B('פי '+(Math.round(d.lift*10)/10))} יותר ממה שהיה צפוי לפי כמה שכל אחד כותב. ${n(d.obs)} פעמים שאחד כתב והשני ענה מיד.`, `${B(d.a)} כותב/ת, ${B(d.b)} עונה. ${B(d.b)} כותב/ת, ${B(d.a)} עונה. ${n(d.obs)} פעמים. פי ${Math.round(d.lift*10)/10} מהצפוי. אולי כדאי לכם קבוצה משלכם.`.replace(`${B(d.a)} כותב/ת`, `${B(d.a)} ${g(d.a,'כותב','כותבת')}`).replace(`${B(d.b)} כותב/ת`, `${B(d.b)} ${g(d.b,'כותב','כותבת')}`).replace(`${B(d.b)} עונה. `, `${B(d.b)} ${g(d.b,'עונה','עונה')}. `)])},
+      ...(duos[1] ? [{t:'p', text:`ועוד צמד: ${B(duos[1].a)} ו${B(duos[1].b)}, פי ${Math.round(duos[1].lift*10)/10} מהצפוי.`}] : []),
+      ...(strangers ? [{t:'reveal', text: pick([`ומהצד השני: ${strangers.a} ו${strangers.b}. באותה קבוצה, אבל כמעט אף פעם לא עונים אחד לשני ישירות. לא אומרים כלום, רק מציינים.`, `${strangers.a} ו${strangers.b}: שכנים באותו צ'אט שכמעט לא מדברים ישירות. אולי זה הזמן?`])}] : [])
+    ]});
+  }
+  if (bomb){
+    const m = msgs[bomb.i], after = msgs.slice(bomb.i+1, Math.min(bomb.end, bomb.i+5));
+    facts.push([Math.min(2.6, bomb.burst/14), pick([`הודעה אחת, ${n(bomb.burst)} תגובות ברבע שעה: הדוח על ${chat}`, `${m.who} ${g(m.who,'כתב','כתבה')} משפט אחד. ${chat} לא נרגע.`])]);
+    add('roast', {icon:'💣', title: pick(['ההודעה שהציתה הכל', 'פצצה', `${m.who} ${g(m.who,'מדליק','מדליקה')} את הצ'אט`]), blocks:[
+      {t:'p', text: pick([`${heDate(m.t)}. הצ'אט שקט. ואז ${B(m.who)} ${g(m.who,'כותב','כותבת')} את זה:`, `יש הודעות שעוברות בשקט. ויש את ההודעה הזו של ${B(m.who)}, מ-${heDate(m.t)}:`])},
+      {t:'chat', msgs:[msgOf(m), ...after.map(msgOf)], after:`ברבע השעה הבאה: ${B(n(bomb.burst)+' הודעות')}${st.isGroup?` מ-${n(bomb.people)} אנשים`:''}. ${pick(['מכאן אין דרך חזרה.', 'משפט אחד. כאוס מלא.', 'זה מה שקורה כשזורקים גפרור לצ\'אט הזה.'])}`}
+    ]});
+  }
+  if (ghost){
+    add('roast', {icon:'👻', title: pick([`הרוח: ${ghost.name}`, 'מי פה בכלל?', ...(GEN[ghost.name] ? [`${ghost.name}, ${g(ghost.name,'אתה','את')} שם?`] : [])]), blocks:[
+      {t:'p', text: !GEN[ghost.name] ? `${n(st.total)} הודעות נכתבו בקבוצה הזו. ${B(n(ghost.count))} מהן של ${B(ghost.name)}. אבל אל תטעו: כל הודעה פה נקראת. גם ההודעה הזו. ככה זה עם רוחות: הן לא מדברות, הן מקשיבות. ופעם בכמה זמן, הן אומרות משהו:` : pick([`${B(ghost.name)} ${g(ghost.name,'נמצא','נמצאת')} בקבוצה הזו. ${g(ghost.name,'כתב','כתבה')} בה ${B(times(ghost.count))} בכל ההיסטוריה. אבל אל תטעו: ${g(ghost.name,'הוא','היא')} ${g(ghost.name,'קורא','קוראת')} הכל. תמיד. ${g(ghost.name,'הוא','היא')} פשוט ${g(ghost.name,'בוחר','בוחרת')} את הרגעים ${g(ghost.name,'שלו','שלה')}.`, `${n(st.total)} הודעות בקבוצה. ${n(ghost.count)} מהן של ${B(ghost.name)}. ${g(ghost.name,'הוא','היא')} כמו מצלמת אבטחה: לא מדבר${g(ghost.name,'','ת')}, רואה הכל.`])},
+      ...(ghostLast>=0 ? [{t:'chat', msgs:[msgOf(msgs[ghostLast])], after: msgs[ghostLast].text.length>=60 ? pick(['כשהרוח מדברת, כדאי להקשיב.', 'פעם בהמון זמן. ובדיוק בשביל זה זה שווה.']) : pick(['נדיר. כמעט כמו ליקוי חמה.', 'שמרו את זה. מי יודע מתי תהיה הבאה.'])}] : [])
+    ]});
+  }
+  if (eras.length>=2){
+    add('heart', {icon:'🗓️', title: pick(['העידנים', 'תקופות בחיים של הצ\'אט', 'פרקים']), blocks:[
+      {t:'p', text: pick(['כל צ\'אט ארוך עובר תקופות. מצאנו את החודשים הכי סוערים, ובמה הם עסקו (לפי המילים שפתאום הופיעו בהם):', 'יש חודשים שבהם הצ\'אט פשוט רתח. הנה הם, ומה בער בכל אחד:'])},
+      {t:'list', ordered:true, items: eras.map(e=>`${B(heMY(new Date(e.k+'-15').getTime()))}: ${n(e.n)} הודעות (פי ${Math.round(e.x*10)/10} מחודש רגיל). עידן ה${e.kw.map(w=>q(w)).join(', ה')}.`)},
+      {t:'reveal', text: pick(['כל אחד מהעידנים האלה הוא סיפור שלם. אתם כבר יודעים איזה.', 'מי שהיה שם, זוכר. מי שלא, שישאל.'])}
+    ]});
   }
 
   // --- act 4: the heart
@@ -1719,15 +1847,11 @@ function quickReport(msgs, st, reader, readerGender){
       ]});
     }
   }
-  const used = (i) => (makeup && i>=makeup.from-2 && i<=makeup.ok+3) || (silenceBreak>=0 && i>=silenceBreak && i<=silenceBreak+4);
-  for (let k=topHearts.length-1;k>=0;k--) if (used(topHearts[k].i)) topHearts.splice(k,1);
-  if (topHearts.length<2) for (const h of hearts){ if (topHearts.length>=2) break; if (used(h.i) || topHearts.some(x=>Math.abs(msgs[x.i].t-msgs[h.i].t)<3*864e5)) continue; topHearts.push(h); }
-  topHearts.sort((a,b)=>b.s-a.s);
   topHearts.forEach((h,k)=>{
     const m = msgs[h.i]; const replies = h.replies.slice(0,3).map(j=>msgs[j]);
     if (k===0) facts.push([1.2, pick([`"${m.text.slice(0,40).trim()}...": הדוח על ${chat}`, `${heDate(m.t)}: הרגע שבו ${m.who} ${g(m.who,'אמר','אמרה')} את זה`])]);
     add('heart', {icon: k===0?'🤍':'🕯️', title: k===0 ? pick(['רגע של אמת', 'ההודעה שצריך לקרוא פעמיים', 'מתחת לכל הצחוקים']) : pick(['ועוד רגע אחד', 'גם זה נשמר']), blocks:[
-      {t:'p', text: k===0 ? pick([`בין כל ה"קנית חלב?" וה"חחחח", מסתתרים רגעים כאלה. ${heDate(m.t)}, ${B(m.who)}:`, `עכשיו אפשר להפסיק לצחוק לרגע. ${heDate(m.t)}. ${B(m.who)} ${g(m.who,'כותב','כותבת')}:`, `יש הודעות שכותבים בשנייה, ויש הודעות שכותבים עם הלב בגרון. ב-${heDate(m.t)}, ${B(m.who)} ${g(m.who,'כתב','כתבה')} אחת כזו:`]) : `${heDate(m.t)}. ${B(m.who)}:`},
+      {t:'p', text: k===0 ? pick([`בין כל "${daily}" וה"חחחח", מסתתרים רגעים כאלה. ${heDate(m.t)}, ${B(m.who)}:`, `עכשיו אפשר להפסיק לצחוק לרגע. ${heDate(m.t)}. ${B(m.who)} ${g(m.who,'כותב','כותבת')}:`, `יש הודעות שכותבים בשנייה, ויש הודעות שכותבים עם הלב בגרון. ב-${heDate(m.t)}, ${B(m.who)} ${g(m.who,'כתב','כתבה')} אחת כזו:`]) : `${heDate(m.t)}. ${B(m.who)}:`},
       {t:'chat', msgs:[msgOf(m), ...replies.map(msgOf)], after: replies.length ? pick(['ככה נראית תשובה שמגיעה מהבטן.', 'אין מה להוסיף. רק לקרוא שוב.', '']) : ''},
       ...(k===0 ? [{t:'reveal', text: pick(['את זה לא שולחים לכל אחד. זה נשלח לכאן.', 'בשביל רגעים כאלה שווה לשמור את כל השאר.', 'זו הסיבה שהצ\'אט הזה שווה יותר מכל התמונות בטלפון.'])}] : [])
     ]});
@@ -1754,12 +1878,31 @@ function quickReport(msgs, st, reader, readerGender){
   }
 
   // --- the numbers, as a short interlude
-  const numBlocks = [{t:'num', value:n(st.total), label: st.totalWords < 2500 ? `הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים. זו רק ההתחלה.` : pick([`הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים, כלומר ${n(Math.max(1,st.totalWords/220/60))} שעות קריאה רצופות.`, `הודעות. אם הייתם מדפיסים את כל זה, זה היה ספר של ${n(st.totalWords/250)} עמודים.`])}];
+  const numBlocks = [{t:'num', value:n(st.total), label: st.totalWords < 2500 ? `הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים. זו רק ההתחלה.` : pick([`הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים, כלומר ${(h=>h<1.4?'שעה':h<2.5?'שעתיים':n(h)+' שעות')(st.totalWords/220/60)} של קריאה רצופה.`, `הודעות. אם הייתם מדפיסים את כל זה, זה היה ספר של ${n(st.totalWords/250)} עמודים.`])}];
   if (st.runRec.n>=10) numBlocks.push({t:'num', value:n(st.runRec.n), label:`הודעות ברצף של ${st.runRec.who}, ב-${heDate(st.runRec.t)}, בלי שאף אחד ענה באמצע. מונולוג.`});
   if (st.deleted>=5) numBlocks.push({t:'num', value:n(st.deleted), label:'הודעות שנמחקו. מה היה כתוב שם? רק השולח יודע. והוא לא מספר.'});
   if (sorryTop) numBlocks.push({t:'num', value:n(sorryTop.sorry), label:`פעמים ש${sorryTop.name} ${g(sorryTop.name,'התנצל','התנצלה')}. ${sorryTop.sorry>=15 ? 'על מה, בדיוק?' : 'מנומס/ת.'.replace('מנומס/ת', g(sorryTop.name,'מנומס','מנומסת'))}`});
   numBlocks.push({t:'num', value:pad(st.peakHour)+':00', label:`השעה הכי עמוסה בצ'אט. היום הכי רועש בשבוע: ${WD[st.peakWd]}.`});
   if (gmTop?.[1]>=5 || gnTop?.[1]>=5){ const bits=[]; if (gmTop?.[1]>=5) bits.push(`${gmTop[0]} ${g(gmTop[0],'פותח','פותחת')} את היום (${times(gmTop[1])} "בוקר טוב")`); if (gnTop?.[1]>=5) bits.push(`${gnTop[0]} ${g(gnTop[0],'סוגר','סוגרת')} אותו (${times(gnTop[1])} "לילה טוב")`); numBlocks.push({t:'p', text: bits.join(', ו') + '. אף אחד לא סיכם על חלוקת התפקידים הזו, וכולם מקיימים אותה.'}); }
+
+  // --- the reader's own chapter
+  if (reader && inP.has(reader)){
+    const me = P.find(p=>p.name===reader), bits = [];
+    const myFan = Object.entries(fan).map(([l,o])=>[l, o[reader]||0]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1])[0];
+    if (myFan) bits.push(`${B(myFan[0])}, ${g(myFan[0],'המעריץ','המעריצה')} ${g(reader,'שלך','שלך')}: ${g(myFan[0],'צחק','צחקה')} מהבדיחות שלך ${B(times(myFan[1]))}.${st.isGroup?' יותר מכל אחד אחר בקבוצה.':''}`);
+    const iLaugh = fan[reader] ? Object.entries(fan[reader]).sort((a,b)=>b[1]-a[1])[0] : null;
+    if (iLaugh && iLaugh[1]>=3) bits.push(`ומי מצחיק ${g(reader,'אותך','אותך')} הכי הרבה? ${B(iLaugh[0])}, ${times(iLaugh[1])}.`);
+    const fastTo = Object.entries(pair).filter(([k,v])=>k.startsWith(reader+'→') && v.length>=10).map(([k,v])=>[k.split('→')[1], med(v)]).sort((a,b)=>a[1]-b[1]);
+    if (fastTo.length>=2) bits.push(`למי ${g(reader,'אתה עונה','את עונה')} הכי מהר? ל${B(fastTo[0][0])}, תוך ${dur(fastTo[0][1])}. ול${fastTo[fastTo.length-1][0]}? ${dur(fastTo[fastTo.length-1][1])}. לא שופטים. רק מודדים.`);
+    else if (fastTo.length===1) bits.push(`${g(reader,'אתה עונה','את עונה')} ל${fastTo[0][0]} בדרך כלל תוך ${B(dur(fastTo[0][1]))}.`);
+    if (catch_[reader]?.[0]) bits.push(`המשפט ${g(reader,'שלך','שלך')}: ${q(catch_[reader][0].key)}, ${times(catch_[reader][0].c)}. ${g(reader,'אתה','את')} ${g(reader,'יודע','יודעת')}, נכון?`);
+    const myBest = moments.find(mo=>msgs[mo.i].who===reader);
+    if (bits.length>=2 || myBest){
+      const blocks = bits.map(t=>({t:'p', text:t}));
+      if (myBest){ blocks.push({t:'p', text: pick([`וההודעה הכי מצחיקה ${g(reader,'שכתבת','שכתבת')} אי פעם, לפי התגובות:`, `ולסיום החלק ${g(reader,'שלך','שלך')}, ההודעה ${g(reader,'שלך','שלך')} שהכי הצחיקה פה:`])}); blocks.push({t:'chat', msgs: msgs.slice(myBest.i, myBest.last+1).map(msgOf), after:''}); }
+      add('heart', {icon:'🪞', title: pick([`${reader}, זה החלק ${g(reader,'שלך','שלך')}`, `ועכשיו: ${reader}`, `מה הצ'אט יודע על ${reader}`]), blocks, mine:true});
+    }
+  }
 
   // --- predictions, from what we found
   const fut = [];
@@ -1769,7 +1912,7 @@ function quickReport(msgs, st, reader, readerGender){
   if (comedian) fut.push(`**${comedian[0]}** ${g(comedian[0],'יגרום','תגרום')} למישהו לצחוק בקול במקום ציבורי. שוב.`);
   if (owl) fut.push(`**${owl.name}** ${g(owl.name,'ישלח','תשלח')} עוד הודעה אחרי חצות. כנראה הלילה.`);
   if (two && P.length===2) fut.push(pick([`מישהו פה יקרא את הדוח הזה ויגיד "זה לא נכון". זה נכון.`, `אחד מכם ישלח את הדוח הזה לשני עם "חחח תראה/י". זה בדיוק מה שאנחנו מקווים.`]));
-  else fut.push(pick(['מישהו פה יגיד שהדוח לא מדויק. הדוח מדויק.', `הדוח הזה יישלח ל${chat} תוך דקה. ואז יתחיל ויכוח.`]));
+  else fut.push(pick(['מישהו פה יגיד שהדוח לא מדויק. הדוח מדויק.', `הדוח הזה יישלח ${chatL} תוך דקה. ואז יתחיל ויכוח.`]));
 
   // --- the finale: everything in one paragraph that lands
   const laughsTotal = Object.values(caused).reduce((a,b)=>a+b,0), loveTotal = Object.values(loveBy).reduce((a,b)=>a+b,0);
@@ -1781,7 +1924,7 @@ function quickReport(msgs, st, reader, readerGender){
   const hey = reader ? `${reader}, ` : '';
   const closing = fin.join(' ') + ' ' + pick([
     `${hey}זה לא צ'אט. זה תיעוד של משהו שקורה בין אנשים כשאף אחד לא מסתכל. ועכשיו מישהו הסתכל, והוא רוצה להגיד: שמרו על זה.`,
-    `${hey}מבחוץ זה נראה כמו "קנית חלב?" ו"חחחח". מבפנים זה אחד הדברים הכי חשובים שיש לכם. שמרו עליו.`,
+    `${hey}מבחוץ זה נראה כמו "${daily}" ו"חחחח". מבפנים זה אחד הדברים הכי חשובים שיש לכם. שמרו עליו.`,
     `${hey}בעוד כמה שנים תגללו את זה למעלה ותתגעגעו בדיוק לימים האלה. אז אולי, רק הפעם, תגידו את זה עכשיו.`]);
 
   /* ======================= assemble, with a shape: smile, laugh, wince, feel, and leave with a lump in the throat ======================= */
@@ -1792,7 +1935,7 @@ function quickReport(msgs, st, reader, readerGender){
     ...(castBlocks.length ? [{icon:'🎭', title: pick(['מצעד הדמויות', 'מי זה מי', 'הקאסט']), blocks:castBlocks}] : []),
     ...shuffle(S.roast),
     {icon:'📊', title: pick(['במספרים', 'הנתונים היבשים (שהם לא יבשים בכלל)', 'רגע של סטטיסטיקה']), blocks:numBlocks},
-    ...S.heart.filter(s=>s.icon!=='🤍' && s.icon!=='🕯️'), ...S.heart.filter(s=>s.icon==='🕯️'), ...S.heart.filter(s=>s.icon==='🤍'),
+    ...S.heart.filter(s=>s.icon==='🗓️'), ...S.heart.filter(s=>!['🤍','🕯️','🗓️','🪞'].includes(s.icon)), ...S.heart.filter(s=>s.icon==='🕯️'), ...S.heart.filter(s=>s.icon==='🤍'), ...S.heart.filter(s=>s.icon==='🪞').map(({mine,...x})=>x),
     {icon:'🔮', title: pick(['תחזית (מבוססת נתונים, בערך)', 'מה הלאה', 'נבואות']), blocks:[{t:'list', ordered:false, items:fut.slice(0,5)}]},
   ].filter(Boolean);
 
@@ -1821,7 +1964,7 @@ function quickReport(msgs, st, reader, readerGender){
     dek: pick([`${hey}קראנו את כל ${n(st.total)} ההודעות. כל ציטוט פה אמיתי. כל מספר נספר.`, `${hey}${n(st.total)} הודעות, ${n(st.spanDays)} ימים, ואמת אחת: אתם לא מבינים כמה אתם מצחיקים. ומרגשים.`, `${hey}מה שקרה ב${chat}, כבר לא נשאר ב${chat}.`]),
     intro:[ intro ],
     sections, cast: P.map(p=>({name:p.name, title:p.name, para:''})), characters:[],
-    awards: st.localAwards.slice(0,6), scores,
+    awards: st.localAwards.filter(a=>!(a.title==='פרס הצב' && !(P.find(p=>p.name===a.winner)?.medianReply >= 12*60e3))).slice(0,6).map(a=>({...a, why: a.why.replace('פתח/ה', g(a.winner,'פתח','פתחה')).replace('התנצל/ה', g(a.winner,'התנצל','התנצלה'))})), scores,
     prediction: closing, signoff: pick(['שלכם, רכילותא. (הדוח נבנה בדפדפן שלכם. אף הודעה לא יצאה מהמכשיר.)', 'רכילותא. קראנו הכל, לא סיפרנו לאף אחד. (הכל נבנה במכשיר שלכם.)']),
     quick: true,
   };
@@ -2275,7 +2418,7 @@ function renderReport(){
     if (rep.characters.length) h += `<section class="sect"><div class="sect-h"><span class="ic">🎭</span><h2>הדמויות</h2></div><div class="chars">${rep.characters.map(charHTML).join('')}</div></section>`;
     const aw = rep.awards.length ? rep.awards : st.localAwards.slice(0,6);
     h += `<section class="sect"><div class="sect-h"><span class="ic">🏆</span><h2>טקס הפרסים</h2></div><div class="awards">${aw.map(a=>`<div class="award"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div>
-      ${rep.awards.length && st.localAwards.length?`<div class="label">ופרסים שחושבו מהנתונים</div><div class="awards">${st.localAwards.slice(0,6).map(a=>`<div class="award data"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div>`:''}</section>`;
+      ${rep.awards.length && st.localAwards.length && !rep.quick?`<div class="label">ופרסים שחושבו מהנתונים</div><div class="awards">${st.localAwards.slice(0,6).map(a=>`<div class="award data"><span class="t">${esc(a.title)}</span><span class="w">${esc(a.winner)}</span><span class="y">${esc(a.why)}</span></div>`).join('')}</div>`:''}</section>`;
     if (rep.scores || rep.prediction) h += `<section class="sect"><div class="sect-h"><span class="ic">${rep.scores?'📊':'🔮'}</span><h2>${rep.scores?'המדדים הרשמיים':'לסיום'}</h2></div><div class="scores">${Object.entries(rep.scores||{}).map(([k,v])=>`<div class="score"><span>${SCORE_LABELS[k]}</span><div class="bar"><i style="width:${v}%"></i></div><b class="num">${v}</b></div>`).join('')}</div>
       ${rep.prediction?`<div class="predict"><b>${rep.quick?'ולסיום':'התחזית'}</b><p>${rich(rep.prediction)}</p>${rep.signoff?`<p class="so">${persona.av} ${rich(rep.signoff)}</p>`:''}</div>`:''}</section>`;
     if (rep.quick && rep.signoff && !rep.prediction) h += `<p class="privacy" style="text-align:center">${rich(rep.signoff)}</p>`;

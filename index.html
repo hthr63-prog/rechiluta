@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://hthr63-prog.github.io/rechiluta/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#22163F">
+<script src="config.js"></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -929,14 +930,14 @@ Reply with ONLY one JSON object:
 {"teaser":"one funny line (max 14 words) about this period, for a loading screen",
 "summary":"3-5 sentences: what happened in this period and how the dynamic looked",
 "events":[{"date":"dd/mm/yy","what":"specific event","ids":[123]}],
-"moments":[{"kind":"funny|sweet|fight|cringe|weird|telling","lol":1,"note":"what happens and why it's revealing or funny, plus the comic angle (the absurd detail, the gap, the irony)","ids":[120,121,122]}],
+"moments":[{"kind":"funny|touching|growth|sweet|fight|cringe|weird|telling","lol":1,"note":"what happens and why it's revealing or funny, plus the comic angle (the absurd detail, the gap, the irony)","ids":[120,121,122]}],
 "people":[{"name":"exact participant name","notes":"habits, catchphrases, role in this period, recurring behaviour (e.g. always proposes plans then cancels)","ids":[130]}],
 "glossary":[{"term":"private word, nickname or phrase this chat uses","meaning":"what it means here","ids":[140]}],
 "patterns":["behavioural pattern + who, with an example"],
 "jokes":["running jokes, nicknames, private words"],
 "facts":["specific facts: places, sums, names, dates, products"],
 "serious":"if this period contains something genuinely hard (war, reserve duty, injury, illness, loss, a breakup), describe it briefly and respectfully; otherwise empty string"}
-Hunt for comedy gold above all: absurd details, ironic gaps between what people say and do, exact times and sums, plans that collapse, dramatic overreactions, misunderstandings, typos that became legends. "lol" rates how funny a moment is (1-5); include at least 4 moments rated 4-5 if they exist. 3-8 events, 6-12 moments (each with 1-6 ids of consecutive messages that show it best), one "people" entry for every participant who is active in this part, up to 6 of each other list.
+Hunt for TWO kinds of gold. Comedy: absurd details, ironic gaps, exact times and sums, collapsing plans, overreactions, misunderstandings, legendary typos. And heart: the small daily care ("הגעת הביתה?", "תאכל משהו"), showing up in hard moments, late-night honesty, apologies, inside rituals, a sentence that says "I love you" without saying it, and how the people and the relationship changed over time (who they were then vs. now). Mark those moments with kind "touching" or "growth". Comedy: absurd details, ironic gaps between what people say and do, exact times and sums, plans that collapse, dramatic overreactions, misunderstandings, typos that became legends. "lol" rates how funny a moment is (1-5); include at least 4 moments rated 4-5 if they exist. 3-8 events, 6-12 moments (each with 1-6 ids of consecutive messages that show it best), one "people" entry for every participant who is active in this part, up to 6 of each other list.
 
 === CHAT PART ${k+1}/${n} ===
 ${ch.text}`;
@@ -960,7 +961,14 @@ const SHARED_STYLE = (st, persona) => `STYLE (this is what matters most):
 - If the notes show a genuinely hard period (war, reserve duty, injury, illness, loss), it is never joked about. Wherever it comes up, the tone turns sincere and warm.
 - Evidence: embed real messages using "chat" blocks with ids from the MARKED MESSAGES list only (1-6 ids per block; a single short message on its own works great as a punchline). Never invent ids.
 
-THE GOAL IS LAUGH-OUT-LOUD. The reader must laugh out loud at least once per section and want to screenshot lines to the group. Comedy toolkit, use all of it:
+THE GOAL: the best fifteen minutes of their day. A piece they cannot stop reading, that takes them through the whole emotional palette: they laugh out loud, they feel seen, they feel nostalgic, they get a lump in their throat, they laugh again, and they finish moved, wanting to send it to everyone. Emotional craft:
+- Open with a hook in the very first lines (a precise, funny or startling fact) that makes stopping impossible.
+- Alternate: big laughs, then a quiet true moment, then a laugh that releases the tension. Never two sections in the same emotional key in a row.
+- Nostalgia: show who they were at the start vs. who they are now, with real early messages. Time passing is emotional.
+- Heart: find the moments they showed up for each other (care, support, the 3am talk, the "הגעת?") and let them land without jokes. Short sentences. Let the quote do the work. This is where readers tear up.
+- End sections on a turn or a cliffhanger so they keep scrolling.
+- Everything still rests on real messages and real facts. Emotion that isn't earned by evidence is cheap; never invent feelings.
+ALSO LAUGH-OUT-LOUD. The reader must laugh out loud at least once per section and want to screenshot lines to the group. Comedy toolkit, use all of it:
 - Precision IS the joke: the exact time (03:12), the exact sum (134 ₪ לאדם), the exact wording, the exact gap between two messages ("שעה וארבעים דקות בין שתי ההודעות").
 - Deadpan after absurdity: quote something ridiculous, then one dry, short line. Never explain the joke.
 - Mock-serious framing: treat trivial chat drama as history, a military operation, a scientific study, a State Comptroller report, a court ruling, a nature documentary, a weather forecast.
@@ -991,6 +999,7 @@ Rewrite the Hebrew text fields to be much funnier, sharper and tighter:
 - Use: deadpan, precision, mock-serious framing (history, military operation, court ruling, scientific study), rule of three with a swerve, Israeli references everyone gets, absurd comparisons.
 - Keep the narrator's voice and the affection. Never cruel about looks, body, health, religion or anything sensitive.
 - Any sincere passage about a genuinely hard period (war, reserve duty, injury, illness, loss) stays sincere: leave it as is.
+- Touching passages and the closing letter stay touching: sharpen them by cutting words, not by adding jokes. The goal is laughs AND a lump in the throat.
 - Keep a similar length (it may get slightly shorter). Natural Israeli Hebrew.
 - Blocks with "t":"aside" are cameo lines by panel members (savta = loving nosy grandmother, shrink = over-serious therapist, sports = over-excited sports commentator, roast = merciless stand-up): keep "who" unchanged and make each line funnier in that character's voice.
 
@@ -1054,7 +1063,7 @@ Reply with ONLY one JSON object:
 
 STRUCTURE: 5-7 sections in a story arc, chronological where it makes sense. Ideas (adapt to THIS chat; rename freely, skip what doesn't fit): ${st.isGroup
   ? 'the world the group lives in (the place, the setting, its absurd geography or logistics); the eternal plans that never happen and the rituals that always do; food, money and who owes whom; the alliances, feuds and the person everyone teases; the funniest moments; if there was a genuinely hard period (war, reserve duty, injury), a sincere "moment of truth" section that shows how the group showed up for each other, with no jokes at all; the numbers that tell the story'
-  : 'how it started and the first impressions; the roles you think you play vs. what is really happening; the biggest weakness of each of you; the biggest fight and what it was really about; the funniest moments; if there was a genuinely hard period, a sincere "moment of truth" section with no jokes; the numbers that tell the story'}. Each section: 2-5 paragraphs plus 1-3 chat blocks, and a reveal where it lands. Total about 1,400-1,900 words. 4-6 awards. Scores are integers 0-100.${persona.plural?ASIDE_RULE:''}
+  : 'how it started and the first impressions; the roles you think you play vs. what is really happening; the biggest weakness of each of you; the biggest fight and what it was really about; the funniest moments; if there was a genuinely hard period, a sincere "moment of truth" section with no jokes; the numbers that tell the story'}. Arrange the sections as an emotional journey (hook → laughs → nostalgia → tension → heart → release → finale), and make the LAST section a short, intimate closing letter to them ("מכתב" in the title), in your voice: it ties together the callbacks from the whole report, names what this chat really is for them, and ends on one line they will screenshot. Each section: 2-5 paragraphs plus 1-3 chat blocks, and a reveal where it lands. Total about 1,600-2,200 words. 4-6 awards. Scores are integers 0-100.${persona.plural?ASIDE_RULE:''}
 
 === STATISTICS (accurate; trust these over your own counting) ===
 ${statsBrief(st)}
@@ -1602,8 +1611,10 @@ function quickReport(msgs, st, reader){
 /* ================= accounts (public site only): username + password, no email.
    Reports are stored in Firebase, encrypted in the browser with a key derived from the password,
    so nobody (including whoever runs the Firebase project) can read them. ================= */
-const FB = {kay:'', project:'trip-split-91938'};
-const ACCOUNTS = HOSTED;
+// Public web configuration comes from config.js (loaded before this script on the public site).
+// Nothing secret may ever live in this file or in config.js: everything shipped to a browser is public.
+const FB = (window.RK_CONFIG && window.RK_CONFIG.firebase) || {key:'', project:''};
+const ACCOUNTS = HOSTED && !!FB.key && !!FB.project;
 let AUTH = null;
 const AUTH_ERR = {
   EMAIL_EXISTS:'שם המשתמש הזה כבר תפוס. נסו שם אחר.',

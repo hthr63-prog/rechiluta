@@ -1,0 +1,8 @@
+# סריקת סודות אוטומטית בכל שמירה (GitHub Actions + gitleaks).
+# config.js מוחרג בכוונה: הוא מכיל רק הגדרות ציבוריות (מפתח Firebase מוגבל), כפי שמוסבר בתוכו.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public web config (restricted Firebase key)"
+paths = ['''^config\.js$''']

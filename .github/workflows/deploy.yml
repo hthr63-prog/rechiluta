@@ -1,0 +1,45 @@
+name: פרסום האתר
+# מפרסם את האתר ל-GitHub Pages, ומכניס את מפתח Firebase מתוך הכספת של המאגר (Settings → Secrets → FIREBASE_API_KEY).
+# כך המפתח לא נמצא בקוד ולא בהיסטוריה, אבל האתר שמתפרסם מקבל אותו.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: הכנסת המפתח מהכספת
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        run: |
+          if [ -z "$FIREBASE_API_KEY" ]; then echo "::error::חסר הסוד FIREBASE_API_KEY בהגדרות המאגר (Settings → Secrets and variables → Actions)"; exit 1; fi
+          python3 - <<'PY'
+          import os, re
+          s = open('config.js', encoding='utf-8').read()
+          s, n = re.subn(r'''((?:apiKey|key)\s*:\s*)(['"])[^'"]*\2''', lambda m: m.group(1) + m.group(2) + os.environ['FIREBASE_API_KEY'] + m.group(2), s, count=1)
+          assert n == 1, 'key line not found in config.js'
+          open('config.js', 'w', encoding='utf-8').write(s)
+          PY
+      - name: הכנת קבצי האתר
+        run: |
+          mkdir _site
+          for f in $(ls -A); do case "$f" in .git|.github|_site|.gitleaks.toml|SECURITY.md) ;; *) cp -r "$f" _site/ ;; esac; done
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

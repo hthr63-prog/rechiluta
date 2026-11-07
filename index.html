@@ -2,6 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-8BEeyMhXxK0aX5YoEg1kiYo98PQWJqqkU6RUePROq+4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
 <meta property="og:title" content="רכילותא · מישהו קרא את כל הצ'אט שלכם">
@@ -20,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Karantina:wght@700&family=Rubik:wght@400;500;700;800&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="jszip.min.js"></script>
 <style id="rk-css">
 /* Layout: a magazine long-read column (max 700px) with WhatsApp evidence blocks; a full-screen tap-through story overlay for the reveal. */
 :root{
@@ -1619,7 +1621,7 @@ let AUTH = null;
 const AUTH_ERR = {
   EMAIL_EXISTS:'שם המשתמש הזה כבר תפוס. נסו שם אחר.',
   INVALID_LOGIN_CREDENTIALS:'שם משתמש או סיסמה לא נכונים.', INVALID_PASSWORD:'שם משתמש או סיסמה לא נכונים.', EMAIL_NOT_FOUND:'שם משתמש או סיסמה לא נכונים.',
-  WEAK_PASSWORD:'הסיסמה קצרה מדי. צריך לפחות 6 תווים.',
+  WEAK_PASSWORD:'הסיסמה קצרה מדי. צריך לפחות 8 תווים.',
   OPERATION_NOT_ALLOWED:'ההתחברות עוד לא הופעלה באתר. נסו שוב מאוחר יותר.', CONFIGURATION_NOT_FOUND:'ההתחברות עוד לא הופעלה באתר. נסו שוב מאוחר יותר.',
   TOO_MANY_ATTEMPTS_TRY_LATER:'יותר מדי ניסיונות. חכו כמה דקות.', PERMISSION_DENIED:'השמירה בענן עוד לא הופעלה באתר.',
 };
@@ -1695,8 +1697,8 @@ function authSheet(mode='in', then=null){
     <div class="tabs"><button type="button" class="${mode==='in'?'on':''}" data-act="authIn">יש לי משתמש</button><button type="button" class="${mode==='up'?'on':''}" data-act="authUp">משתמש חדש</button></div>
     <form id="authForm" data-mode="${mode}" autocomplete="on">
       <label class="fld"><span>שם משתמש</span><input id="auU" name="username" autocomplete="username" required minlength="2" maxlength="24" placeholder="למשל: yair" dir="auto"></label>
-      <label class="fld"><span>סיסמה</span><input id="auP" name="password" type="password" autocomplete="${mode==='up'?'new-password':'current-password'}" required minlength="6" placeholder="לפחות 6 תווים"></label>
-      ${mode==='up'?'<label class="fld"><span>שוב את הסיסמה</span><input id="auP2" type="password" autocomplete="new-password" required minlength="6"></label>':''}
+      <label class="fld"><span>סיסמה</span><input id="auP" name="password" type="password" autocomplete="${mode==='up'?'new-password':'current-password'}" required ${mode==='up'?'minlength="8"':''} placeholder="${mode==='up'?'לפחות 8 תווים':'הסיסמה שלך'}"></label>
+      ${mode==='up'?'<label class="fld"><span>שוב את הסיסמה</span><input id="auP2" type="password" autocomplete="new-password" required minlength="8"></label>':''}
       <p class="fine" id="auErr" role="alert"></p>
       <button class="btn big" type="submit" id="auGo">${mode==='up'?'יצירת משתמש':'כניסה'}</button>
     </form>
@@ -1707,6 +1709,8 @@ function authSheet(mode='in', then=null){
 async function submitAuth(form){
   const mode = form.dataset.mode, u = $('#auU').value.trim(), p = $('#auP').value, err = $('#auErr'), btn = $('#auGo');
   if (mode==='up' && p !== $('#auP2').value){ err.textContent = 'הסיסמאות לא זהות.'; return; }
+  if (mode==='up' && p.length < 8){ err.textContent = 'הסיסמה קצרה מדי. צריך לפחות 8 תווים.'; return; }
+  if (mode==='up' && (/^(.)\1+$/.test(p) || /^(12345678|123456789|1234567890|password|qwertyui|11111111|00000000|abcdefgh)/i.test(p) || p.toLowerCase().includes(u.toLowerCase()))){ err.textContent = 'הסיסמה קלה מדי לניחוש. נסו משהו פחות צפוי.'; return; }
   btnBusy(btn, true, mode==='up'?'יוצרים...':'נכנסים...'); err.textContent = '';
   try {
     if (mode==='up') await signUp(u, p); else await signIn(u, p);
@@ -1983,7 +1987,29 @@ function normalizeReport(a, B){
   };
 }
 function packReport(){ return {v:2, created:Date.now(), persona:VIEW.persona, reader:VIEW.reader, gender:VIEW.gender, st:ST, rep:REP}; }
-function loadPack(p, saved){ ST=p.st; REP=p.rep; VIEW={persona:p.persona||'neighbor', reader:p.reader||'', gender:p.gender||'', demo:false, saved:saved||null}; MSGS=null; NOTES=null; }
+/* security: a report pack can arrive from anyone (a shared link), so before rendering, every string is defanged:
+   HTML-special characters become look-alike letters, numbers must be real numbers, and prototype keys are dropped.
+   Even if some template forgot to escape a field, nothing in a pack can become markup or code. */
+const DEFANG = {'<':'‹','>':'›','"':'״',"'":'׳','&':'＆','`':'ˋ'};
+function defang(v, d=0){
+  if (d > 14) return null;
+  if (typeof v === 'string') return v.slice(0, 20000).replace(/[<>"'&`]/g, c => DEFANG[c]);
+  if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
+  if (typeof v === 'boolean' || v == null) return v;
+  if (Array.isArray(v)) return v.slice(0, 6000).map(x => defang(x, d+1));
+  if (typeof v === 'object'){ const o = {}; for (const [k,x] of Object.entries(v)){ if (k==='__proto__' || k==='constructor' || k==='prototype') continue; o[defang(k)] = defang(x, d+1); } return o; }
+  return null;
+}
+function safePack(p){
+  p = defang(p && typeof p === 'object' ? p : {}) || {};
+  if (p.rep && typeof p.rep === 'object'){
+    const sc = p.rep.scores; const cl = v => Math.max(0, Math.min(100, Math.round(+v || 0)));
+    if (sc && typeof sc === 'object') p.rep.scores = {drama:cl(sc.drama), love:cl(sc.love), chaos:cl(sc.chaos), cringe:cl(sc.cringe)};
+  }
+  if (!Object.hasOwn(PERSONAS, p.persona)) p.persona = 'neighbor';
+  return p;
+}
+function loadPack(p, saved){ p = safePack(p); ST=p.st; REP=p.rep; VIEW={persona:p.persona||'neighbor', reader:p.reader||'', gender:p.gender||'', demo:false, saved:saved||null}; MSGS=null; NOTES=null; }
 
 /* ================= render ================= */
 const SCORE_LABELS = {drama:'דרמה', love:'אהבה', chaos:'כאוס', cringe:'קרינג\''};
@@ -2009,7 +2035,7 @@ function blockHTML(b){
   if (b.t==='num') return `<div class="bignum"><b class="num">${esc(b.value)}</b><span>${rich(b.label)}</span></div>`;
   if (b.t==='chat') return waBlock(b.msgs) + (b.after?`<p class="after">${rich(b.after)}</p>`:'');
   if (b.t==='h') return `<h3 class="sub">${rich(b.text)}</h3>`;
-  if (b.t==='aside'){ const p = PERSONAS[b.who]; return p ? `<div class="aside" data-w="${b.who}"><i>${p.av}</i><div><b>${esc(p.name)}</b><span>${rich(b.text)}</span></div></div>` : ''; }
+  if (b.t==='aside'){ const p = Object.hasOwn(PERSONAS, b.who) ? PERSONAS[b.who] : null; return p ? `<div class="aside" data-w="${b.who}"><i>${p.av}</i><div><b>${esc(p.name)}</b><span>${rich(b.text)}</span></div></div>` : ''; }
   if (b.t==='list'){ const tag = b.ordered?'ol':'ul'; return `<${tag} class="plist">${b.items.map(x=>`<li>${rich(x)}</li>`).join('')}</${tag}>`; }
   if (b.t==='gloss') return `<dl class="gloss">${b.items.map(g=>`<div><dt>${esc(g.term)}</dt><dd>${rich(g.meaning)}</dd></div>`).join('')}</dl>`;
   return '';
@@ -2585,6 +2611,7 @@ function bootDemo(){
 
 /* ================= boot ================= */
 (async function boot(){
+  if (HOSTED && window.top !== window.self){ try { window.top.location = window.location.href; } catch(_){ document.body.innerHTML = '<p style="padding:24px;font:16px system-ui">לפתיחה בטוחה: <a href="https://hthr63-prog.github.io/rechiluta/" target="_top" rel="noopener">hthr63-prog.github.io/rechiluta</a></p>'; } return; }
   if (HOSTED) document.body.classList.add('hosted');
   { const a = store.get('rk-auth'); if (ACCOUNTS && a?.uid && a?.keyHex) AUTH = a; }
   syncAuthUI(); $('#acctBtn').addEventListener('click', ()=>AUTH ? historySheet() : authSheet('in'));

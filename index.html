@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-voS5oMKP/0QNgVxXhEMSO3H02cB4MwLMpjdLX01zD/M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-pdO3OGwwD8I5dj+izkn3H9VvPNXKSdbqNkDlVzJlSRE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -1553,7 +1553,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (f.startsWith(stem) && f.length-stem.length<=2) return m+'/'+f.slice(stem.length);
     return m+'/'+f; };
   const isText = m => m && m.kind==='text';
-  const LAUGH_RE = /ח{3,}|😂|🤣|(?:ha){2,}|\blol\b|מתתי|מתה מצחוק|מת מצחוק|קורע|גמרת אותי|אני מת(?:ה)?(?![\p{L}])(?!\s+על)/iu;
+  const LAUGH_RE = /ח{3,}|😂|🤣|(?:ha){2,}|\blol\b|מתתי|מתה מצחוק|מת מצחוק|בוכה מצחוק|בוכה מרוב צחוק|קורע|גמרת אותי|אני מת(?:ה)?(?![\p{L}])(?!\s+על)/iu;
   const isLaugh = t => LAUGH_RE.test(t);
   const hCount = t => Math.max(0, ...(t.match(/ח{3,}/g)||[]).map(x=>x.length));
   const HEART_RE = /❤|🤍|💕|💖|💗|🥹|🥰|😍|♥|💙|💜|🧡|💛/u;
@@ -1588,7 +1588,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   for (let i=0;i<msgs.length-1;i++){
     const m = msgs[i]; if (!isText(m) || m.text.length<8 || isLaugh(m.text) || !inP.has(m.who) || /https?:/.test(m.text)) continue;
     const resp = [];
-    for (let j=i+1;j<Math.min(msgs.length,i+4);j++){ const r=msgs[j]; if (r.t-m.t>3*60e3) break; if (r.who===m.who) break; if (isText(r) && isLaugh(r.text)) resp.push(j); }
+    for (let j=i+1;j<Math.min(msgs.length,i+4);j++){ const r=msgs[j]; if (r.t-m.t>3*60e3) break; if (r.who===m.who) break; if (isText(r) && isLaugh(r.text)) resp.push(j); else if (r.kind==='text') break; }
     if (!resp.length) continue;
     const laughers = new Set(resp.map(j=>msgs[j].who)); caused[m.who] = (caused[m.who]||0) + laughers.size;
     for (const l of laughers) if (l!==m.who && inP.has(l)) (fan[l] ||= {})[m.who] = (fan[l][m.who]||0)+1;
@@ -1617,7 +1617,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     const seen = new Set();
     for (const sent of m.text.toLowerCase().split(/[.!?,\n:;()]+/)){ const w = (sent.match(/[\p{L}']+/gu)||[]).filter(x=>!/^ח+$/.test(x));
     for (let L=1; L<=3; L++) for (let k=0;k+L<=w.length;k++){ const gr=w.slice(k,k+L);
-      if (gr.some(x=>x.length<2) || gr.every(x=>STOP.has(x)||COMMON_HE.has(x)) || STOP.has(gr[0]) || STOP.has(gr[gr.length-1])) continue;
+      if (isLaugh(gr.join(' ')) || gr.some(x=>x.length<2) || gr.every(x=>STOP.has(x)||COMMON_HE.has(x)) || STOP.has(gr[0]) || STOP.has(gr[gr.length-1])) continue;
       if (L===1 && (gr[0].length<4 || COMMON_HE.has(gr[0]))) continue;
       const nm_ = gr.some(isNameish);
       const key = gr.join(' '); if (seen.has(key)) continue; seen.add(key);
@@ -1627,9 +1627,12 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   let jokes = [...ph.values()].filter(o=>{ const users=Object.keys(o.who).length, days=o.days.size; const span = msgs[msgs.length-1].t - msgs[o.firstI].t;
       const born = msgs[o.firstI].t - msgs[0].t;
       if (!o.key.includes(' ')) return false;
+      { let lr = 0; for (const i0 of o.idx){ for (let j=i0+1;j<Math.min(msgs.length,i0+4);j++){ const r=msgs[j]; if (r.t-msgs[i0].t>5*60e3) break; if (r.who!==msgs[i0].who && isText(r) && isLaugh(r.text)){ lr++; break; } } }
+        o.lr = lr; let bornL = false; for (let j=o.firstI+1;j<Math.min(msgs.length,o.firstI+4);j++){ if (msgs[j].who!==msgs[o.firstI].who && isText(msgs[j]) && isLaugh(msgs[j].text) && msgs[j].t-msgs[o.firstI].t<10*60e3){ bornL = true; break; } }
+        if (!bornL && !(lr>=2 && lr/o.c>=.2)) return false; }
       if (o.nameish){ let born = false; for (let j=o.firstI;j<Math.min(msgs.length,o.firstI+4);j++){ if (msgs[j].who!==msgs[o.firstI].who && isText(msgs[j]) && isLaugh(msgs[j].text) && msgs[j].t-msgs[o.firstI].t<10*60e3){ born = true; break; } } if (!born) return false; }
-      return o.c>=5 && days>=3 && span>=10*864e5 && born>=2*864e5 && o.c/msgs.length < .012 && (users>=2 || st.people.length===1) && !o.key.split(' ').some(w=>nameWords.has(w)); })
-    .map(o=>({...o, users:Object.keys(o.who).length, score: o.c * Math.log(o.days.size+1) * (Object.keys(o.who).length>=2?1.6:1) * (o.key.includes(' ')?1.5:1)}))
+      return o.c>=5 && days>=3 && span>=10*864e5 && born>=2*864e5 && o.c/msgs.length < .012 && (users>=2 || st.people.length===1); })
+    .map(o=>({...o, users:Object.keys(o.who).length, score: (1+(o.lr||0)) * o.c * Math.log(o.days.size+1) * (Object.keys(o.who).length>=2?1.6:1) * (o.key.includes(' ')?1.5:1)}))
     .sort((a,b)=>b.score-a.score);
   { const kept=[]; for (const j of jokes){ if (kept.some(k=>{ if (k.key.includes(j.key)||j.key.includes(k.key)) return true; const ks=new Set(k.idx); return j.idx.filter(x=>ks.has(x)).length/j.idx.length > .5; })) continue; kept.push(j); if (kept.length>=4) break; } jokes = kept; }
 
@@ -1637,6 +1640,9 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const catch_ = {};
   for (const o of ph.values()){ if (o.nameish || (!o.key.includes(' ') && (o.key.length<5 || COMMON_HE.has(o.key)))) continue; for (const [who,c] of Object.entries(o.who)) if (c>=5 && c/o.c>=.75 && !jokes.some(j=>j.key===o.key)) (catch_[who] ||= []).push({key:o.key, c}); }
   for (const who in catch_){ const arr = catch_[who].sort((a,b)=>b.c-a.c || b.key.length-a.key.length); const kept=[]; for (const x of arr){ if (kept.some(k=>{ if (k.key.includes(x.key)||x.key.includes(k.key)) return true; const a=ph.get(k.key)?.idx||[], b=new Set(ph.get(x.key)?.idx||[]); return a.filter(i=>b.has(i)).length/Math.max(1,a.length) > .5; })) continue; kept.push(x); if (kept.length>=2) break; } catch_[who]=kept; }
+  // when a catchphrase is really a whole sentence someone keeps sending, show the sentence
+  { const full = {}; for (const m of msgs){ if (m.kind!=='text' || !inP.has(m.who)) continue; const t = m.text.trim(); if (t.length>40) continue; const o = full[m.who] ||= {}; o[t]=(o[t]||0)+1; }
+    for (const who in catch_) for (const x of catch_[who]){ const best = Object.entries(full[who]||{}).filter(([t])=>t.toLowerCase().includes(x.key)).sort((a,b)=>b[1]-a[1])[0]; if (best && best[1] >= x.c*.5 && best[0].length > x.key.length) x.key = best[0].replace(/[.!]+$/,''); } }
   const shortBy = {}; for (const m of msgs){ if (!isText(m) || !inP.has(m.who)) continue; const t=m.text.trim().toLowerCase(); if (SHORT.has(t)){ const o = shortBy[m.who] ||= {}; o[t]=(o[t]||0)+1; } }
   let shortKing = null; for (const [who,o] of Object.entries(shortBy)){ const [w,c] = Object.entries(o).sort((a,b)=>b[1]-a[1])[0]; if (c>=10 && (!shortKing || c>shortKing.c)) shortKing = {who, w, c}; }
 
@@ -1836,7 +1842,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
       `אם הצ'אט הזה היה תוכנית בוקר, ${B(c)} ${g(c,'היה','הייתה')} ${g(c,'המנחה','המנחה')}. ${times(comedian[1])} מישהו פה התפוצץ מצחוק אחרי הודעה של ${c}. הנה הרגעים הגדולים:`])}];
     const reacts = ['ככה נראה קהל שנשבר.','והקהל? על הרצפה.','שימו לב לזמן התגובה. אין פה מחשבה, רק רפלקס.','זה הרגע שבו הטלפון כמעט נפל לאסלה.','לא צריך להסביר. רק לקרוא שוב.'];
     topMoments.forEach((mo,k)=>{
-      const start = (mo.i>0 && msgs[mo.i-1].t > msgs[mo.i].t-3*60e3 && msgs[mo.i-1].who!==msgs[mo.i].who) ? mo.i-1 : mo.i;
+      const start = (mo.i>0 && msgs[mo.i-1].t > msgs[mo.i].t-3*60e3 && msgs[mo.i-1].who!==msgs[mo.i].who && isText(msgs[mo.i-1]) && /\?\s*$/.test(msgs[mo.i-1].text)) ? mo.i-1 : mo.i;
       const lc = Math.max(0, ...msgs.slice(mo.i+1, mo.last+1).map(m=>isText(m)?hCount(m.text):0));
       const medical = lc>=12 && !blocks.some(b=>b.after?.includes('מצב רפואי'));
       blocks.push({t:'chat', msgs:msgs.slice(start, mo.last+1).map(msgOf), after: medical ? `${lc} פעמים ח'. ברמה הזו זה כבר לא צחוק, זה מצב רפואי.` : reacts.splice(Math.floor(rnd()*reacts.length),1)[0]});
@@ -1859,7 +1865,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     const best = phrasePeople.map(p=>({p, x:catch_[p.name][0]})).sort((a,b)=>b.x.c-a.x.c)[0];
     add('comedy', {icon:'🗣️', title: pick(['המשפטים שלכם', 'זה מה שאתם אומרים כל הזמן', 'הסלוגנים']), blocks:[
       {t:'p', text: pick(['לכל אחד פה יש משפט שהוא כותב שוב ושוב בלי לשים לב. אנחנו שמנו לב. (ספרנו רק משפטים שלפחות 75% מהשימושים בהם הם של אדם אחד.)', 'אם תסירו את השמות מהצ\'אט, עדיין יהיה ברור מי כתב מה. בגלל אלה:'])},
-      {t:'list', ordered:false, items: phrasePeople.flatMap(p=>catch_[p.name].map(x=>`**${p.name}:** ${q(x.key)}, ${times(x.c)}`))},
+      {t:'list', ordered:false, items: phrasePeople.slice(0,6).map(p=>{ const x = catch_[p.name][0]; return `**${p.name}:** ${q(x.key)}, ${times(x.c)}`; })},
       {t:'reveal', text: pick([`${best.p.name}, ${q(best.x.key)} ${times(best.x.c)}. זה כבר לא משפט. זה מותג רשום.`, `${q(best.x.key)}. ${times(best.x.c)}. ${best.p.name}, ${g(best.p.name,'אתה','את')} ${g(best.p.name,'יודע','יודעת')} שאפשר לגוון, נכון?`, `אם ${best.p.name} ${g(best.p.name,'יכתוב','תכתוב')} ${q(best.x.key)} עוד פעם אחת, מגיע לזה פרס על מפעל חיים.`])}
     ]});
   }
@@ -1966,7 +1972,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     const back = msgs.slice(silenceBreak, silenceBreak+4).filter(x=>x.t-m.t<40*60e3);
     const warm = back.some(x=>isText(x) && (LOVE_RE.test(x.text)||HEART_RE.test(x.text)||/!!!/.test(x.text)));
     add('heart', {icon:'🤫', title: pick(['השקט הגדול', `${dur(st.gap.ms)} בלי מילה`, 'ואז, פתאום']), blocks:[
-      {t:'p', text:`בין ${heDate(st.gap.from)} ל-${heDate(st.gap.to)} לא נכתבה פה אף הודעה. ${B(dur(st.gap.ms))} של שקט. ${pick(['ואז', 'עד ש'])}${B(m.who)} ${g(m.who,'שבר','שברה')} אותו:`},
+      {t:'p', text:`בין ${heDate(st.gap.from)} ל-${heDate(st.gap.to)} לא נכתבה פה אף הודעה. ${B(dur(st.gap.ms))} של שקט. ${pick(['ואז ', 'עד ש'])}${B(m.who)} ${g(m.who,'שבר','שברה')} אותו:`},
       {t:'chat', msgs: back.map(msgOf), after: warm ? pick(['ככה חוזרים. בלי הקדמות, בדיוק מאיפה שעצרנו.', 'יש קשרים שאפשר לעצור באמצע ולהמשיך כאילו כלום. זה אחד מהם.']) : (m.kind==='text' && m.text.length<25 ? 'אחרי כל כך הרבה זמן, זה מה שיצא. קצר, ענייני, בלי התנצלות.' : '')}
     ]});
   }
@@ -2140,8 +2146,8 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     const iLaugh = fan[reader] ? Object.entries(fan[reader]).sort((a,b)=>b[1]-a[1])[0] : null;
     if (iLaugh && iLaugh[1]>=3) bits.push(`ומי מצחיק ${g(reader,'אותך','אותך')} הכי הרבה? ${B(iLaugh[0])}, ${times(iLaugh[1])}.`);
     const fastTo = Object.entries(pair).filter(([k,v])=>k.startsWith(reader+'→') && v.length>=10).map(([k,v])=>[k.split('→')[1], med(v)]).sort((a,b)=>a[1]-b[1]);
-    if (fastTo.length>=2) bits.push(`למי ${g(reader,'אתה עונה','את עונה')} הכי מהר? ל${B(fastTo[0][0])}, תוך ${dur(fastTo[0][1])}. ול${fastTo[fastTo.length-1][0]}? ${dur(fastTo[fastTo.length-1][1])}. לא שופטים. רק מודדים.`);
-    else if (fastTo.length===1) bits.push(`${g(reader,'אתה עונה','את עונה')} ל${fastTo[0][0]} בדרך כלל תוך ${B(dur(fastTo[0][1]))}.`);
+    if (fastTo.length>=2 && fastTo[fastTo.length-1][1] >= fastTo[0][1]*2) bits.push(`למי ${g(reader,'אתה עונה','את עונה')} הכי מהר? ל${B(fastTo[0][0])}, תוך ${dur(fastTo[0][1])}. ול${fastTo[fastTo.length-1][0]}? ${dur(fastTo[fastTo.length-1][1])}. לא שופטים. רק מודדים.`);
+    else if (fastTo.length>=1) bits.push(`${g(reader,'אתה עונה','את עונה')} ל${fastTo[0][0]} בדרך כלל תוך ${B(dur(fastTo[0][1]))}.`);
     if (catch_[reader]?.[0]) bits.push(`המשפט ${g(reader,'שלך','שלך')}: ${q(catch_[reader][0].key)}, ${times(catch_[reader][0].c)}. ${g(reader,'אתה','את')} ${g(reader,'יודע','יודעת')}, נכון?`);
     const myBest = moments.find(mo=>msgs[mo.i].who===reader);
     if (bits.length>=2 || myBest){
@@ -2171,7 +2177,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (jokes[0]) bits.push(`המצאתם שפה משלכם: ${q(jokes[0].key)}, ${times(jokes[0].c)}, ואף אחד מבחוץ לא יבין למה זה מצחיק.`);
     if (bits.length) letter.push(bits.join(' ')); }
   if (momJoy || miles.some(x=>['💍','👶','💼','🏠','🎓'].includes(x.ic))){ const j = momJoy ? msgs[momJoy.i] : msgs[miles.find(x=>['💍','👶','💼','🏠','🎓'].includes(x.ic)).i]; letter.push(`היו שמחות. ${q(short(j.text,60))}, ופתאום כולם כתבו בבת אחת.`); }
-  if (momSad) letter.push(`והיו ימים קשים. ${heDate(msgs[momSad.i].t)}, ${q(short(msgs[momSad.i].text,60))}. ${rock && rock[1]>=2 ? `${rock[0]} ${g(rock[0],'היה','הייתה')} שם. כמו תמיד.` : 'ומישהו ענה. כמו תמיד.'}`);
+  if (momSad) letter.push(`והיו ימים קשים. ${heDate(msgs[momSad.i].t)}, ${q(short(msgs[momSad.i].text,60))}. ${rock && rock[1]>=2 ? (rock[0]===reader ? `${g(reader,'אתה היית','את היית')} שם. כמו תמיד.` : `${rock[0]} ${g(rock[0],'היה','הייתה')} שם. כמו תמיד.`) : 'ומישהו ענה. כמו תמיד.'}`);
   if (makeup) letter.push(`רבתם, וחזרתם. ואולי יותר מכל השאר, זה מה שהופך את זה לאמיתי.`);
   if (st.gap.ms>=3*864e5) letter.push(`היה שקט של ${dur(st.gap.ms)}. ואז מישהו כתב, והכל המשיך כאילו לא עבר יום.`);
   if (loveAll>=5) letter.push(`${n(loveAll)} פעמים מישהו פה כתב "אוהב/ת"${firstLove>=0 ? `, הראשונה ב-${heDate(msgs[firstLove].t)}` : ''}.`);
@@ -2716,7 +2722,7 @@ function blockHTML(b){
 function renderReport(){
   const st=ST, rep=REP, persona=PERSONAS[VIEW.persona]||PERSONAS.neighbor;
   const verb = readVerb(persona);
-  if (VIEW.demo) $('#banner').innerHTML = `<div class="banner"><span><b>זו דוגמה.</b> קבוצה מומצאת, "הטיול לגולן", והדוח נכתב לנועה. העלו צ'אט משלכם למעלה.</span><button class="btn light" type="button" data-act="story">▶ סטורי</button></div>`;
+  if (VIEW.demo) $('#banner').innerHTML = `<div class="banner"><span><b>זו דוגמה.</b> קבוצה מומצאת של שישה חברים, והדוח נכתב לנועה. העלו צ'אט משלכם למעלה.</span><button class="btn light" type="button" data-act="story">▶ סטורי</button></div>`;
   else if (!$('#banner .err')) $('#banner').innerHTML = '';
   let h = '<article class="lr">';
   const byLine = `<div class="by"><i>${persona.av}</i><span>${esc(persona.name)} ${verb} את כל ${fmt(st.total)} ההודעות של "${esc(st.chatName)}"</span></div>`;
@@ -3200,117 +3206,109 @@ function bindEvents(){
 /* ================= demo ================= */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function makeDemoChat(){
-  const R = mulberry32(7); const pick = a => a[Math.floor(R()*a.length)];
-  const L = {
-    'נועה':['אנשים!!! תענו לסקר 🙏','מי מביא מה? אני פותחת רשימה','יש לי אקסל לזה, אל תדאגו','אפשר להחליט על תאריך כבר??','אני מזכירה שוב שצריך לשלם על הצימר עד חמישי','חמודים אני לא אמא שלכם אבל','מעדכנת: הזמנתי. אין דרך חזרה','מי אוכל צמחוני? לשאלה הזאת יש תשובה נכונה אחת רון','חחח אתם בלתי אפשריים','עשיתי טבלה של מי חייב למי, תסתכלו','זה הסקר השלישי השבוע ואני לא מתביישת','אוקיי אז סגרנו?','מישהו קורא את מה שאני כותבת פה?'],
-    'איתי':['חחחחחחחחח','אחי','מי ער?','שלחתי לכם מסלול, סמכו עליי','המפה אומרת שזה 20 דקות הליכה','אני לא הלכתי לאיבוד, המסלול השתנה','יאללה אני בפנים','ראיתם את הסרטון ששלחתי? בדיוק אנחנו 😂','אני מביא גזייה ואת הרמקול','חחחחח מתתי','3 בלילה ואני מתכנן מסלולים, זה נורמלי?','מצאתי מעיין סודי, אף אחד לא מכיר'],
-    'מאיה':['סורי ראיתי עכשיו 🙈','אני בפנים!! 🥹','רגע מה פספסתי','חחחח אני לא מאמינה 😂😂','האוהל שלי בסדר גמור, הוא פשוט עקום','אפשר שמישהו יעשה לי סיכום?','אוהבת אתכם 💕','אני מאחרת קצת, תתחילו בלעדיי','מה זה האקסל הזה נועה 😂','אני מביאה שוקולד, זה התרומה שלי','🥹🥹🥹'],
-    'רון':['מי מביא את המנגל?','שקשוקה בבוקר זה לא נתון למשא ומתן','אני על האוכל, תסמכו עליי','קניתי 4 קילו קבב, זה מספיק?','צמחוני זה מצב רוח','בפעם הקודמת שכחתי את המנגל, אני יודע, די','מישהו יודע איפה יש חומוס טוב בקצרין?','אחרי הטיול הזה אני בדיאטה','יש לי מתכון למרינדה שישנה לכם את החיים','רעב.','חחח נכון','אני מביא את הצידנית הגדולה 🍖'],
+  /* a made-up group of six friends, three years of real-feeling life: invented for the demo, nobody real */
+  const R = mulberry32(2207); const pick = a => a[Math.floor(R()*a.length)];
+  const out = []; let T = 0;
+  const line = (t,n,tx) => { const d=new Date(t); return `[${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}] ${n}: ${tx}`; };
+  const at = (y,mo,d,h,mi) => new Date(y,mo-1,d,h,mi||0).getTime();
+  let story = false; const say = (n, tx, gapMin) => { T += (gapMin==null ? 0.4+R()*3 : gapMin)*60e3; if (!story && T>quiet[0] && T<quiet[1]) return; out.push([T, line(T,n,tx)]); };
+  const scene = (t, rows) => { T = t; for (const [n,tx,g] of rows) say(n,tx,g); };
+  const N='נועה', I='איתי', M='מאיה', RO='רועי', O='עומר', DN='דנה';
+  const POOL = {
+    [N]:['מי בא ביום חמישי?','מי פנוי בשבת?','מי בא מחר בערב?','חמישי אצלי?','אני בדרך, מגיעה עוד עשר דקות','מישהו ראה את הסדרה שהמלצתי?','אני מתה עליכם','אני עייפה ברמות','יש למישהו מטען לאייפון?','אני על זה','מי רעב?','אני יודעת שאני חופרת אבל','סגרתי לנו שולחן ל-9','איך היה היום?','מאיה ענייי','מי בא לים בשבת?','תזכירו לי לקנות מתנה לאמא','אני מגיעה עם עוגה','אוקיי אני בפנים','איך היה הדייט??','אני בעבודה עד שש','מישהו מכיר אינסטלטור?','ראיתם מה עומר העלה? 😂','צריכה המלצה לספר טוב','מי רוצה להצטרף לפילאטיס'],
+    [I]:['אחי זה לא נורמלי','מי ער?','אני גמור מהעבודה','מישהו בא לשווארמה?','אני מגיע, תשמרו לי מקום','אחי ראיתם את המשחק?','זה לא נורמלי מה שקרה היום','שלחתי לכם משהו','אני עייף אבל אני בא','מי הזמין את זה','סבבה אחי','אני לא מאמין','מישהו בא לכדורגל ביום שלישי?','אני על הבר','רועי תענה','עומר אתה חי?','קניתי אוזניות חדשות, החיים השתנו'],
+    [M]:['רגע מה פספסתי?','אני יודעת אני יודעת','אני בפנים!! 🥹','נועה ענייי','אני מתה','סורי ראיתי עכשיו 🙈','מי בא אליי? יש לי יין','אני עייפה אבל אוקיי','נשמות שלי','איזה כיף','אוהבת אתכם','אני חייבת לספר לכם משהו','למה אף אחד לא עונה','הבוסית שלי שוב','אני אוכלת שוקולד במקום ארוחת ערב'],
+    [RO]:['יאללה סגרנו','סגור','אני מגיע','אני עייף, מחר?','מי לוקח אותי?','אני יודע','אחי אני בעבודה עד 8','סגור, אני על זה','מישהו צריך טרמפ?','תעדכנו','אחרי 8 אני פנוי','אני אביא את הבירות','סורי הייתי בפגישה'],
+    [O]:['אני בפנים','מגיע','מה הלו״ז?','אני עייף מת','מי בא?','סבבה','אני על זה','אני יודע','לא יכול היום, סורי','העליתי סטורי, תגיבו','מי צופה בגמר?','אני בדרך מהמילואים'],
+    [DN]:['👍','אני יודעת','❤️','אני בפנים'],
   };
-  const names = Object.keys(L), w=[.31,.27,.17,.25];
-  const who = () => { let r=R(), a=0; for (let k=0;k<4;k++){ a+=w[k]; if(r<a) return names[k]; } return names[3]; };
-  const out=[]; const line = (t,n,tx) => { const d=new Date(t); return `[${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}] ${n}: ${tx}`; };
-  const start = new Date(2026,6,1).getTime();
-  for (let day=0; day<112; day++){
-    const trip = day>=50 && day<=53;
-    const sessions = trip ? 4 : (R()<0.72 ? 1+Math.floor(R()*2.4) : 0);
-    for (let s=0; s<sessions; s++){
-      const night = R()<0.14;
-      let t = start + day*864e5 + (night ? (R()*3+0.2) : (8+R()*15))*3600e3;
-      const n = trip ? 18+Math.floor(R()*16) : 3+Math.floor(R()*14);
+  const FUNNY = [
+    'קניתי מזגן ועכשיו אני גר בתוכו',
+    'הבוס אמר לי לחשוב מחוץ לקופסה, אז יצאתי הביתה',
+    'אמא שלי שאלה אם אני אוכל טוב. אמרתי לה שאני אוכל הרבה, זה לא אותו דבר',
+    'ניסיתי מדיטציה. נרדמתי. אני חושב שזה נחשב',
+    'השכן שלי לומד תופים כבר שנתיים. הוא לא השתפר, אני כן',
+    'הלכתי לחדר כושר. ראיתי אותו. זה מספיק להיום',
+    'עשיתי סדר בארון ומצאתי את עצמי מ-2015. הוא לא מרוצה ממני',
+    'הזמנתי סלט במסעדה ועכשיו המלצר מסתכל עליי כאילו אני חולה',
+    'הרופא אמר לי להוריד מתוקים. הורדתי אותם מהמדף הגבוה למדף הנמוך',
+    'סבתא שלי למדה לשלוח סטיקרים. החיים שלי נגמרו',
+    'החלטתי לקום מוקדם מחר. אני כבר מתגעגע לעצמי של עכשיו',
+    'הוויז אמר לי "פנה ימינה" ואז שתק. אני חושב שהוא כועס עליי',
+    'קניתי ספר על איך להפסיק לדחות דברים. אקרא אותו אחר כך',
+    'הכלב של השכנים נובח רק כשאני מנסה לעשות שיחה חשובה. הוא בעבודה שלי',
+    'ניסיתי לבשל אורז. האורז ניסה לברוח',
+    'אמרתי לעצמי שאני הולך לישון מוקדם. עצמי צחק עליי',
+  ];
+  const LAUGH = ['חחחחחחחחחח','חחחחחחחחחחחחחחח די','מתתי חחחחח','😂😂😂','חחחחחח איתי','אני בוכה מצחוק','חחחחחחחחחחחחחחחחחח'];
+  const SONGS = ['https://youtu.be/kJQP7kiw5Fk','https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC','https://youtu.be/fJ9rUzIMcZQ','https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3','https://youtu.be/hTWKbfoikeg','https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b'];
+  const ANTHEM = 'https://youtu.be/JGwWNGJdvx8';
+  const W = [[N,.25],[I,.22],[M,.2],[RO,.16],[O,.15],[DN,.02]];
+  const CATCH = {[N]:'אני מתה עליכם', [I]:'אחי זה לא נורמלי', [M]:'נשמות שלי', [RO]:'יאללה סגרנו', [O]:'אני בדרך מהמילואים'};
+  const FUNNY_N = ['הפילאטיס היום היה כל כך קשה שהמורה שאלה אם אני בסדר. אמרתי לה שאני כן, רק הגוף שלי לא','אמא שלי שלחה לי מתכון עם הקלטה קולית של 7 דקות. המתכון היה לחביתה','קניתי צמח לבית. הוא כבר מסתכל עליי באכזבה'];
+  const who = () => { let r=R(), a=0; for (const [n,w] of W){ a+=w; if (r<a) return n; } return N; };
+  const start = at(2022,6,10,21,4);
+  const end = at(2025,10,23,22,0);
+  const quiet = [at(2024,1,20,21,30), at(2024,2,7,22,30)];        // the big silence, after the fight
+  // ---------- everyday life ----------
+  let lastFill = start;
+  for (let day=1; start+day*864e5 < end; day++){
+    const d0 = start + day*864e5;
+    const dt = new Date(d0); const summer = dt.getMonth()>=5 && dt.getMonth()<=7;
+    let sessions = R()< (summer?.42:.28) ? 1+Math.floor(R()*1.7) : 0;
+    if (!sessions && d0-lastFill > 6*864e5 && !(d0>quiet[0] && d0<quiet[1])) sessions = 1;
+    if (sessions) lastFill = d0;
+    for (let s=0;s<sessions;s++){
+      const night = R()<.1;
+      T = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), night ? 0 : 9+Math.floor(R()*12), Math.floor(R()*59)).getTime() + (night? (1+R()*2)*3600e3 : 0);
+      const n = 3+Math.floor(R()*7);
+      let last = null;
       for (let k=0;k<n;k++){
-        let p = k===0 ? (night?'איתי':(R()<.45?'נועה':who())) : who(); if (night && R()<.5) p='איתי';
-        let tx; if (p==='איתי' && R()<.12) tx='‎audio omitted'; else if (p==='מאיה' && R()<.08) tx='‎sticker omitted'; else if (trip && R()<.2) tx='‎image omitted'; else tx = pick(L[p]);
-        out.push(line(t,p,tx)); t += (p==='מאיה'? 4 : 1) * (0.2 + R()*R()*25) * 60e3;
+        let p = night && R()<.6 ? I : who();
+        if (last===N && R()<.45) p = M; else if (last===M && R()<.45) p = N;   // נועה and מאיה: always answering each other
+        if (p===last && R()<.6) p = who();
+        let tx = CATCH[p] && R()<.16 ? CATCH[p] : pick(POOL[p]);
+        if (p===I && R()<.06) tx = '‎audio omitted';
+        if (R()<.035) tx = '‎image omitted';
+        say(p, tx, p===RO ? 4+R()*30 : 0.3+R()*R()*14);
+        last = p;
       }
+      if (FUNNY_N.length && R()<.03){ say(N, FUNNY_N.shift(), 2); say(pick([M,I]), pick(LAUGH), 0.6); }
+      if (FUNNY.length && R()<.03){ const f = FUNNY.shift(); say(I, f, 2); say(M, pick(LAUGH), 0.5); if (R()<.6) say(pick([N,O,RO]), pick(LAUGH), 0.7); }
+      if (R()<.018) say(pick([I,I,M,N,O]), pick(['השיר של היום 🎶 ','תקשיבו לזה ','זה מתנגן לי כל היום ',''])+pick(SONGS), 3);
+      if (day>40 && R()<.05){ say(pick([N,M,I,O]), pick(['מי מביא את הגזייה? לא רועי 😂','זה כמו הגזייה של רועי','הגזייה של רועי 2.0','אל תדאגו, רועי לא אחראי על הגזייה','זה יותר גרוע מהגזייה של רועי','מזכירה: רועי לא מביא גזייה']), 4); if (R()<.5) say(pick([M,N,O]), pick(LAUGH), 0.5); }
+      if (dt.getHours()<12 && R()<.08) say(N, pick(['בוקר טוב אהובים ☀️','בוקר טוב לכולם','בוקר טוב ☕']), 0);
     }
   }
-  return out.join('\n');
+  // ---------- the story ----------
+  story = true;
+  scene(start, [[N,'יאללה, פתחתי קבוצה. אין יותר תירוצים',0],[I,'מי שם אותי פה בלי לשאול',2],[M,'אני בפנים!! 🥹',1],[RO,'סגור',9],[N,'המטרה: טיול בצפון לפני שכולנו מתבגרים',2],[O,'מאוחר מדי בשבילי',1],[I,'חחחח עומר',1]]);
+  scene(at(2022,7,14,19,40), [[RO,'אוקיי אל תכעסו',0],[RO,'שכחתי את הגזייה',0.5],[I,'רועי',0.3],[I,'היה לך תפקיד אחד',0.2],[M,'חחחחחחחחחחחחחחחחחחחחח',0.3],[N,'אנחנו בגליל בלי גזייה ועם 3 קילו בשר נא',0.6],[O,'הגזייה של רועי. זה ייכנס להיסטוריה',0.8],[M,'חחחחחחחחח הגזייה של רועי',0.4],[RO,'אני אבנה מדורה, תירגעו',1]]);
+  scene(at(2022,7,15,23,30), [[I,'הלילה הזה ליד המדורה של רועי (שאין לו גזייה) היה הלילה הכי טוב שלי השנה',0],[N,'❤️❤️',1],[M,'אוהבת אתכם כל כך',0.5]]);
+  scene(at(2022,7,16,10,0), [[I,'השיר של הטיול 🎶 '+ANTHEM,0],[M,'השיר של הטיול!!! 🥹',1]]);
+  scene(at(2023,1,1,0,2), [[N,'שנה טובה למשפחה שבחרתי 🤍',0],[I,'השיר של הטיול לכבוד השנה החדשה '+ANTHEM,2],[M,'❤️',1]]);
+  scene(at(2023,3,5,7,12), [[I,'אבא שלי עבר אירוע לב בלילה. אנחנו בבית חולים. אני לא יודע מה לעשות',0],[M,'אני בדרך. איזה בית חולים?',1],[N,'אנחנו איתך. שולחת כוח ❤️',0.5],[RO,'אחי כל מה שצריך, אני פה',2],[O,'תחזיק חזק אחי. רפואה שלמה',1],[I,'איכילוב',3],[M,'עוד 20 דקות אני שם',0.5]]);
+  scene(at(2023,3,6,18,20), [[I,'הוא התעורר. הוא בסדר. הרופאים אומרים שהוא יצא מזה',0],[N,'יששששש 🥹🥹',0.5],[M,'בכיתי עכשיו באוטובוס',0.4],[I,'תודה שאתם כאלה. באמת. לא הייתי עובר את הלילה הזה בלעדיכם',2],[RO,'תמיד אחי',1]]);
+  scene(at(2023,8,20,17,0), [[M,'עברתי דירה!!! הבית החדש שלי בתל אביב 🏠',0],[N,'מזל טוב!!! מתי חנוכת בית?',0.4],[I,'אני מביא את הגזייה',0.6],[O,'חחחחחחחח',0.3],[RO,'תצחקו תצחקו',1]]);
+  scene(at(2023,9,3,0,1), [[N,'יום הולדת שמח רועי!! 🎂',0],[M,'יום הולדת שמח לגיבור הגזייה',1],[I,'מזל טוב אחי, שתזכור הכל השנה',2]]);
+  scene(at(2024,1,20,21,5), [[RO,'חבר׳ה אני לא אגיע מחר, משהו הסתבך בעבודה',0],[I,'שוב?? זה יום ההולדת שלי',2],[I,'זה היה חשוב לי!! אמרתי לך חודש מראש',0.5],[RO,'אחי אני לא יכול כל הזמן להיות זמין',6],[I,'אתה אף פעם לא יכול',0.5],[N,'חבר׳ה...',3]]);
+  scene(at(2024,2,7,22,40), [[DN,'אני יודעת שאני כמעט אף פעם לא כותבת פה. אבל השקט הזה מוזר לי. אתם חסרים לי. כולכם',0],[M,'דנה ❤️',3],[I,'אני עדיין כועס',8],[I,'זה היה חשוב לי!! חיכיתי לך כל הערב',0.5],[RO,'איתי, סליחה. באמת. הייתי אידיוט ואני מצטער שלא הגעתי. זה לא יקרה שוב',5],[I,'אוהב אותך אחי ❤️ השווארמה עליך',4],[O,'חחחחחחחחח סוף סוף',0.5],[N,'המשפחה חזרה 🥹',1]]);
+  scene(at(2024,6,2,21,13), [[N,'הוא הציע!!!!! 💍 אני מתחתנת!!!',0]]);
+  { const cheers = [[M,'מה?!?!?! אני בוכה'],[I,'מזל טוב!!!!!'],[O,'וואו!!! מזל טוב נועה!!'],[M,'אני בוכה ברחוב'],[RO,'מזל טוב!!! מגיע לך הכי טוב בעולם'],[I,'אמרתי לכם שהוא הבן אדם'],[M,'איזה כיף!!!!'],[N,'אני רועדת'],[O,'מתי החתונה??'],[M,'אני מארגנת את המסיבת רווקות, לא מתווכחים'],[I,'אני מביא גזייה'],[RO,'חחחחחח'],[N,'אוהבת אתכם כל כך'],[M,'אני עדיין בוכה'],[I,'הלילה שותים']];
+    for (let k=0;k<36;k++){ const c = cheers[k % cheers.length]; say(c[0], c[1], 0.15+R()*0.35); } }
+  scene(at(2024,6,2,23,50), [[DN,'נועה, אני זוכרת אותך בגיל 12 מתכננת חתונות לבובות בחדר שלך. ועכשיו זה קורה באמת. מגיע לך כל האושר שבעולם. אני כל כך גאה בך ואוהבת אותך',0],[N,'דנה... אני בוכה 😭❤️',2],[M,'דנה מה עשית לנו 🥹',1]]);
+  scene(at(2024,12,1,6,30), [[RO,'נחתתי בהודו 🇮🇳 תשמרו לי מקום בקבוצה',0],[N,'תשמור על עצמך!!',1],[I,'תביא גזייה מהודו',2],[M,'חחחחחחחחחח',0.4]]);
+  scene(at(2025,3,10,22,15), [[M,'נפרדנו. אני לא מסוגלת לדבר על זה עכשיו',0],[N,'אני באה אלייך עם גלידה. אל תהיי לבד הלילה',1],[I,'מאיה, את הכי טובה שיש. הוא פספס',2],[O,'אנחנו פה בשבילך ❤️',1],[RO,'כל מה שצריך',3],[M,'תודה. אני צריכה אתכם',4]]);
+  scene(at(2025,9,12,23,55), [[N,'תודה שהייתם שם היום. כל אחד מכם. אתם המשפחה שבחרתי 🤍',0],[M,'החתונה הכי יפה שראיתי בחיים',1],[I,'רקדתי כמו שלא רקדתי מאז הטיול',1],[I,'השיר של הטיול בחתונה!!! '+ANTHEM,1],[RO,'הכי מרגש שיש',2],[O,'❤️❤️❤️',1]]);
+  scene(at(2025,10,23,21,40), [[I,'מי בא ביום חמישי? אני מביא את הגזייה',0],[M,'חחחחחח',1],[RO,'אני מביא גיבוי',2]]);
+  out.sort((a,b)=>a[0]-b[0]);
+  return out.map(x=>x[1]).join('\n');
 }
-const D = (s,who,text) => ({t:new Date(s.replace(' ','T')).getTime(), who, text, kind:'text', media:null});
-const DEMO_REP = {
-  headline:'שלושה חודשים, ארבעה אנשים וארבעה קילו קבב: הסאגה של הטיול לגולן 🏕️🍖',
-  dek:'קראנו כל הודעה בקבוצה. נועה, אנחנו צריכים לדבר על האקסל.',
-  intro:[
-    'נועה, נגיד את זה בעדינות: את לא בקבוצת וואטסאפ. את מנכ"לית של חברה עם שלושה עובדים, אפס משכורת, ושיעור היענות לסקרים של מפלגה שלא עברה את אחוז החסימה.',
-    'קראנו את כל ההודעות, מהסקר הראשון ביולי ועד טבלת החובות של אוקטובר. ובאמצע, איפשהו בין המנגל שנשכח למסלול ש"השתנה", מסתתר פה סיפור אהבה. לא רומנטי. **ארבעה אנשים שהחליטו שהם משפחה, ושכחו להגיד את זה בקול.**'
-  ],
-  sections:[
-    {icon:'📋', title:'איך זה התחיל: סקר, שקט, ועוד סקר', blocks:[
-      {t:'p', text:'הקבוצה נפתחה בתחילת יולי, בשעת ערב. לקח בדיוק שלוש דקות עד הסקר הראשון. ושלוש שעות עד הסקר השני, כי לראשון ענה אדם אחד: נועה.'},
-      {t:'chat', msgs:[D('2026-07-01 20:17','נועה','אנשים!!! תענו לסקר 🙏'), D('2026-07-01 23:02','נועה','אפשר להחליט על תאריך כבר??'), D('2026-07-02 09:41','מאיה','סורי ראיתי עכשיו 🙈'), D('2026-07-02 09:43','איתי','חחחחחחחחח')], after:'שימי לב למבנה. הוא יחזור על עצמו כל השבוע, כל החודש, כל הקיץ.'},
-      {t:'aside', who:'shrink', text:'מה שאנחנו רואים כאן הוא "תסמונת הסקר המופקר": מצב שבו אדם אחד מצביע, ושלושה חווים את זה כהטרדה.'},
-      {t:'p', text:'כבר בעמוד הראשון רואים את כל הדינמיקה בקטן: את שואלת, מאיה מתנצלת, איתי צוחק, ורון, איפשהו ברקע, שואל מי מביא מנגל. **זה לא צ\'אט. זו הצגה עם תסריט קבוע, ואת הבמאית, המפיקה והשחקנית הראשית.**'}
-    ]},
-    {icon:'🎭', title:'התפקיד שאתם חושבים שאתם משחקים (לעומת מה שקורה באמת)', blocks:[
-      {t:'p', text:'את בטוחה שאת המארגנת. איתי בטוח שהוא הנווט. רון בטוח שהוא השף. ומאיה בטוחה שהיא רק "קצת מאחרת".'},
-      {t:'p', text:'אבל כשקוראים את זה ברצף, מתגלה משהו אחר לגמרי.'},
-      {t:'reveal', text:'נועה, את לא המארגנת. את הדבק.'},
-      {t:'p', text:'כל פעם שהקבוצה שותקת יותר מיום, את זאת שמחזירה אותה לחיים. הסקרים הם רק התירוץ. מה שאת באמת כותבת, שוב ושוב, זה "אני רוצה שנישאר ביחד". ואת עושה את זה בטון של מישהי שמזכירה תשלום על צימר:'},
-      {t:'chat', msgs:[D('2026-08-11 21:30','נועה','חמודים אני לא אמא שלכם אבל'), D('2026-08-11 21:30','נועה','אני מזכירה שוב שצריך לשלם על הצימר עד חמישי'), D('2026-08-11 22:58','רון','חחח נכון')], after:'"חחח נכון". שעה וחצי אחרי. ובלי לשלם.'}
-    ]},
-    {icon:'🧭', title:'החולשה הכי גדולה של איתי (רמז: שלוש בלילה)', blocks:[
-      {t:'p', text:'איתי שולח יותר הודעות אחרי חצות מכל שאר הקבוצה ביחד. בשעות שבהן אנשים נורמליים ישנים, ואנשים לא נורמליים גוללים טיקטוק, איתי עושה משהו מסוכן הרבה יותר: מתכנן.'},
-      {t:'chat', msgs:[D('2026-08-02 03:12','איתי','3 בלילה ואני מתכנן מסלולים, זה נורמלי?'), D('2026-08-02 03:14','איתי','מצאתי מעיין סודי, אף אחד לא מכיר')]},
-      {t:'p', text:'"מעיין שאף אחד לא מכיר" זה בדרך כלל קוד ל"אין אליו שביל". ואכן, ביום הטיול עצמו:'},
-      {t:'chat', msgs:[D('2026-08-21 11:05','איתי','המפה אומרת שזה 20 דקות הליכה'), D('2026-08-21 12:47','איתי','אני לא הלכתי לאיבוד, המסלול השתנה')], after:'שעה וארבעים דקות בין שתי ההודעות. מסלולים לא משתנים, איתי.'},
-      {t:'aside', who:'sports', text:'ועכשיו לבדיקת VAR: הכדור, סליחה, הקבוצה, הייתה מחוץ למסלול כבר בדקה העשרים. השופט מאשר. אין שער. יש שלפוחיות.'},
-      {t:'p', text:'**החולשה של איתי היא לא חוש הכיוון. זה שהוא לא מסוגל להגיד "אני לא יודע".** והוא מפצה על זה בהתלהבות, ברמקול ובגזייה. וזה, בכנות, עובד.'}
-    ]},
-    {icon:'🍖', title:'רון והמנגל: טרגדיה בשלוש מערכות', blocks:[
-      {t:'p', text:'יש בקבוצה הזאת פצע ישן. הוא לא מוזכר הרבה, אבל הוא שם, כמו ריח של פחמים: בטיול הקודם, רון שכח את המנגל.'},
-      {t:'chat', msgs:[D('2026-07-19 18:20','רון','בפעם הקודמת שכחתי את המנגל, אני יודע, די'), D('2026-08-14 13:06','רון','קניתי 4 קילו קבב, זה מספיק?')], after:'ארבעה קילו. לארבעה אנשים. ליומיים. זה לא קניות. זה תיקון היסטורי.'},
-      {t:'num', value:'1 ק״ג', label:'קבב לאדם. רון לא בא לטייל, רון בא לכפר על חטא.'},
-      {t:'reveal', text:'רון לא אובססיבי לאוכל. רון אובססיבי לא לאכזב שוב.'},
-      {t:'aside', who:'savta', text:'אוי, מאמי, ארבעה קילו זה בדיוק מה שצריך. ולמה אין סלט? מי יאכל סלט? תביא סלט.'}
-    ]},
-    {icon:'🙈', title:'מאיה, או: איך לאחר בכל פעם ולהיות האהובה של כולם', blocks:[
-      {t:'p', text:'מאיה כותבת הכי מעט בקבוצה, ועונה הכי לאט. ובכל זאת, כשקוראים את הכול, היא הכוח השקט שמונע מהקבוצה להתפרק.'},
-      {t:'chat', msgs:[D('2026-08-16 22:40','מאיה','רגע מה פספסתי'), D('2026-08-16 22:41','מאיה','אפשר שמישהו יעשה לי סיכום?'), D('2026-08-16 22:44','נועה','סיכום עד עכשיו:\nאוהלים - רון\nגזייה - איתי\nמאיה - רק תגיעי בזמן בבקשה 🙏'), D('2026-08-16 23:30','מאיה','אוהבת אתכם 💕')], after:'ואת, נועה, עושה לה סיכום. כל פעם. עם נקודות.'},
-      {t:'aside', who:'roast', text:'מאיה היא היחידה בעולם שמקבלת תקציר פרקים קודמים לקבוצת וואטסאפ של ארבעה אנשים.'},
-      {t:'p', text:'**אף ויכוח בקבוצה הזאת לא מחזיק יותר משתי הודעות, כי תמיד מגיעה מאיה עם 🥹 אחד והכול נסלח.** היא לא מאחרת לשיחות. היא מגיעה בדיוק כשצריך מישהו שירכך.'}
-    ]},
-    {icon:'📖', title:'המילון הפנימי: מושגי יסוד בדיאלקט של הטיול לגולן', blocks:[
-      {t:'p', text:'כדי שכולם יישרו קו, הנה הטרמינולוגיה שהמצאתם בלי לשים לב:'},
-      {t:'gloss', items:[
-        {term:'"המסלול השתנה"', meaning:'הלכנו לאיבוד, אבל באופן שמאפשר לאיתי לשמור על כבודו.'},
-        {term:'"אני מעדכנת"', meaning:'נועה כבר החליטה. העדכון הוא מחווה דמוקרטית בלבד.'},
-        {term:'"קצת מאחרת"', meaning:'יחידת זמן של מאיה. שווה ערך לשעה וחצי עד יום שלם.'},
-        {term:'"אני על האוכל"', meaning:'הצהרת כוונות של רון שכוללת לפחות 4 קילו בשר וסיכון ממשי לשכוח את המנגל.'},
-        {term:'"האקסל"', meaning:'מסמך מכונן. איש לא קרא אותו, וכולם חוששים ממנו.'}
-      ]}
-    ]},
-    {icon:'🔮', title:'תחזית לעתיד: לאן כל זה הולך?', blocks:[
-      {t:'p', text:'הסתכלנו לכם בעיניים (בהודעות, אבל עדיין). זה מה שאנחנו רואים:'},
-      {t:'list', ordered:false, items:[
-        '**נועה** תפתח סקר לטיול הבא עוד לפני שכולם החזירו את הכסף על הקודם.',
-        '**איתי** ישלח מסלול חדש בשלוש בלילה, עם המילים "אף אחד לא מכיר".',
-        '**מאיה** תענה "אני בפנים!! 🥹" יומיים אחרי שהכול כבר סגור, ותקבל סיכום.',
-        '**רון** כבר יודע מה הוא מביא, וזה לא סלט.'
-      ]},
-      {t:'p', text:'ובאמת? תמשיכו בדיוק ככה. **רוב הקבוצות מתות אחרי הטיול. שלכם רק התחילה.**'}
-    ]}
-  ],
-  characters:[
-    {name:'נועה', role:'שרת הלוגיסטיקה', bio:'פותחת סקר לפני שמישהו פתח את הפה. מחזיקה את הקבוצה ביד אחת ואת האקסל ביד השנייה.', superpower:'אקסל שמסדר גם מריבות', redflag:'"אני לא אמא שלכם אבל"', quote:'זה הסקר השלישי השבוע ואני לא מתביישת'},
-    {name:'איתי', role:'הנווט הלילי', bio:'ער כשכולם ישנים ובטוח שהוא יודע את הדרך. המפה לא תמיד מסכימה.', superpower:'התלהבות שמכסה על כל טעות ניווט', redflag:'"המסלול השתנה"', quote:'אני לא הלכתי לאיבוד, המסלול השתנה'},
-    {name:'רון', role:'שר המנגלים', bio:'כל שיחה, לא משנה על מה, מגיעה אצלו לקבב. שכח פעם אחת את המנגל ועד היום משלם על זה.', superpower:'מרינדה שמשנה חיים (לטענתו)', redflag:'"אחרי הטיול הזה אני בדיאטה"', quote:'שקשוקה בבוקר זה לא נתון למשא ומתן'},
-    {name:'מאיה', role:'נסיכת הסורי', bio:'רואה הודעות שלוש שעות אחרי, מבקשת סיכום ושולחת לב. וכולם סולחים לה.', superpower:'להפוך כל ויכוח לחיבוק עם 🥹 אחד', redflag:'האוהל ה"עקום"', quote:'האוהל שלי בסדר גמור, הוא פשוט עקום'},
-  ],
-  awards:[
-    {title:'פרס המנגל הנשכח', winner:'רון', why:'יש דברים שהקבוצה הזאת לא שוכחת, גם אם הוא מאוד היה רוצה.'},
-    {title:'מדליית הסקר השבועי', winner:'נועה', why:'דמוקרטיה זה יפה, אבל שלושה סקרים בשבוע זה כבר ענף ספורט.'},
-    {title:'פרס המצפן השבור', winner:'איתי', why:'"20 דקות הליכה". תשאלו את הרגליים של כולם.'},
-    {title:'פרס "מה פספסתי?"', winner:'מאיה', why:'השאלה שנשאלת הכי הרבה בקבוצה, וגם הכי מתוקה.'},
-  ],
-  scores:{drama:34,love:88,chaos:71,cringe:42},
-  prediction:'עוד חודשיים יהיה סקר חדש, מסלול חדש בשלוש בלילה, וארבעה קילו קבב. אולי חמישה.',
-  signoff:'שלכם, כל הפאנל של רכילותא. (סבתא פנינה מבקשת שתאכלו משהו לפני הטיול הבא.)',
-};
 let demoCache = null;
 function bootDemo(){
-  if (!demoCache) demoCache = computeStats(parseChat(makeDemoChat()), 'הטיול לגולן 🏕️');
-  ST = demoCache; REP = DEMO_REP; MSGS = null; NOTES = null; VIEW = {persona:'mix', reader:'נועה', gender:'f', demo:true, saved:null};
+  // the demo is a real run of the engine on an invented chat, so it shows exactly what people get
+  if (!demoCache){ const msgs = parseChat(makeDemoChat()); const st = computeStats(msgs, 'החבר׳ה 💛'); let rep = null; try { rep = quickReport(msgs, st, 'נועה', 'f'); } catch(e){ console.error(e); } demoCache = {st, rep}; }
+  ST = demoCache.st; REP = demoCache.rep; MSGS = null; NOTES = null; VIEW = {persona:'mix', reader:'נועה', gender:'f', demo:true, saved:null};
   renderReport();
 }
 

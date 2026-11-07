@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-wo8BKS86yStE4Va9EJ3/2G9a9PxOQLxGT1HwdJfntzg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-voS5oMKP/0QNgVxXhEMSO3H02cB4MwLMpjdLX01zD/M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -219,6 +219,46 @@ button{font:inherit;cursor:pointer}
 .bar i{display:block;height:100%;border-radius:inherit;background:var(--pink)}
 .score .bar{height:18px}
 .score:nth-child(2) .bar i{background:var(--teal)} .score:nth-child(3) .bar i{background:var(--violet)} .score:nth-child(4) .bar i{background:var(--yolk)}
+:root{--m1:#C98A00;--m2:#E8285F;--m3:#5B3FE0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--m1:#C08A1C;--m2:#EE4A7A;--m3:#8A74F2}}
+:root[data-theme="dark"]{--m1:#C08A1C;--m2:#EE4A7A;--m3:#8A74F2}
+.mood{position:relative;margin:4px 0 0;padding:34px 0 26px;touch-action:pan-y;user-select:none}
+.mood-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.mood-plot{position:relative;flex:1;height:56px;border-bottom:1px solid var(--line)}
+.mood-plot svg{display:block;width:100%;height:100%;overflow:visible}
+.mood-line{fill:none;stroke:var(--c);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.mood-area{fill:var(--c);opacity:.12}
+.mood-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--surface);transform:translate(-50%,-50%)}
+.mood-lab{flex:none;width:96px;display:flex;flex-direction:column}
+.mood-lab b,.plinks .pt b,.mood-tip b{font-size:14px;color:var(--ink);background:none;padding:0;box-shadow:none}
+.mood-lab small{font-size:12px;color:var(--muted)}
+.mood-marks{position:absolute;top:4px;left:0;right:108px;height:26px}
+.mood-mk{position:absolute;transform:translateX(-50%);font-size:16px;line-height:1}
+.mood-axis{position:relative;height:16px;margin-right:108px;color:var(--muted);font-size:12px}
+.mood-axis span{position:absolute;transform:translateX(-50%)}
+.mood-cross{position:absolute;top:30px;bottom:24px;width:1px;background:var(--muted);opacity:.6;pointer-events:none}
+.mood-tip{position:absolute;top:0;z-index:2;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:13px;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 24px -12px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap}
+.mood-tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px}
+.mood figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.mood-table summary{cursor:pointer;color:var(--muted);font-size:14px}
+.mood-table .mt-wrap{max-height:260px;overflow:auto;margin-top:8px}
+.mood-table table{width:100%;border-collapse:collapse;font-size:13px}
+.mood-table th,.mood-table td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:start}
+.quiz .fine a{color:var(--violet);font-weight:700}
+.quizpage{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.quizpage .pg-badge{align-self:center}
+.quizpage .lr-h,.quizpage .lr-dek{text-align:center}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}
+.pchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px 6px 8px;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s var(--ease),border-color .2s}
+@media (hover:hover) and (pointer:fine){.pchip:hover{transform:translateY(-2px);border-color:var(--violet)}}
+.pchip .av0{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px}
+.plinks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.plinks a,.plinks .plink-off{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s var(--ease),border-color .2s}
+@media (hover:hover) and (pointer:fine){.plinks a:hover{transform:translateY(-2px);border-color:var(--violet)}}
+.plinks .pk{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--violet);color:#fff;font-size:15px}
+.plinks .pt{display:flex;flex-direction:column;min-width:0}
+.plinks .pt b{overflow-wrap:anywhere}
+.plinks .pt small{color:var(--muted);font-size:13px}
 .letter{position:relative;background:#FFFDF7;color:#2A2233;border-radius:6px 22px 22px 6px;padding:28px 24px 26px;font-family:var(--serif);font-size:19px;line-height:1.8;box-shadow:0 1px 0 #EFE6D6,0 18px 40px -18px rgba(60,40,20,.35);background-image:repeating-linear-gradient(transparent 0 33px,rgba(91,63,224,.07) 33px 34px);border-inline-start:4px solid var(--pink)}
 .letter p{margin:0 0 14px}
 .letter p.dear{font-weight:900;font-size:22px}
@@ -1182,10 +1222,40 @@ const B32 = '0123456789abcdefghijklmnopqrstuv';
 function toB32(u8){ let out='', bits=0, val=0; for (const b of u8){ val=((val<<8)|b)>>>0; bits+=8; while (bits>=5){ out+=B32[(val>>>(bits-5))&31]; bits-=5; } val &= (1<<bits)-1; } if (bits>0) out+=B32[(val<<(5-bits))&31]; return out; }
 function fromB32(s){ const out=[]; let bits=0, val=0; for (const c of s.toLowerCase()){ const v=B32.indexOf(c); if (v<0) continue; val=((val<<5)|v)>>>0; bits+=5; if (bits>=8){ out.push((val>>>(bits-8))&255); bits-=8; val &= (1<<bits)-1; } } return new Uint8Array(out); }
 function slimPack(){ const p = packReport(); const st = {...p.st, people: p.st.people.map(x=>({...x, longest: ''}))}; return {...p, st}; }
-async function makeOpenHash(){
-  let data = new TextEncoder().encode(JSON.stringify(slimPack())), z = 'p';
+async function makeOpenHash(pack){
+  if (pack) pack = {...pack, st: {...pack.st, people: pack.st.people.map(x=>({...x, longest:''}))}};
+  let data = new TextEncoder().encode(JSON.stringify(pack || slimPack())), z = 'p';
   if (window.CompressionStream){ try { data = await streamBytes(data, new CompressionStream('gzip')); z='z'; } catch(_){} }
   return 'x-' + z + toB32(data);
+}
+async function encodeHash(prefix, obj){
+  let data = new TextEncoder().encode(JSON.stringify(obj)), z = 'p';
+  if (window.CompressionStream){ try { data = await streamBytes(data, new CompressionStream('gzip')); z='z'; } catch(_){} }
+  return prefix + z + toB32(data);
+}
+/* "who said it?": real quotes, balanced across people; nothing sensitive (numbers, links, illness, mourning) */
+function buildShareQuiz(){
+  if (!MSGS || !ST) return null;
+  const P = ST.people.filter(p=>p.count >= Math.max(5, ST.total*0.015)).slice(0,8); if (P.length<2) return null;
+  const names = new Set(P.map(p=>p.name)), LQ = /ח{3,}|😂|🤣|מתתי/u;
+  const SENS = /\d{6,}|\S+@\S+\.\S+|https?:|www\.|סיסמ|אשראי|תעודת זהות|נפטר|הלוויה|בית חולים|שבעה|מאושפז|ניתוח|הריון|בהריון/u;
+  const pool = [];
+  MSGS.forEach((m,i)=>{ if (m.kind!=='text' || !names.has(m.who) || m.text.length<14 || m.text.length>140 || SENS.test(m.text) || LQ.test(m.text) || (m.text.match(/\p{L}/gu)||[]).length<10) return;
+    let sc = Math.random();
+    for (let j=i+1;j<Math.min(MSGS.length,i+4);j++){ const r=MSGS[j]; if (r.t-m.t>3*60e3) break; if (r.who!==m.who && r.kind==='text' && LQ.test(r.text)) sc += 2; }
+    pool.push({m, sc}); });
+  pool.sort((a,b)=>b.sc-a.sc);
+  const cap = Math.max(2, Math.ceil(12/P.length)+1), per = {}, seen = new Set(), chosen = [];
+  for (const x of pool){ if (chosen.length>=12) break; if ((per[x.m.who]||0)>=cap || seen.has(x.m.text)) continue; seen.add(x.m.text); per[x.m.who]=(per[x.m.who]||0)+1; chosen.push(x.m); }
+  if (chosen.length<5) return null;
+  const opts = ans => shuffle([ans, ...shuffle(P.filter(p=>p.name!==ans)).slice(0,3).map(p=>p.name)]);
+  return {v:1, chat: ST.chatName, by: VIEW.reader||'', qs: shuffle(chosen).map(m=>({q:'מי כתב/ה את זה?', quote:m.text, a:m.who, o:opts(m.who), why:`${m.who}, ${heDate(m.t)}.`}))};
+}
+function cleanQuiz(d){
+  d = defang(d && typeof d==='object' ? d : {}) || {};
+  const qs = (Array.isArray(d.qs)?d.qs:[]).slice(0,15).map(q=>{ const o = (Array.isArray(q?.o)?q.o:[]).slice(0,4).map(x=>String(x).slice(0,40)); const a = String(q?.a ?? '').slice(0,40);
+    return o.length>=2 && o.includes(a) ? {q:String(q.q||'מי כתב/ה את זה?').slice(0,80), quote:String(q.quote||'').slice(0,220), a, o, why:String(q.why||'').slice(0,160)} : null; }).filter(Boolean);
+  return qs.length>=3 ? {chat:String(d.chat||'הצ׳אט').slice(0,60), by:String(d.by||'').slice(0,40), qs} : null;
 }
 async function readOpenHash(h){
   const z = h[2], body = fromB32(h.slice(3));
@@ -1358,6 +1428,14 @@ function startQuiz(st){
 }
 function renderQuiz(){
   const s = quizState, box = $('#quiz'); if (!s || !box) return;
+  if (s.i >= s.qs.length && s.shared){
+    const r = s.score/s.qs.length, link = shareLink(s.shared.hash);
+    const lvl = r>=.9 ? ['🏆','מכירים את כולם יותר טוב ממה שהם מכירים את עצמם.'] : r>=.6 ? ['💛','חברות אמיתית. רואים שהייתם שם.'] : r>=.35 ? ['📚','יש עוד מה ללמוד. אולי פחות להשתיק את הקבוצה?'] : ['👀','מי זה? בטוחים שאתם בצ\'אט הזה?'];
+    const wa = encodeURIComponent(`קיבלתי ${s.score}/${s.qs.length} בחידון "מי אמר את זה?" של ${s.shared.chat} ${lvl[0]}\nנסו לנצח אותי:\n${link}`);
+    box.innerHTML = `<div class="qk">החידון נגמר</div><div class="qscore">${s.score}/${s.qs.length}</div><p class="qq">${lvl[0]} ${esc(lvl[1])}</p><div class="actions"><a class="btn big" href="https://wa.me/?text=${wa}" target="_blank" rel="noopener">לאתגר את הקבוצה בוואטסאפ</a><button class="btn ghost" type="button" data-act="quizRetry">עוד סיבוב</button></div><p class="fine">רוצים דוח מלא על הצ'אט שלכם? <a href="#" data-act="gohome">מתחילים כאן</a>. הכל נבנה בטלפון, ואף הודעה לא יוצאת ממנו.</p>`;
+    if (r>=.6) confetti();
+    return;
+  }
   if (s.i >= s.qs.length){
     const r = s.score/s.qs.length;
     box.innerHTML = `<div class="qk">החידון נגמר</div><div class="qscore">${s.score}/${s.qs.length}</div><p class="qq">${r>=.8?(VIEW.gender==='f'?'וואו. את מכירה':VIEW.gender==='m'?'וואו. אתה מכיר':'וואו. את/ה מכיר/ה')+' את הצ\'אט הזה יותר טוב מהטלפון שלך.':r>=.5?'לא רע בכלל. אבל יש פה כמה הפתעות שמחכות לך בדוח.':'אוקיי, מסתבר שיש לך הרבה מה לגלות. טוב שאנחנו פה.'}</p>${VIEW.quick && !QUICK_READY ? '<button class="btn big" type="button" data-act="toReport">לדוח שלי 🎉</button>' : '<button class="btn ghost" type="button" data-act="quizAgain">עוד סיבוב</button>'}`;
@@ -1365,7 +1443,7 @@ function renderQuiz(){
     return;
   }
   const q = s.qs[s.i];
-  box.innerHTML = `<div class="qk">חידון בזמן ההמתנה · שאלה ${s.i+1} מתוך ${s.qs.length} · ${s.score} נקודות</div><div class="qdots">${s.qs.map((_,k)=>`<i class="${k<s.i?(s.res?.[k]?'ok':'no'):k===s.i?'now':''}"></i>`).join('')}</div><p class="qq">${esc(q.q)}</p>${q.quote?`<div class="qquote">${esc(q.quote)}</div>`:''}<div class="qopts ${q.big?'big':''}">${q.o.map(o=>`<button type="button" class="qo" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p class="qwhy" id="qwhy"></p>`;
+  box.innerHTML = `<div class="qk">${s.shared?'מי אמר את זה?':'חידון בזמן ההמתנה'} · שאלה ${s.i+1} מתוך ${s.qs.length} · ${s.score} נקודות</div><div class="qdots">${s.qs.map((_,k)=>`<i class="${k<s.i?(s.res?.[k]?'ok':'no'):k===s.i?'now':''}"></i>`).join('')}</div><p class="qq">${esc(q.q)}</p>${q.quote?`<div class="qquote">${esc(q.quote)}</div>`:''}<div class="qopts ${q.big?'big':''}">${q.o.map(o=>`<button type="button" class="qo" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><p class="qwhy" id="qwhy"></p>`;
 }
 function answerQuiz(btn){
   const s = quizState; if (!s || btn.disabled) return;
@@ -1432,6 +1510,16 @@ function setStep(n){ document.querySelectorAll('#steps .step').forEach((s,i)=>{ 
 const COMMON_HE = new Set(('בית אוכל עבודה בעבודה הביתה בבית יום ימים שבוע שבועות חודש שנה שעה שעות דקות דקה בוקר ערב לילה צהריים מחר אתמול היום עכשיו תכף אחר בדרך דרך פקק אמא אבא אמא שלך אבא שלך הורים ילדים חברים חבר חברה כסף שקל שקלים אוטו רכב מכונית טלפון הודעה הודעות תמונה תמונות סרטון שיר שירים כביסה כלים מקלחת שינה לישון ישנתי קמתי אכלתי שתיתי הלכתי באתי הגעתי יצאתי חזרתי נסעתי קניתי אמרתי שאלתי ראיתי שמעתי חשבתי ידעתי רציתי עשיתי לקחתי שמתי נתתי דיברתי כתבתי שלחתי מגיע מגיעה מגיעים יוצא יוצאת חוזר חוזרת נוסע נוסעת עובד עובדת רוצים יודעים חושבים אומר אומרת אמר אמרה תגיד תגידי תעשה תעשי תביא תביאי תקנה תקני תשלח תשלחי בואו בוא בואי לך לכי אכל אוכלת אוכל שותה לאכול לשתות לקנות לעשות ללכת לבוא לנסוע לדבר לראות לשמוע לחשוב לדעת לקחת לתת לשים לצאת לחזור להגיע לשלוח לכתוב לקרוא לשאול לענות מים קפה חלב לחם ארוחה ארוחת פיצה סלט שוקולד עוגה גלידה ים חוף טיול מסעדה סרט סדרה מחשב משחק כדור מכבי הפועל אנשים ילד ילדה גבר אישה בחור בחורה נשמה מאמי חיים אחי אחותי אחות אח דוד דודה סבא סבתא בן בת שלום ביי היי הי מזל טוב תודה רבה בבקשה סליחה בסדר נכון ברור באמת ממש מאוד הרבה קצת מעט גדול גדולה קטן קטנה טובה רע רעה יפה חמוד חמודה מגניב מגניבה מטורף מטורפת חדש חדשה ישן ישנה ראשון ראשונה אחרון אחרונה שני שנייה שלישי רביעי חמישי שישי שבת שבוע הבא מחר בבוקר מקום מקומות דבר דברים משהו כלום הכל הכול שום אף פעם פעמים בפעם שוב עוד פעם ביחד לבד שלנו שלהם כולם כולנו מישהי משהי אחד אחת שתיים שלוש ארבע חמש עשר מאה אלף סבבה אחלה יאללה תכף קניתי הזמנתי מאמי חיים נשמה אוקיי סגור בדיוק נכון וואלה בכיף אוהב אוהבת אוהבים מתגעגע מתגעגעת בוקר לילה מותק יפה').split(/\s+/));
 const G_PAIRS = [['יודע','יודעת'],['הולך','הולכת'],['חושב','חושבת'],['אוהב','אוהבת'],['צריך','צריכה'],['יכול','יכולה'],['מוכן','מוכנה'],['בטוח','בטוחה'],['עייף','עייפה'],['שמח','שמחה'],['מת','מתה'],['רעב','רעבה'],['אמור','אמורה'],['מבין','מבינה'],['מצטער','מצטערת'],['מתגעגע','מתגעגעת'],['עובד','עובדת'],['נוסע','נוסעת'],['מגיע','מגיעה'],['יוצא','יוצאת'],['חוזר','חוזרת'],['גמור','גמורה'],['לחוץ','לחוצה'],['מאוהב','מאוהבת'],['כועס','כועסת'],['מרגיש','מרגישה'],['מסכים','מסכימה'],['זוכר','זוכרת'],['שונא','שונאת'],['מתרגש','מתרגשת'],['מפחד','מפחדת'],['מסודר','מסודרת'],['נשבע','נשבעת'],['מקנא','מקנאת'],['בוכה','בוכה'],['שוכב','שוכבת'],['יושב','יושבת'],['מחכה','מחכה'],['גאה','גאה'],['ער','ערה'],['רוצה','רוצה'],['רואה','רואה'],['קונה','קונה'],['עושה','עושה'],['שותה','שותה'],['קורא','קוראת'],['כותב','כותבת'],['אוכל','אוכלת'],['מדבר','מדברת'],['שומע','שומעת'],['מתכוון','מתכוונת'],['מנסה','מנסה']].filter(([m,f])=>m!==f);
 const G_FILL = new Set(['לא','ממש','כל','כך','כבר','פשוט','די','נורא','גם','עדיין','באמת','סתם','קצת','מאוד','עוד','רק','כנראה','בטח','ממש','לגמרי','חייב','חייבת','עכשיו','תמיד','אף','פעם']);
+/* music links: reduced to a canonical form, and checked again before they become a link on the page */
+const SAFE_MUSIC = /^https:\/\/(?:youtu\.be\/[\w-]{11}|open\.spotify\.com\/(?:track|album|playlist|episode)\/[A-Za-z0-9]{10,30}|music\.apple\.com\/[a-z]{2}\/(?:album|playlist|song)\/[A-Za-z0-9.-]{1,40}(?:\?i=\d{1,15})?|soundcloud\.com\/[\w-]{1,60}\/[\w-]{1,100})$/;
+function musicLink(text){
+  let m;
+  if ((m = text.match(/(?:youtube\.com\/(?:watch\?(?:[^\s]*?&)?v=|shorts\/)|youtu\.be\/|music\.youtube\.com\/watch\?(?:[^\s]*?&)?v=)([\w-]{11})/i))) return {url:'https://youtu.be/'+m[1], kind:'yt'};
+  if ((m = text.match(/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(track|album|playlist|episode)\/([A-Za-z0-9]{10,30})/i))) return {url:`https://open.spotify.com/${m[1].toLowerCase()}/${m[2]}`, kind:'sp'};
+  if ((m = text.match(/music\.apple\.com\/([a-z]{2})\/(album|playlist|song)\/(?:[^\s\/?]+\/)?([A-Za-z0-9.-]{1,40})(?:\?i=(\d{1,15}))?/i))) return {url:`https://music.apple.com/${m[1].toLowerCase()}/${m[2].toLowerCase()}/${m[3]}${m[4]?'?i='+m[4]:''}`, kind:'am'};
+  if ((m = text.match(/soundcloud\.com\/([\w-]{1,60})\/([\w-]{1,100})/i))) return {url:`https://soundcloud.com/${m[1]}/${m[2]}`, kind:'sc'};
+  return null;
+}
 function guessGenders(msgs, people, readerName, readerGender){
   const map = new Map(); for (const [m,f] of G_PAIRS){ map.set(m,'m'); map.set(f,'f'); }
   const vote = {}; const V = (who,g,w=1) => { const o = vote[who] ||= {m:0,f:0}; o[g]+=w; };
@@ -1452,7 +1540,7 @@ function guessGenders(msgs, people, readerName, readerGender){
   if (readerName && (readerGender==='m' || readerGender==='f')) G[readerName] = readerGender;
   return G;
 }
-function quickReport(msgs, st, reader, readerGender){
+function quickReport(msgs, st, reader, readerGender, personal=false){
   readerGender = readerGender ?? (typeof VIEW!=='undefined' ? VIEW.gender : '');
   const rnd = mulberry32((Date.now() ^ (msgs.length*2654435761)) >>> 0);
   const pick = a => a[Math.floor(rnd()*a.length)], chance = p => rnd() < p;
@@ -1666,6 +1754,15 @@ function quickReport(msgs, st, reader, readerGender){
     eras.sort((a,b)=>a.k.localeCompare(b.k));
   }
 
+  /* ===== 17. the soundtrack: every song (and clip) people shared ===== */
+  const songs = [];
+  msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who) || !/https?:/.test(m.text)) return; const ml = musicLink(m.text); if (!ml || !SAFE_MUSIC.test(ml.url)) return;
+    const note = m.text.replace(/https?:\/\/\S+/g,'').replace(/\s+/g,' ').trim(); songs.push({...ml, who:m.who, t:m.t, note: note.length>=2 ? note.slice(0,70) : ''}); });
+  const songBy = {}; for (const x of songs) songBy[x.who]=(songBy[x.who]||0)+1;
+  const dj = Object.entries(songBy).sort((a,b)=>b[1]-a[1])[0];
+  const songRep = {}; for (const x of songs) songRep[x.url]=(songRep[x.url]||0)+1;
+  const anthem = Object.entries(songRep).filter(([u,c])=>c>=2).sort((a,b)=>b[1]-a[1])[0];
+
   /* ===== 16. the full range of feeling: joy, hard days, longing, gratitude, and who shows up ===== */
   const EMO_SETS = {
     joy:   /איזה כיף|יש{2,}|יש!!|הצלחתי|התקבלתי|קיבלתי את|מזל טוב|🎉|🥳|כל כך שמח|מאושר|מאושרת|ניצחנו|עברתי את|הדירה החדשה|נולד|נולדה|מתחתנ|התארס/u,
@@ -1673,6 +1770,7 @@ function quickReport(msgs, st, reader, readerGender){
     miss:  /מתגעגע|מתגעגעת|מתגעגעים|געגוע|חסר לי|חסרה לי|חסרים לי/u,
     thank: /תודה ש|תודה על|תודה לך על|תודה לכם|תודה לכולם|בזכותך|בזכותכם/u,
   };
+  const isSad = t => EMO_SETS.sad.test(t) && !isLaugh(t) && !/בוכה מ(?:רוב )?צחוק|בוכה מצחוק|מתה מצחוק|מת מצחוק/u.test(t);
   const SUPPORT = /אני פה|אני כאן|אני איתך|אנחנו איתך|אנחנו פה|תחזיק|תחזיקי|יהיה בסדר|יהיה טוב|חיבוק|🫂|מחבק|מחבקת|שולח כוח|שולחת כוח|שולחים כוח|רפואה שלמה|בצער|רק בשמחות|תהיה חזק|תהיי חזקה|בשבילך|אוהבים אותך|אלייך|אליך|אני מגיע|אני מגיעה|לנחם|❤|🤍|💪|🙏/u;
   const JOYREPLY = /מזל טוב|איזה כיף|גאה|❤|😍|🥳|🎉|!!!|וואו|מגיע לך|כל הכבוד/u;
   const pickMoment = (re, replyRe, minLen) => { let best=null;
@@ -1682,10 +1780,10 @@ function quickReport(msgs, st, reader, readerGender){
       if (!rp.length) return; sc += new Set(rp.map(j=>msgs[j].who)).size*1.5;
       if (!best || sc>best.sc) best = {i, sc, rp: rp.slice(0,4)}; });
     return best; };
-  let momJoy = pickMoment(EMO_SETS.joy, JOYREPLY, 8), momSad = pickMoment(EMO_SETS.sad, SUPPORT, 12), momMiss = pickMoment(EMO_SETS.miss, /מתגעגע|גם אני|❤|🥹|חסר|בקרוב/u, 10), momThank = pickMoment(EMO_SETS.thank, /❤|🥹|אוהב|תמיד|בכיף|בשבילך|🙏/u, 15);
+  let momJoy = pickMoment(EMO_SETS.joy, JOYREPLY, 8), momSad = pickMoment({test:isSad}, SUPPORT, 12), momMiss = pickMoment(EMO_SETS.miss, /מתגעגע|גם אני|❤|🥹|חסר|בקרוב/u, 10), momThank = pickMoment(EMO_SETS.thank, /❤|🥹|אוהב|תמיד|בכיף|בשבילך|🙏/u, 15);
   const showedUp = {}, cheered = {}; let hardTimes = 0;
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who)) return;
-    const sad = EMO_SETS.sad.test(m.text) && m.text.length>=12, joy = EMO_SETS.joy.test(m.text) && !isLaugh(m.text);
+    const sad = isSad(m.text) && m.text.length>=12, joy = EMO_SETS.joy.test(m.text) && !isLaugh(m.text);
     if (!sad && !joy) return; if (sad) hardTimes++;
     const seen = new Set();
     for (let j=i+1;j<Math.min(msgs.length,i+15);j++){ const r=msgs[j]; if (r.t-m.t>6*3600e3) break; if (r.who===m.who || !inP.has(r.who) || !isText(r) || seen.has(r.who)) continue;
@@ -2000,6 +2098,40 @@ function quickReport(msgs, st, reader, readerGender){
     }
   }
 
+  { // the mood over time: laughter, love and hard days, month by month (3-month rolling, so one loud week doesn't shout)
+    const mon = {}; for (const m of msgs){ if (!isText(m)) continue; const k = ymd(new Date(m.t)).slice(0,7); const o = mon[k] ||= {n:0, laugh:0, love:0, sad:0};
+      o.n++; if (isLaugh(m.text)) o.laugh++; if (isLoveMsg(m.text) || LOVE_RE.test(m.text) || HEART_RE.test(m.text)) o.love++; if (isSad(m.text)) o.sad++; }
+    const months = []; { const d = new Date(msgs[0].t); d.setDate(1); const end = ymd(new Date(msgs[msgs.length-1].t)).slice(0,7); for (let k=0;k<240;k++){ const key = ymd(d).slice(0,7); months.push(key); if (key>=end) break; d.setMonth(d.getMonth()+1); } }
+    if (months.length >= 6){
+      const roll = key => { const out=[]; months.forEach((mk,i)=>{ let a=0,nn=0; for (let j=Math.max(0,i-1); j<=Math.min(months.length-1,i+1); j++){ const o = mon[months[j]]; if (o){ a+=o[key]; nn+=o.n; } } out.push(nn>=10 ? Math.round(a/nn*1000)/10 : null); }); return out; };
+      const series = {laugh: roll('laugh'), love: roll('love'), sad: roll('sad')};
+      const peak = arr => { let bi=-1; arr.forEach((v,i)=>{ if (v!=null && (bi<0 || v>arr[bi])) bi=i; }); return bi; };
+      const avg = arr => { const v = arr.filter(x=>x!=null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0; };
+      const pk = {laugh: peak(series.laugh), love: peak(series.love), sad: peak(series.sad)};
+      const sadReal = pk.sad>=0 && series.sad[pk.sad] >= .25 && series.sad[pk.sad] >= avg(series.sad)*2.5;
+      const marks = []; const addMark = (t, ic) => { const k = ymd(new Date(t)).slice(0,7); if (!marks.some(x=>x.k===k) && marks.length<7) marks.push({k, ic}); };
+      if (firstLove>=0) addMark(msgs[firstLove].t, '💘'); for (const x of miles) addMark(msgs[x.i].t, x.ic); if (makeup) addMark(msgs[makeup.i].t, '🌧️'); topHearts.forEach(h=>addMark(msgs[h.i].t,'🤍'));
+      const lines = [];
+      if (pk.laugh>=0) lines.push(`הכי צחקתם ב${B(heMY(new Date(months[pk.laugh]+'-15').getTime()))}.`);
+      if (pk.love>=0 && series.love[pk.love] > 0) lines.push(`הכי הרבה אהבה הייתה ב${B(heMY(new Date(months[pk.love]+'-15').getTime()))}.`);
+      if (sadReal) lines.push(`והתקופה שבה היה הכי קשה: ${B(heMY(new Date(months[pk.sad]+'-15').getTime()))}.`);
+      add('story', {icon:'🌡️', title: pick(['גרף הרגשות', 'מד הלב של הצ\'אט', 'איך הרגשתם, חודש אחרי חודש']), blocks:[
+        {t:'p', text: `כל הודעה פה נושאת רגש. ספרנו אותם, חודש אחרי חודש: כמה צחוק, כמה אהבה, וכמה ימים קשים. ${lines.join(' ')}`},
+        {t:'mood', months, laugh: series.laugh, love: series.love, sad: series.sad, peaks: pk, marks}
+      ]});
+    }
+  }
+  if (songs.length>=3){
+    const uniq = []; const seenU = new Set(); for (const x of songs){ if (seenU.has(x.url)) continue; seenU.add(x.url); uniq.push(x); }
+    let pickS = uniq.length<=10 ? uniq : [uniq[0], ...uniq.slice(1,-4).filter((_,k,a)=>k % Math.ceil(a.length/5)===0), ...uniq.slice(-4)];
+    if (anthem && !pickS.some(x=>x.url===anthem[0])) pickS = [uniq.find(x=>x.url===anthem[0]), ...pickS.slice(0,9)];
+    const KIND = {yt:'יוטיוב', sp:'ספוטיפיי', am:'Apple Music', sc:'SoundCloud'};
+    add('story', {icon:'🎵', title: pick(['הפסקול של הצ\'אט', 'הפלייליסט שלכם', 'השירים של הסיפור']), blocks:[
+      {t:'p', text: `${n(songs.length)} שירים וסרטונים נשלחו פה לאורך הדרך.${dj && dj[1]>=2 ? ` ${g(dj[0],'הדי-ג׳יי','הדי-ג׳יית')} הרשמי${g(dj[0],'','ת')}: ${B(dj[0])}, עם ${n(dj[1])}.` : ''}${anthem ? ` ושיר אחד נשלח ${B(times(anthem[1]))}. זה כבר לא שיר, זה ההמנון.` : ''} הנה הפסקול, בסדר שבו הוא נכתב:`},
+      {t:'links', items: pickS.map(x=>({url:x.url, kind:x.kind, label: KIND[x.kind], who:x.who, t:x.t, note:x.note, anthem: !!(anthem && anthem[0]===x.url)}))}
+    ]});
+  }
+
   // --- the reader's own chapter
   if (reader && inP.has(reader)){
     const me = P.find(p=>p.name===reader), bits = [];
@@ -2071,9 +2203,16 @@ function quickReport(msgs, st, reader, readerGender){
     {icon:'🔮', title: pick(['תחזית (מבוססת נתונים, בערך)', 'מה הלאה', 'נבואות']), blocks:[{t:'list', ordered:false, items:fut.slice(0,5)}]},
   ].filter(Boolean);
 
+  if (personal && reader && inP.has(reader)){
+    const myFanH = Object.entries(fan).map(([l,o])=>[l, o[reader]||0]).filter(x=>x[1]>=3).sort((a,b)=>b[1]-a[1])[0];
+    const pers = [`${reader}, זה מה ש${chat==='הקבוצה'?'הקבוצה':'הצ\'אט'} יודע${chat==='הקבוצה'?'ת':''} ${g(reader,'עליך','עלייך')}`, `הדוח האישי של ${reader}`];
+    if (myFanH) pers.push(`${reader}, ${myFanH[0]} ${g(myFanH[0],'צחק','צחקה')} מהבדיחות של${g(reader,'ך','ך')} ${times(myFanH[1])}`);
+    if (catch_[reader]?.[0]) pers.push(`${reader}, ${q(catch_[reader][0].key)} ${times(catch_[reader][0].c)}. ספרנו.`);
+    var personalHead = pick(pers);
+  }
   facts.sort((a,b)=>b[0]-a[0]);
   const top3 = facts.slice(0,3);
-  const headline = (top3.length ? top3[Math.floor(rnd()*Math.min(2,top3.length))][1] : '') || `${n(st.total)} הודעות אחר כך: הדוח הרשמי על ${chat}`;
+  const headline = (typeof personalHead==='string' && personalHead) || (top3.length ? top3[Math.floor(rnd()*Math.min(2,top3.length))][1] : '') || `${n(st.total)} הודעות אחר כך: הדוח הרשמי על ${chat}`;
   const sc = v => Math.max(3, Math.min(99, Math.round(v)));
   const textN = Math.max(1, msgs.filter(isText).length);
   const scores = {
@@ -2095,11 +2234,11 @@ function quickReport(msgs, st, reader, readerGender){
     `${hey}מישהו קרא את כל הצ'אט שלכם. כל הודעה. כל "חחח". כל "נו?" שנשאר בלי תשובה. מה שמצאנו: ${list}.`]);
   return {
     headline,
-    dek: pick([`${hey}קראנו את כל ${n(st.total)} ההודעות. כל ציטוט פה אמיתי. כל מספר נספר.`, `${hey}${n(st.total)} הודעות, ${n(st.spanDays)} ימים, ואמת אחת: אתם לא מבינים כמה אתם מצחיקים. ומרגשים.`, `${hey}מה שקרה ב${chat}, כבר לא נשאר ב${chat}.`]),
+    dek: pick([`${hey}קראנו את כל ${n(st.total)} ההודעות. כל ציטוט פה אמיתי. כל מספר נספר.`, `${hey}${n(st.total)} הודעות, ${n(st.spanDays)} ימים, ואמת אחת: אתם לא מבינים כמה אתם מצחיקים. ומרגשים.`, `${hey}מה שקרה ${chatB}, כבר לא נשאר ${chatB}.`]),
     intro:[ intro ],
     sections, cast: P.map(p=>({name:p.name, title:p.name, para:''})), characters:[],
     awards: st.localAwards.filter(a=>!(a.title==='פרס הצב' && !(P.find(p=>p.name===a.winner)?.medianReply >= 12*60e3))).slice(0,6).map(a=>({...a, why: a.why.replace('פתח/ה', g(a.winner,'פתח','פתחה')).replace('התנצל/ה', g(a.winner,'התנצל','התנצלה'))})), scores,
-    prediction: '', letter, signoff: pick(['שלכם, רכילותא. (הדוח נבנה בדפדפן שלכם. אף הודעה לא יצאה מהמכשיר.)', 'רכילותא. קראנו הכל, לא סיפרנו לאף אחד. (הכל נבנה במכשיר שלכם.)']),
+    prediction: '', letter, genders: GEN, signoff: pick(['שלכם, רכילותא. (הדוח נבנה בדפדפן שלכם. אף הודעה לא יצאה מהמכשיר.)', 'רכילותא. קראנו הכל, לא סיפרנו לאף אחד. (הכל נבנה במכשיר שלכם.)']),
     quick: true,
   };
 }
@@ -2497,6 +2636,9 @@ function defang(v, d=0){
 function safePack(p){
   p = defang(p && typeof p === 'object' ? p : {}) || {};
   if (p.rep && typeof p.rep === 'object'){
+    for (const k of ['intro','sections','characters','awards','cast']) if (!Array.isArray(p.rep[k])) p.rep[k] = [];
+    for (const k of ['headline','dek','prediction','signoff']) if (typeof p.rep[k] !== 'string') p.rep[k] = '';
+    p.rep.sections = p.rep.sections.filter(x=>x && typeof x==='object').map(x=>({...x, blocks: Array.isArray(x.blocks) ? x.blocks.filter(b=>b && typeof b==='object') : []}));
     const sc = p.rep.scores; const cl = v => Math.max(0, Math.min(100, Math.round(+v || 0)));
     if (sc && typeof sc === 'object') p.rep.scores = {drama:cl(sc.drama), love:cl(sc.love), chaos:cl(sc.chaos), cringe:cl(sc.cringe)};
   }
@@ -2523,6 +2665,41 @@ function waBlock(msgs){
   }
   return h + '</div>';
 }
+function moodHTML(b){
+  const months = (Array.isArray(b.months)?b.months:[]).filter(k=>/^\d{4}-\d{2}$/.test(k)).slice(0,240); const N = months.length; if (N<2) return '';
+  const num = v => (typeof v==='number' && isFinite(v)) ? Math.max(0, Math.min(100, v)) : null;
+  const rows = [['laugh','😂 צחוק','m1'],['love','❤️ אהבה','m2'],['sad','🫂 ימים קשים','m3']].map(([key,label,col])=>{
+    const vals = (Array.isArray(b[key])?b[key]:[]).slice(0,N).map(num); while (vals.length<N) vals.push(null);
+    const max = Math.max({laugh:5, love:3, sad:1.2}[key], ...vals.filter(v=>v!=null)); const X = i => (N===1?500:i/(N-1)*1000), Y = v => 94 - v/max*84;
+    let d='', area='', run=[];
+    const flush = () => { if (run.length>1){ d += 'M'+run.map(([x,y])=>x.toFixed(1)+' '+y.toFixed(1)).join('L'); area += `M${run[0][0].toFixed(1)} 100L`+run.map(([x,y])=>x.toFixed(1)+' '+y.toFixed(1)).join('L')+`L${run[run.length-1][0].toFixed(1)} 100Z`; } run=[]; };
+    vals.forEach((v,i)=>{ if (v==null) flush(); else run.push([X(i),Y(v)]); }); flush();
+    const pi = typeof b.peaks?.[key]==='number' ? b.peaks[key] : -1;
+    const peak = pi>=0 && pi<N && vals[pi]!=null ? `<circle cx="${X(pi).toFixed(1)}" cy="${Y(vals[pi]).toFixed(1)}" r="4" class="mood-pk" vector-effect="non-scaling-stroke"/>` : '';
+    const peakTxt = pi>=0 && pi<N ? `שיא: ${esc(heMY(new Date(months[pi]+'-15').getTime()))}` : '';
+    return {key, label, col, vals, html:`<div class="mood-row" style="--c:var(--${col})"><div class="mood-plot"><svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path d="${area}" class="mood-area"/><path d="${d}" class="mood-line" vector-effect="non-scaling-stroke"/></svg>${peak?`<span class="mood-dot" style="left:${(X(pi)/10).toFixed(2)}%;top:${Y(vals[pi]).toFixed(1)}%"></span>`:''}</div><div class="mood-lab" dir="rtl"><b>${label}</b><small>${peakTxt}</small></div></div>`};
+  });
+  const marks = (Array.isArray(b.marks)?b.marks:[]).slice(0,8).map(m=>{ const i = months.indexOf(m?.k); if (i<0) return ''; const ic = String(m.ic||'').slice(0,4); return `<span class="mood-mk" style="left:${(i/(N-1)*100).toFixed(2)}%" title="${esc(heMY(new Date(m.k+'-15').getTime()))}">${esc(ic)}</span>`; }).join('');
+  const years = []; months.forEach((k,i)=>{ if (i===0 || k.endsWith('-01')) years.push(`<span style="left:${(i/(N-1)*100).toFixed(2)}%">${k.slice(0,4)}</span>`); });
+  const data = esc(JSON.stringify({m:months, s:rows.map(r=>r.vals)}));
+  const table = `<details class="mood-table"><summary>הנתונים בטבלה</summary><div class="mt-wrap"><table><thead><tr><th>חודש</th>${rows.map(r=>`<th>${r.label}</th>`).join('')}</tr></thead><tbody>${months.map((k,i)=>`<tr><td>${esc(heMY(new Date(k+'-15').getTime()))}</td>${rows.map(r=>`<td>${r.vals[i]==null?'–':r.vals[i]+'%'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+  return `<figure class="mood" dir="ltr" data-mood="${data}"><div class="mood-marks">${marks}</div>${rows.map(r=>r.html).join('')}<div class="mood-axis">${years.join('')}</div><div class="mood-cross" hidden></div><div class="mood-tip" dir="rtl" hidden></div><figcaption dir="rtl">אחוז ההודעות בכל חודש שיש בהן צחוק, אהבה או קושי. כל שורה בקנה מידה משלה.</figcaption></figure>${table}`;
+}
+function initMood(root){
+  root.querySelectorAll('.mood[data-mood]').forEach(fig=>{
+    if (fig.dataset.on) return; fig.dataset.on = '1';
+    let D; try { D = JSON.parse(fig.dataset.mood); } catch(_){ return; }
+    const N = D.m.length, tip = fig.querySelector('.mood-tip'), cross = fig.querySelector('.mood-cross'), plot = fig.querySelector('.mood-plot');
+    const show = e => { const r = plot.getBoundingClientRect(); const x = Math.min(Math.max(e.clientX - r.left, 0), r.width); const i = Math.round(x / r.width * (N-1));
+      const L = ['😂 צחוק','❤️ אהבה','🫂 ימים קשים'];
+      tip.innerHTML = `<b>${esc(heMY(new Date(D.m[i]+'-15').getTime()))}</b>` + D.s.map((v,k)=>`<span><i style="background:var(--m${k+1})"></i>${L[k]}: ${v[i]==null?'–':v[i]+'%'}</span>`).join('');
+      const px = i/(N-1)*r.width + (r.left - fig.getBoundingClientRect().left);
+      cross.style.left = px+'px'; cross.hidden = false; tip.hidden = false;
+      const fw = fig.clientWidth, tw = tip.offsetWidth; tip.style.left = Math.min(Math.max(px - tw/2, 0), fw - tw)+'px'; };
+    const hide = () => { tip.hidden = true; cross.hidden = true; };
+    fig.addEventListener('pointermove', show); fig.addEventListener('pointerdown', show); fig.addEventListener('pointerleave', hide);
+  });
+}
 function blockHTML(b){
   if (b.t==='p') return `<p>${rich(b.text)}</p>`;
   if (b.t==='reveal') return `<div class="reveal">${rich(b.text)}</div>`;
@@ -2531,6 +2708,8 @@ function blockHTML(b){
   if (b.t==='h') return `<h3 class="sub">${rich(b.text)}</h3>`;
   if (b.t==='aside'){ const p = Object.hasOwn(PERSONAS, b.who) ? PERSONAS[b.who] : null; return p ? `<div class="aside" data-w="${b.who}"><i>${p.av}</i><div><b>${esc(p.name)}</b><span>${rich(b.text)}</span></div></div>` : ''; }
   if (b.t==='list'){ const tag = b.ordered?'ol':'ul'; return `<${tag} class="plist">${b.items.map(x=>`<li>${rich(x)}</li>`).join('')}</${tag}>`; }
+  if (b.t==='mood') return moodHTML(b);
+  if (b.t==='links') return `<ul class="plinks">${(Array.isArray(b.items)?b.items:[]).slice(0,12).map(x=>{ const ok = typeof x?.url==='string' && SAFE_MUSIC.test(x.url); const inner = `<span class="pk">${x.kind==='yt'?'▶':'♫'}</span><span class="pt"><b>${esc(x.note || ('שיר ב'+(x.label||'קישור')))}</b><small>${x.anthem?'⭐ ההמנון · ':''}${esc(x.who)} · ${esc(heDate(+x.t||0))}${x.label?' · '+esc(x.label):''}</small></span>`; return `<li>${ok ? `<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>` : `<span class="plink-off">${inner}</span>`}</li>`; }).join('')}</ul>`;
   if (b.t==='gloss') return `<dl class="gloss">${b.items.map(g=>`<div><dt>${esc(g.term)}</dt><dd>${rich(g.meaning)}</dd></div>`).join('')}</dl>`;
   return '';
 }
@@ -2564,9 +2743,14 @@ function renderReport(){
   h += appendixHTML(st);
   if (rep && !VIEW.demo && MSGS && NOTES) h += askHTML(persona);
   if (rep && !VIEW.demo) h += `<section class="savebox"><h3>${VIEW.saved && !VIEW.saved.isNew ? 'שלחו את זה הלאה' : 'לשלוח את זה לחברים'}</h3><p>${VIEW.saved ? 'אותו קישור עובד לכל מי שתשלחו לו, גם בלי חשבון Claude.' : 'לוחצים "שיתוף" ומקבלים קישור שנפתח לכל אחד, גם בלי חשבון Claude.'}</p><div class="actions"><button class="btn" type="button" data-act="share">שיתוף</button>${ACCOUNTS && !VIEW.cloudId ? '<button class="btn ghost" type="button" data-act="cloudSave">☁️ שמירה בחשבון</button>' : ''}${VIEW.saved?.isNew?'<button class="btn ghost" type="button" data-act="delThis">מחיקת הדוח</button>':''}</div></section>`;
+  if (rep && rep.quick && !VIEW.demo && MSGS && st.people.length>=2){
+    const ppl = st.people.filter(p=>p.count >= Math.max(5, st.total*0.015)).slice(0,12);
+    if (ppl.length>=2) h += `<section class="savebox personal"><h3>📩 דוח אישי לכל אחד</h3><p>כל אחד מקבל גרסה משלו: ${st.isGroup?'המעריץ שלו, הרגעים שלו, ':''}הפרק שלו, ומכתב שנכתב רק אליו. לוחצים על שם, ושולחים.</p><div class="pchips">${''}${ppl.map(p=>`<button type="button" class="pchip" data-act="personal" data-who="${esc(p.name)}"><span class="av0" style="background:${nameColor(p.name)}">${esc([...p.name][0]||'?')}</span>${esc(p.name)}</button>`).join('')}</div></section>`;
+    if (ppl.length>=2) h += `<section class="savebox"><h3>🎮 מי אמר את זה?</h3><p>חידון לחברים: 12 ציטוטים אמיתיים מהצ'אט, וכל אחד מנחש מי כתב. אפשר לשלוח לקבוצה ולראות מי מכיר את כולם הכי טוב.</p><div class="actions"><button class="btn" type="button" data-act="quizLink">ליצור חידון ולשלוח</button></div></section>`;
+  }
   if (VIEW.saved && !VIEW.saved.isNew) h += `<section class="savebox"><h3>רוצים גם?</h3><p>הדוח הזה נכתב ברכילותא. מי שיש לו Claude יכול להעלות צ'אט משלו בדף הבית.</p><div class="actions"><button class="btn ghost" type="button" data-act="gohome">לדף הבית</button></div></section>`;
   h += '</article>';
-  $('#report').innerHTML = h;
+  $('#report').innerHTML = h; initMood($('#report'));
   const away = $('#hero').hidden; $('#newChat').hidden = !away; $('#mastNote').hidden = away;
   enter($('#report')); revealify($('#report')); onScrollBar();
   if (rep && !VIEW.demo && MSGS && NOTES) setupAsk();
@@ -2633,7 +2817,7 @@ function heatSVG(st){
 }
 
 /* ================= save & share ================= */
-const shareLink = hash => ((hash.startsWith('x-') && SITE_URL) ? SITE_URL : APP_URL) + '#' + hash;
+const shareLink = hash => ((/^[xq]-/.test(hash) && SITE_URL) ? SITE_URL : APP_URL) + '#' + hash;
 async function isOwner(){ const db = await use('db'); if (!db) return false; const user = await use('user'); try { return user ? !!(await user.isOwner()) : true; } catch(_){ return false; } }
 function modal(html){ pause(); const m=$('#modal'); m.hidden=false; m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; return m; }
 function closeModal(){ const m=$('#modal'); if (m.hidden) return; if (reduceMotion()){ m.hidden=true; m.innerHTML=''; resume(); return; } m.classList.add('closing'); setTimeout(()=>{ m.classList.remove('closing'); m.hidden=true; m.innerHTML=''; resume(); }, 190); }
@@ -2650,14 +2834,14 @@ async function saveReport(){
   renderReport();
   return hash;
 }
-function shareSheet(hash, title){
+function shareSheet(hash, title, heading, note){
   const link = shareLink(hash), open = hash.startsWith('x-');
   const waText = encodeURIComponent((title||'הדוח שלנו')+' 👀\n'+link);
-  modal(`<h3>שיתוף הדוח 🎉</h3>
-    <p>${open ? 'הקישור פתוח לכולם: אפשר לפתוח אותו גם בלי חשבון Claude ובלי להתחבר לשום דבר. כל הדוח נמצא בתוך הקישור עצמו, אז הוא לא נשמר באף שרת.' : 'קישור קצר. מי שמקבל אותו צריך להיות מחובר ל-Claude (חשבון חינמי מספיק). אפשר למחוק אותו מדף הבית, ואז הוא מפסיק לעבוד.'}</p>
+  modal(`<h3>${esc(heading||'שיתוף הדוח 🎉')}</h3>${heading?`<p><a class="btn ghost" href="${esc(link)}" target="_blank" rel="noopener">👀 לצפייה לפני ששולחים</a></p>`:''}
+    <p>${note ? esc(note) : open ? 'הקישור פתוח לכולם: אפשר לפתוח אותו גם בלי חשבון Claude ובלי להתחבר לשום דבר. כל הדוח נמצא בתוך הקישור עצמו, אז הוא לא נשמר באף שרת.' : 'קישור קצר. מי שמקבל אותו צריך להיות מחובר ל-Claude (חשבון חינמי מספיק). אפשר למחוק אותו מדף הבית, ואז הוא מפסיק לעבוד.'}</p>
     <div class="actions"><a class="btn big" href="https://wa.me/?text=${waText}" target="_blank" rel="noopener">שליחה בוואטסאפ</a><button class="btn ghost" type="button" data-act="copy">העתקת הקישור</button></div>
     <input id="shareIn" readonly value="${esc(link)}" aria-label="קישור לדוח" class="linkin">
-    ${REP?'<div class="actions"><button class="btn ghost" type="button" data-act="export">הורדה כקובץ</button>'+(open && !VIEW.demo?'<button class="btn ghost" type="button" data-act="shortLink">קישור קצר במקום</button>':'')+'</div>':''}
+    ${REP && !heading?'<div class="actions"><button class="btn ghost" type="button" data-act="export">הורדה כקובץ</button>'+(open && !VIEW.demo?'<button class="btn ghost" type="button" data-act="shortLink">קישור קצר במקום</button>':'')+'</div>':''}
     <p class="fine">${open ? 'שימו לב: קישור פתוח אי אפשר לבטל אחרי ששלחתם אותו, כי הדוח נמצא בתוכו. כדי שהקישור ייפתח, בתפריט השיתוף של האפליקציה צריך להיות מסומן שכל מי שיש לו קישור יכול לצפות.' : 'בתפריט השיתוף של האפליקציה צריך להיות מסומן שכל מי שיש לו קישור יכול לצפות.'}</p>
     <div class="actions"><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`);
 }
@@ -2904,6 +3088,15 @@ function goHome(){ closeStory(); $('#hero').hidden=false; $('#setup').hidden=tru
 async function route(){
   const h = location.hash.replace(/^#/,'');
   if (h.startsWith('r-')) { await openSaved(h); return true; }
+  if (h.startsWith('q-')) {
+    closeStory(); $('#hero').hidden = true; $('#setup').hidden = true; $('#banner').innerHTML='';
+    try {
+      const d = cleanQuiz(await readOpenHash(h)); if (!d) throw 0;
+      $('#report').innerHTML = `<section class="quizpage"><div class="pg-badge">🎮 מי אמר את זה?</div><h1 class="lr-h">כמה אתם מכירים את ${d.chat==='הקבוצה'?'הקבוצה':'"'+esc(d.chat)+'"'}?</h1><p class="lr-dek">${d.qs.length} ציטוטים אמיתיים מהצ'אט${d.by?`, באדיבות ${esc(d.by)}`:''}. לכל ציטוט, תנחשו מי כתב אותו.</p><div class="quiz" id="quiz"></div></section>`;
+      quizState = {qs:d.qs, i:0, score:0, shared:{hash:h, chat:d.chat}}; renderQuiz(); window.scrollTo({top:0});
+    } catch(_){ $('#report').innerHTML = `<div class="err">לא הצלחנו לפתוח את החידון. נראה שהקישור נחתך בדרך. בקשו מהשולח/ת לשלוח שוב.</div>`; }
+    return true;
+  }
   if (h.startsWith('x-')) {
     closeStory(); $('#hero').hidden = true; $('#setup').hidden = true; $('#banner').innerHTML='';
     try {
@@ -2965,6 +3158,22 @@ function bindEvents(){
     const rx = e.target.closest('.rx'); if (rx){ burst(rx, [rx.dataset.e]); const n = rx.querySelector('small'); n.textContent = (+n.textContent||0)+1; rx.classList.add('on'); rx.classList.remove('bump'); void rx.offsetWidth; rx.classList.add('bump'); haptic(12); return; }
     const b = e.target.closest('[data-act]'); if (!b || b.closest('#modal')) return;
     const a = b.dataset.act;
+    if (a==='quizLink'){ const d = buildShareQuiz(); if (!d){ toast('אין מספיק ציטוטים לחידון','🤷'); return; }
+      btnBusy(b, true, '');
+      try { const hash = await encodeHash('q-', d); btnBusy(b, false);
+        shareSheet(hash, `כמה אתם מכירים את ${ST.chatName==='הקבוצה'?'הקבוצה':'"'+ST.chatName+'"'}? 🎮 חידון "מי אמר את זה?" עם ציטוטים אמיתיים`, 'חידון "מי אמר את זה?" 🎮', 'החידון נמצא כולו בתוך הקישור: 12 ציטוטים אמיתיים מהצ\'אט, בלי הדוח עצמו. מי שמקבל אותו משחק מיד, בלי להתחבר. כי הציטוטים אמיתיים, כדאי לשלוח רק למי שבצ\'אט.');
+      } catch(_){ btnBusy(b, false); toast('לא הצלחנו ליצור את החידון','⚠️'); }
+      return; }
+    if (a==='quizRetry'){ if (quizState?.shared){ quizState = {...quizState, i:0, score:0, res:[], qs: shuffle(quizState.qs.slice())}; renderQuiz(); $('#quiz')?.scrollIntoView({block:'center'}); } return; }
+    if (a==='personal'){ const who = b.dataset.who; if (!MSGS || !ST || !who) return;
+      btnBusy(b, true, '');
+      try {
+        const g = REP?.genders?.[who] || '';
+        const prep = quickReport(MSGS, ST, who, g, true);
+        const hash = await makeOpenHash({v:2, created:Date.now(), persona:VIEW.persona, reader:who, gender:g, st:ST, rep:prep});
+        btnBusy(b, false); shareSheet(hash, `${who}, הדוח האישי ${g==='f'?'שלך':g==='m'?'שלך':'שלך'} מ"${ST.chatName}"`, `הדוח האישי של ${who} 💌`);
+      } catch(_){ btnBusy(b, false); toast('לא הצלחנו ליצור את הדוח האישי','⚠️'); }
+      return; }
     if (a==='story') openStory();
     else if (a==='close') closeStory();
     else if (a==='replay') go(0);

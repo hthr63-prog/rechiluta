@@ -65,14 +65,23 @@ function hygiene(name, text, rep) {
 const TESTS = [];
 const test = (name, fn) => TESTS.push({ name, fn });
 
-test('דף הבית והדוגמה', async ({ ctx, base, csp, errs }) => {
+test('דף הבית והדוגמה', async ({ browser, ctx, base, csp, errs }) => {
   const p = await ctx.newPage(); const t0 = Date.now();
   await p.goto(base); await p.waitForSelector('.lr-h', { timeout: 10000 });
   ok(Date.now() - t0 < 6000, `הדוגמה נטענת מהר (${Date.now() - t0}ms)`);
   ok(await p.evaluate(() => !!window.JSZip), 'jszip נטען מהאתר שלנו');
   const n = await p.$$eval('.sect h2', x => x.length); ok(n >= 20, `לדוגמה יש לפחות 20 פרקים (${n})`);
   ok(/דוגמה/.test(await p.$eval('#banner', x => x.textContent)), 'באנר "זו דוגמה" מוצג');
+  const dims = await p.evaluate(async () => { const out = []; for (const f of [makePoster, makeStoryImage]) { const bm = await createImageBitmap(await f()); out.push(bm.width + 'x' + bm.height); } return out.join(','); });
+  ok(dims === '1080x1350,1080x1920', `תמונות שיתוף: פוסט וסטורי (${dims})`);
   await p.close();
+  for (const w of [360, 390]) { // נועם: אין גלילה הצידה בטלפון
+    const c2 = await browser.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true }); await c2.route(/^https?:\/\/(?!127\.0\.0\.1)/, r => r.abort());
+    const m = await c2.newPage(); await m.goto(base); await m.waitForSelector('.lr-h'); await m.click('.howto summary'); await m.waitForTimeout(300);
+    const sw = await m.evaluate(() => document.documentElement.scrollWidth); ok(sw <= w, `ברוחב ${w} אין גלילה הצידה (${sw})`);
+    ok(await m.evaluate(() => { const r = document.querySelector('#acctBtn, #themeBtn').getBoundingClientRect(); return r.right <= innerWidth && r.left >= 0; }), `ברוחב ${w} הכפתורים למעלה בתוך המסך`);
+    await c2.close();
+  }
 });
 
 test('המפענח מסנן הודעות מערכת', async ({ page }) => {
@@ -121,6 +130,10 @@ test('הדוגמה מספרת את הסיפור נכון', async ({ page }) => {
   // ליאור: מסע רגשות מלא. צחוק, שמחה, כאב, ריב, מבוכה, ומי מחפש את מי
   const icons = new Set(res.sections.map(s => s.icon));
   for (const [ic, what] of [['😂', 'צחוק'], ['🙈', 'מבוכה'], ['🫶', 'מי מחפש את מי'], ['🌧️', 'ריב וסליחה'], ['🫂', 'ימים קשים'], ['🌡️', 'גרף רגשות']]) ok(icons.has(ic), `בדוח יש ${what} (${ic})`);
+  for (let k = 0; k < 6; k++) { // המנוע אקראי: מוודאים שהמסע המלא נשמר בכל הרצה, לא רק בחלק מהן
+    const ics = await page.evaluate(() => { const msgs = parseChat(makeDemoChat()); return quickReport(msgs, computeStats(msgs, ''), 'נועה', 'f').sections.map(s => s.icon).join(''); });
+    const miss = ['😂', '🙈', '🫶', '🌧️', '🫂', '🌡️', '🤍'].filter(ic => !ics.includes(ic)); if (miss.length) { ok(false, `בהרצה ${k + 1} חסר: ${miss.join(' ')}`); break; }
+  }
   const emb = res.sections.find(s => s.icon === '🙈');
   ok(emb && emb.blocks.filter(b => b.t === 'p').length >= 3, 'בפרק המביך יש לפחות שני רגעים');
   ok(!/כדורים|תרופ|רופא|בנק|משכורת/.test(JSON.stringify(emb || {})), 'הפרק המביך לא חושף פרט רפואי או כספי');
@@ -135,7 +148,7 @@ test('הקו של ליאור: מה שרגיש לא עולה לפרק המביך'
   ok(!/התרופות של אבא/.test(JSON.stringify(r)), 'הודעה רפואית שנשלחה לצ\'אט הלא נכון לא מוצגת');
 });
 
-test('העלאת zip, דוח, דוח אישי וחידון', async ({ ctx, base, fx, errs }) => {
+test('העלאת zip, דוח, דוח אישי וחידון', async ({ browser, ctx, base, fx, errs }) => {
   const p = await ctx.newPage(); await p.goto(base); await p.waitForSelector('.lr-h');
   await p.setInputFiles('#file', fx.zip); await p.waitForSelector('#readerChips .chip', { timeout: 8000 });
   await p.click('#readerChips .chip >> nth=0'); await p.click('#go'); await p.waitForTimeout(1000);
@@ -146,9 +159,14 @@ test('העלאת zip, דוח, דוח אישי וחידון', async ({ ctx, base,
   const chips = await p.$$('.pchip'); ok(chips.length >= 3, `יש כפתור דוח אישי לכל אחד (${chips.length})`);
   await p.click('.pchip >> nth=1'); await p.waitForSelector('#shareIn'); const plink = await p.$eval('#shareIn', x => x.value);
   ok(plink.startsWith('https://hthr63-prog.github.io/rechiluta/#x-'), 'קישור דוח אישי מצביע לאתר');
-  const p2 = await ctx.newPage(); await p2.goto(plink.replace('https://hthr63-prog.github.io/rechiluta/', base)); await p2.waitForSelector('.lr-h');
+  const friend = await browser.newContext({ viewport: { width: 390, height: 844 } }); await friend.route(/^https?:\/\/(?!127\.0\.0\.1)/, r => r.abort());
+  const p2 = await friend.newPage(); await p2.goto(plink.replace('https://hthr63-prog.github.io/rechiluta/', base)); await p2.waitForSelector('.lr-h');
   ok(await p2.$('.letter'), 'הדוח האישי נפתח אצל החבר, עם מכתב');
-  await p2.close(); await p.click('[data-act=mclose]').catch(() => {}); await p.keyboard.press('Escape').catch(() => {});
+  ok(/במיוחד בשבילך/.test(await p2.$eval('#banner', x => x.textContent)), 'מי שמקבל דוח אישי רואה למעלה הסבר שהדוח נכתב בשבילו');
+  ok(/הקבוצה שלי/.test(await p2.$eval('.gift-cta', x => x.textContent).catch(() => '')), 'בסוף הדוח יש כפתור "לעשות דוח על הקבוצה שלי"');
+  await p2.click('.gift-cta [data-act=gohome]'); await p2.waitForTimeout(600);
+  ok(await p2.$eval('#hero', x => !x.hidden).catch(() => false), 'הכפתור מוביל לדף הבית כדי להעלות צ\'אט');
+  await friend.close(); await p.click('[data-act=mclose]').catch(() => {}); await p.keyboard.press('Escape').catch(() => {});
   await p.click('[data-act=quizLink]'); await p.waitForSelector('#shareIn'); await p.waitForTimeout(300);
   const qlink = await p.$eval('#shareIn', x => x.value); ok(/#q-/.test(qlink), 'יש קישור חידון');
   const f = await ctx.newPage(); await f.goto(qlink.replace('https://hthr63-prog.github.io/rechiluta/', base)); await f.waitForSelector('#quiz .qo');

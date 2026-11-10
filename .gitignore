@@ -1,2 +1,2 @@
 node_modules/
-tests/.dbg.js
+tests/.dbg*.js

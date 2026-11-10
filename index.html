@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-0WCBfIqeZyPgdtwAy1r607gPQjor3eTJygtyynCY9LE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-MAwrqCgXrHWSmJVM4yCGqBoePeIHDMM5sr1F9WFZaCk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -54,8 +54,8 @@ p{margin:0}
 button{font:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:6px}
 .num{font-variant-numeric:tabular-nums}
-.mast{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.logo{font-family:var(--display);font-weight:700;font-size:58px;line-height:.8;color:var(--ink);text-decoration:none}
+.mast{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;row-gap:8px}
+.logo{font-family:var(--display);font-weight:700;font-size:clamp(44px,13vw,58px);line-height:.8;color:var(--ink);text-decoration:none}
 .logo span{color:var(--pink)}
 .mast small{color:var(--muted);font-size:13px;max-width:24ch;text-align:end}
 .newchat{padding:8px 14px;font-size:14px;color:var(--pink)}
@@ -92,6 +92,19 @@ button{font:inherit;cursor:pointer}
 .howto summary{cursor:pointer;padding:10px 0;font-weight:500}
 .howto ol{margin:0 0 12px;padding-inline-start:20px;color:var(--muted);font-size:15px}
 .howto h4{margin:8px 0 2px;font-size:14px}
+.gtabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}.gtabs input{position:absolute;opacity:0;pointer-events:none}
+.gtabs label{padding:6px 14px;border-radius:99px;background:var(--chip);font-weight:700;font-size:14px;cursor:pointer}
+.gtabs input:checked+label{background:var(--ink);color:var(--bg)}.gtabs input:focus-visible+label{outline:2px solid var(--violet);outline-offset:2px}
+.gpane{display:none;width:100%}#gtI:checked~.gI,#gtA:checked~.gA{display:block}
+.gsteps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:g}
+.gsteps li{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;counter-increment:g;font-size:15px;line-height:1.5}
+.gsteps li span::before{content:counter(g);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pink);color:#fff;font-size:12px;font-weight:800;margin-inline-end:8px;vertical-align:1px}
+.gph{width:78px;height:132px;border:3px solid var(--ink);border-radius:15px;background:var(--wa-bg);padding:14px 5px 6px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;overflow:hidden;font-size:8.5px;line-height:1.2;color:var(--wa-ink)}
+.gph b{display:block;background:var(--surface);color:var(--ink);border-radius:5px;padding:3px 4px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gph i{display:block;font-style:normal;background:var(--wa-in);border-radius:5px;padding:3px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gph .hl{background:var(--pink)!important;color:#fff!important;box-shadow:0 0 0 2px var(--yolk);animation:pulse 1.6s infinite}
+.gnote{font-size:14px;color:var(--muted);margin:12px 0}
+@media (prefers-reduced-motion:reduce){.gph .hl{animation:none}}
 .privacy{font-size:13px;color:var(--muted)}
 .label{font-size:12.5px;letter-spacing:.06em;font-weight:700;color:var(--muted)}
 .saved{display:flex;flex-direction:column;gap:8px}
@@ -515,7 +528,9 @@ html{scroll-behavior:smooth}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bg-art i{opacity:.22}}
 
 /* theme switch */
-.mast-r{display:flex;gap:10px;align-items:center}
+.mast-r{display:flex;gap:10px;align-items:center;margin-inline-start:auto}
+@media (max-width:420px){.mast-r{gap:6px}.acct,.newchat{padding:6px 10px;font-size:13px}}
+body{overflow-x:hidden}@supports (overflow:clip){body{overflow-x:clip}}
 .tgl{position:relative;width:66px;height:34px;border-radius:999px;border:0;padding:0;flex:none;cursor:pointer;background:linear-gradient(135deg,#8FD3FF,#FFD27A);box-shadow:inset 0 2px 6px rgba(0,0,0,.18);transition:background .5s var(--ease)}
 .tgl .knob{position:absolute;top:3px;inset-inline-start:3px;width:28px;height:28px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:inset-inline-start .45s var(--spring),transform .45s var(--spring)}
 .tgl .stars{position:absolute;inset:0;opacity:0;transition:opacity .4s;background-image:radial-gradient(1.5px 1.5px at 20% 35%,#fff,transparent),radial-gradient(1px 1px at 35% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 48% 28%,#fff,transparent);border-radius:inherit}
@@ -663,11 +678,12 @@ html{scroll-behavior:smooth}
       <div class="dstate"><span class="spin"></span>קוראים את הקובץ...</div>
     </label>
     <details class="howto">
-      <summary>איך מייצאים צ'אט מוואטסאפ?</summary>
-      <h4>אייפון</h4>
-      <ol><li>פותחים את הצ'אט ולוחצים על השם למעלה</li><li>גוללים למטה ובוחרים "ייצוא צ'אט"</li><li>בוחרים "ללא מדיה" ושומרים לקבצים</li></ol>
-      <h4>אנדרואיד</h4>
-      <ol><li>בצ'אט: ⋮ ‏> עוד ‏> ייצוא צ'אט</li><li>בוחרים "ללא מדיה"</li><li>שומרים את הקובץ ומעלים אותו לכאן</li></ol>
+      <summary>פעם ראשונה? ככה מוציאים צ'אט מוואטסאפ (חצי דקה)</summary>
+      <div class="gtabs" role="tablist"><input type="radio" name="gt" id="gtI" checked><label for="gtI">אייפון</label><input type="radio" name="gt" id="gtA"><label for="gtA">אנדרואיד</label>
+        <div class="gpane gI"><ol class="gsteps"><li><div class="gph" aria-hidden="true"><b class="hl">‹ החבר׳ה 💛</b><i class="">היי!</i><i class="">מי בא מחר?</i><i class="">אני בפנים</i></div><span>פותחים את הצ'אט ולוחצים על <b>השם של הקבוצה</b> (או של האדם) למעלה.</span></li><li><div class="gph" aria-hidden="true"><b>פרטי הקבוצה</b><i class="">מדיה וקישורים</i><i class="">השתקה</i><i class="hl">ייצוא צ'אט</i><i class="">ניקוי צ'אט</i></div><span>גוללים עד למטה ובוחרים <b>ייצוא צ'אט</b>.</span></li><li><div class="gph" aria-hidden="true"><b>ייצוא צ'אט</b><i class="">צירוף מדיה</i><i class="hl">ללא מדיה</i><i class="">ביטול</i></div><span>בוחרים <b>ללא מדיה</b>. ככה הקובץ קטן ומהיר.</span></li><li><div class="gph" aria-hidden="true"><b>שיתוף</b><i class="">העתקה</i><i class="hl">שמירה בקבצים</i><i class="">עוד...</i></div><span>בוחרים <b>שמירה בקבצים</b>, ואז חוזרים לכאן ולוחצים על הכפתור למעלה כדי לבחור את הקובץ.</span></li></ol></div>
+        <div class="gpane gA"><ol class="gsteps"><li><div class="gph" aria-hidden="true"><b>החבר׳ה 💛 <span class="hl">⋮</span></b><i class="">היי!</i><i class="">מי בא מחר?</i><i class="">אני בפנים</i></div><span>פותחים את הצ'אט ולוחצים על <b>⋮</b> (שלוש נקודות) למעלה.</span></li><li><div class="gph" aria-hidden="true"><b>⋮</b><i class="">חיפוש</i><i class="">השתקה</i><i class="">עוד ›</i><i class="hl">ייצוא צ'אט</i></div><span>בוחרים <b>עוד</b>, ואז <b>ייצוא צ'אט</b>.</span></li><li><div class="gph" aria-hidden="true"><b>ייצוא צ'אט</b><i class="">כולל מדיה</i><i class="hl">ללא מדיה</i></div><span>בוחרים <b>ללא מדיה</b>.</span></li><li><div class="gph" aria-hidden="true"><b>שיתוף באמצעות</b><i class="">Drive</i><i class="hl">קבצים</i><i class="">Gmail</i></div><span>שומרים את הקובץ בטלפון או בדרייב, ואז חוזרים לכאן ובוחרים אותו בכפתור למעלה.</span></li></ol></div>
+      </div>
+      <p class="gnote">🔒 הקובץ נשאר אצלכם. האתר קורא אותו בתוך הדפדפן, ושום הודעה לא נשלחת לשום מקום. אפשר להעלות את קובץ ה-zip כמו שהוא.</p>
     </details>
     <div class="hosted-note"><b>⚡ חינם, בלי הרשמה, בלי להשאיר פרטים.</b> מעלים צ'אט ומקבלים דוח תוך שניות. הכול קורה בדפדפן שלכם, ואף הודעה לא נשלחת לשום מקום. הדוחות שלכם נשמרים כאן במכשיר, ואם תרצו, גם בחשבון עם שם משתמש וסיסמה (בלי אימייל).</div>
     <div id="savedList"></div>
@@ -1838,7 +1854,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   if (bomb && heartDays.has(dayOf(bomb.i))) bomb = null;
   if (bigDay && (heartDays.has(bigDay.dk) || (bomb && dayOf(bomb.i)===bigDay.dk) || (makeup && dayOf(makeup.i)===bigDay.dk))) bigDay = null;
   if (ghost && ghostLast>=0) for (let k=topHearts.length-1;k>=0;k--) if (topHearts[k].i===ghostLast) topHearts.splice(k,1);
-  const S = { open:[], comedy:[], roast:[], heart:[], end:[], joy:[], sad:[], story:[] };
+  const S = { open:[], comedy:[], roast:[], heart:[], end:[], joy:[], sad:[], story:[], cringe:[] };
   const add = (act, sec) => S[act].push(sec);
 
   // --- act 1: how it began
@@ -1959,7 +1975,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (items.length>=2){
       const blocks = [{t:'p', text: pick(['כל קבוצה צריכה רגעים שגורמים להסמיק. אלה שלכם. אל תדאגו, זה נשאר בינינו. (ובין כל מי שיקבל את הקישור.)', 'יש רגעים שהייתם מעדיפים שנשכח. אנחנו לא שוכחים. אנחנו רק מזכירים, באהבה.'])}];
       for (const it of items.map(x=>[rnd(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).slice(0,3)){ blocks.push({t:'p', text: it.p}); if (it.chat) blocks.push({t:'chat', msgs: it.chat.map(msgOf), after: it.after||''}); }
-      add('roast', {icon:'🙈', title: pick(['הרגעים המביכים', 'רגעים שהייתם מעדיפים לשכוח', 'אוי לא']), blocks});
+      add('cringe', {icon:'🙈', title: pick(['הרגעים המביכים', 'רגעים שהייתם מעדיפים לשכוח', 'אוי לא']), blocks});
     }
   }
   { // who reaches for whom: a little sting, a lot of love
@@ -2297,7 +2313,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const sections = [
     ...S.open, ...comedyFirst, ...S.joy, ...shuffle(S.comedy.concat(S.roast.splice(0, Math.min(2, S.roast.length)))),
     ...(castBlocks.length ? [{icon:'🎭', title: pick(['מצעד הדמויות', 'מי זה מי', 'הקאסט']), blocks:castBlocks}] : []),
-    ...S.story, ...shuffle(S.roast).slice(0,4),
+    ...S.story, ...shuffle(S.roast).slice(0,3), ...S.cringe,
     {icon:'📊', title: pick(['במספרים', 'הנתונים היבשים (שהם לא יבשים בכלל)', 'רגע של סטטיסטיקה']), blocks:numBlocks},
     ...S.heart.filter(s=>s.icon==='🗓️'), ...S.heart.filter(s=>['🌧️','🤫'].includes(s.icon)), ...S.sad, ...S.heart.filter(s=>!['🤍','🕯️','🗓️','🪞','🌧️','🤫'].includes(s.icon)), ...S.heart.filter(s=>s.icon==='🕯️'), ...S.heart.filter(s=>s.icon==='🤍'), ...S.heart.filter(s=>s.icon==='🪞').map(({mine,...x})=>x),
     {icon:'🔮', title: pick(['תחזית (מבוססת נתונים, בערך)', 'מה הלאה', 'נבואות']), blocks:[{t:'list', ordered:false, items:fut.slice(0,5)}]},
@@ -2338,7 +2354,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     intro:[ intro ],
     sections, cast: P.map(p=>({name:p.name, title:p.name, para:''})), characters:[],
     awards: st.localAwards.filter(a=>!(a.title==='פרס הצב' && !(P.find(p=>p.name===a.winner)?.medianReply >= 12*60e3))).slice(0,6).map(a=>({...a, why: a.why.replace('פתח/ה', g(a.winner,'פתח','פתחה')).replace('התנצל/ה', g(a.winner,'התנצל','התנצלה'))})), scores,
-    prediction: '', letter, genders: GEN, signoff: pick(['שלכם, רכילותא. (הדוח נבנה בדפדפן שלכם. אף הודעה לא יצאה מהמכשיר.)', 'רכילותא. קראנו הכל, לא סיפרנו לאף אחד. (הכל נבנה במכשיר שלכם.)']),
+    prediction: '', letter, genders: GEN, personal: !!personal, signoff: pick(['שלכם, רכילותא. (הדוח נבנה בדפדפן שלכם. אף הודעה לא יצאה מהמכשיר.)', 'רכילותא. קראנו הכל, לא סיפרנו לאף אחד. (הכל נבנה במכשיר שלכם.)']),
     quick: true,
   };
 }
@@ -2816,8 +2832,13 @@ function blockHTML(b){
 function renderReport(){
   const st=ST, rep=REP, persona=PERSONAS[VIEW.persona]||PERSONAS.neighbor;
   const verb = readVerb(persona);
+  const giftView = VIEW.saved?.open && !VIEW.saved.isNew && !VIEW.demo;
+  if (giftView){
+    const who = VIEW.reader && REP?.personal ? esc(VIEW.reader) : '';
+    $('#banner').innerHTML = `<div class="banner gift"><span><b>🎁 ${who ? who+', הדוח הזה נכתב במיוחד בשבילך.' : 'קיבלת דוח רכילותא.'}</b> מישהו מהקבוצה העלה את הצ'אט, והאתר קרא את כולו: הבדיחות, הרגעים הגדולים, ומי היה שם כשהיה צריך. גללו למטה 👇</span><button class="btn light" type="button" data-act="story">▶ סטורי</button></div>`;
+  }
   if (VIEW.demo) $('#banner').innerHTML = `<div class="banner"><span><b>זו דוגמה.</b> קבוצה מומצאת של שישה חברים, והדוח נכתב לנועה. העלו צ'אט משלכם למעלה.</span><button class="btn light" type="button" data-act="story">▶ סטורי</button></div>`;
-  else if (!$('#banner .err')) $('#banner').innerHTML = '';
+  else if (!giftView && !$('#banner .err')) $('#banner').innerHTML = '';
   let h = '<article class="lr">';
   const byLine = `<div class="by"><i>${persona.av}</i><span>${esc(persona.name)} ${verb} את כל ${fmt(st.total)} ההודעות של "${esc(st.chatName)}"</span></div>`;
   if (rep){
@@ -2848,7 +2869,7 @@ function renderReport(){
     if (ppl.length>=2) h += `<section class="savebox personal"><h3>📩 דוח אישי לכל אחד</h3><p>כל אחד מקבל גרסה משלו: ${st.isGroup?'המעריץ שלו, הרגעים שלו, ':''}הפרק שלו, ומכתב שנכתב רק אליו. לוחצים על שם, ושולחים.</p><div class="pchips">${''}${ppl.map(p=>`<button type="button" class="pchip" data-act="personal" data-who="${esc(p.name)}"><span class="av0" style="background:${nameColor(p.name)}">${esc([...p.name][0]||'?')}</span>${esc(p.name)}</button>`).join('')}</div></section>`;
     if (ppl.length>=2) h += `<section class="savebox"><h3>🎮 מי אמר את זה?</h3><p>חידון לחברים: 12 ציטוטים אמיתיים מהצ'אט, וכל אחד מנחש מי כתב. אפשר לשלוח לקבוצה ולראות מי מכיר את כולם הכי טוב.</p><div class="actions"><button class="btn" type="button" data-act="quizLink">ליצור חידון ולשלוח</button></div></section>`;
   }
-  if (VIEW.saved && !VIEW.saved.isNew) h += `<section class="savebox"><h3>רוצים גם?</h3><p>הדוח הזה נכתב ברכילותא. מי שיש לו Claude יכול להעלות צ'אט משלו בדף הבית.</p><div class="actions"><button class="btn ghost" type="button" data-act="gohome">לדף הבית</button></div></section>`;
+  if (VIEW.saved && !VIEW.saved.isNew) h += HOSTED ? `<section class="savebox gift-cta"><h3>ועכשיו, הקבוצה שלכם 👀</h3><p>רוצים דוח כזה על הצ'אט שלכם? חינם, בלי הרשמה, וזה לוקח חצי דקה. הצ'אט נקרא בתוך הטלפון שלכם ולא נשלח לשום מקום.</p><div class="actions"><button class="btn big" type="button" data-act="gohome">לעשות דוח על הקבוצה שלי</button></div></section>` : `<section class="savebox"><h3>רוצים גם?</h3><p>הדוח הזה נכתב ברכילותא. מי שיש לו Claude יכול להעלות צ'אט משלו בדף הבית.</p><div class="actions"><button class="btn ghost" type="button" data-act="gohome">לדף הבית</button></div></section>`;
   h += '</article>';
   $('#report').innerHTML = h; initMood($('#report'));
   const away = $('#hero').hidden; $('#newChat').hidden = !away; $('#mastNote').hidden = away;
@@ -3174,12 +3195,45 @@ async function makePoster(){
   x.fillStyle='#FFC53D'; x.font='700 92px Karantina, Rubik, sans-serif'; x.textAlign='left'; x.fillText('רכילותא',80,H-70);
   return new Promise(r=>c.toBlob(r,'image/png'));
 }
-async function showPoster(){
-  if (!ST) return; pause();
-  const m=$('#modal'); m.hidden=false; m.innerHTML='<p>מכינים פוסטר...</p>';
-  const blob = await makePoster(); const url = URL.createObjectURL(blob);
+function storyQuote(rep){
+  // the strongest moment of the report, for the story image: a real line from the chat
+  const order = ['🤍','🎉','🫂','📖','😂','🌧️','🙈'];
+  for (const ic of order){ const sec = (rep?.sections||[]).find(x=>x.icon===ic); if (!sec) continue;
+    for (const b of sec.blocks) if (b.t==='chat') for (const m of b.msgs||[]) if (m.text && m.text.length>=10 && m.text.length<=140 && !/https?:/.test(m.text) && !/^ח{3,}/.test(m.text)) return {who:m.who, text:m.text, title:sec.title}; }
+  return null;
+}
+async function makeStoryImage(){
+  const st=ST, rep=REP;
+  try{ await document.fonts.load('900 100px "Frank Ruhl Libre"'); await document.fonts.load('700 100px Karantina'); await document.fonts.load('700 40px Rubik'); }catch(_){}
+  const W=1080,H=1920; const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#22163F'); g.addColorStop(1,'#3A1F5E'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle='#5B3FE0'; x.beginPath(); x.arc(W-30,260,300,0,Math.PI*2); x.fill();
+  x.fillStyle='#E8285F'; x.beginPath(); x.arc(40,H-260,260,0,Math.PI*2); x.fill();
+  x.direction='rtl'; x.textAlign='right'; const R=W-90, maxW=W-180;
+  x.fillStyle='#FFC53D'; x.font='700 44px Rubik, sans-serif'; x.fillText('רכילותא קראה את', R, 250);
+  x.fillStyle='#F4EEFF'; x.font='700 52px Rubik, sans-serif'; x.fillText(String(st.chatName).slice(0,30), R, 320);
+  x.font='900 92px "Frank Ruhl Libre", serif'; x.fillStyle='#FFFFFF';
+  let y=480; for (const l of wrap(x, rep?.headline||st.chatName, maxW).slice(0,4)){ x.fillText(l,R,y); y+=106; }
+  const qt = storyQuote(rep);
+  if (qt){ y+=50; x.font='600 46px Rubik, sans-serif'; const lines = wrap(x, qt.text, maxW-90).slice(0,5); const bh = 110 + lines.length*62;
+    x.fillStyle='#FFFFFF'; x.beginPath(); x.roundRect(90, y, maxW, bh, 36); x.fill();
+    x.fillStyle='#E8285F'; x.font='800 36px Rubik, sans-serif'; x.fillText(qt.who, R-45, y+62);
+    x.fillStyle='#1B1726'; x.font='600 46px Rubik, sans-serif'; let yy=y+128; for (const l of lines){ x.fillText(l, R-45, yy); yy+=62; }
+    y += bh + 50; x.fillStyle='#E4DCF7'; x.font='500 36px Rubik, sans-serif'; x.fillText('מתוך: '+qt.title.slice(0,40), R, y); y+=40; }
+  y = Math.max(y+40, H-560);
+  const boxes=[[fmt(st.total),'הודעות'],[fmt(st.spanDays),'ימים'],[fmt(st.people.length),st.isGroup?'אנשים':'שניכם']]; const bw=(maxW-40)/3;
+  boxes.forEach((b,k)=>{ const bx=R-k*(bw+20); x.fillStyle='rgba(255,255,255,.12)'; x.beginPath(); x.roundRect(bx-bw,y,bw,170,28); x.fill();
+    x.fillStyle='#FFC53D'; x.font='700 96px Karantina, Rubik, sans-serif'; x.fillText(b[0],bx-28,y+104); x.fillStyle='#F4EEFF'; x.font='500 32px Rubik, sans-serif'; x.fillText(b[1],bx-28,y+148); });
+  x.fillStyle='#FFFFFF'; x.font='700 46px Rubik, sans-serif'; x.textAlign='center'; x.fillText('ומה הדוח יגיד עליכם? 👀', W/2, H-210);
+  x.fillStyle='#FFC53D'; x.font='700 110px Karantina, Rubik, sans-serif'; x.fillText('רכילותא', W/2, H-90);
+  return new Promise(r=>c.toBlob(r,'image/png'));
+}
+async function showPoster(fmtKind){
+  if (!ST) return; pause(); const story = fmtKind==='story';
+  const m=$('#modal'); m.hidden=false; m.innerHTML=`<p>${story?'מכינים תמונה לסטורי...':'מכינים פוסטר...'}</p>`;
+  const blob = story ? await makeStoryImage() : await makePoster(); const url = URL.createObjectURL(blob);
   const dl = await use('downloads');
-  m.innerHTML = `<img src="${url}" alt="פוסטר של ${esc(ST.chatName)}"><p>${dl?'':'לחיצה ארוכה על התמונה כדי לשמור אותה.'}</p><div class="actions">${dl?'<button class="btn" type="button" data-act="psave">שמירת תמונה</button>':''}<button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`;
+  m.innerHTML = `<img src="${url}" alt="פוסטר של ${esc(ST.chatName)}"><p>${dl?'':'לחיצה ארוכה על התמונה כדי לשמור אותה.'}</p><div class="actions">${dl?'<button class="btn" type="button" data-act="psave">שמירת תמונה</button>':''}<button class="btn ghost" type="button" data-act="pfmt" data-f="${story?'post':'story'}">${story?'🖼️ גרסת פוסט':'📱 גרסה לסטורי'}</button><button class="btn ghost" type="button" data-act="mclose">סגירה</button></div>`;
   m._blob = blob;
 }
 
@@ -3245,6 +3299,7 @@ function bindEvents(){
     if (act==='delYes'){ const h=b.dataset.h; b.disabled=true;
       try { await deleteReport(h); closeModal(); const viewing = VIEW.saved?.hash===h; if (viewing){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){} goHome(); } else renderSavedList(); toast('הדוח נמחק','🗑️'); }
       catch(_){ b.disabled=false; b.textContent='המחיקה לא הצליחה, נסו שוב'; } }
+    if (b.dataset.act==='pfmt'){ showPoster(b.dataset.f); return; }
     if (b.dataset.act==='psave'){ const dl=await use('downloads'); b.disabled=true;
       try{ await dl.save({filename:'rechiluta-'+(ST.chatName||'chat').replace(/[^\p{L}\p{N}]+/gu,'-').slice(0,40)+'.png', data:m._blob}); b.textContent='נשמר'; }
       catch(err){ b.disabled=false; b.textContent = err?.code==='declined'?'שמירת תמונה':'לא נשמר, נסו לחיצה ארוכה'; } }
@@ -3278,6 +3333,7 @@ function bindEvents(){
     else if (a==='close') closeStory();
     else if (a==='replay') go(0);
     else if (a==='poster') showPoster();
+    else if (a==='pfmt') showPoster(b.dataset.f);
     else if (a==='share'){ closeStory(); openShare(); }
     else if (a==='export') exportFile();
     else if (a==='wipe') askWipe();

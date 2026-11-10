@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-5X3OJ6RnaoPXbPg571nDjmDK6mYJuqA7QEVY59UkbWk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-0WCBfIqeZyPgdtwAy1r607gPQjor3eTJygtyynCY9LE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -1928,6 +1928,56 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
       {t:'chat', msgs:[msgOf(msgs[nightIdx])], after: pick([`${hm(t)}. אף אחד לא שואל למה. כולם רק מקווים שהכל בסדר.`, `נכתב ב-${hm(t)}, נקרא בבוקר עם קפה ובלבול.`, `השעה ${hm(t)}. זה לא הודעה, זה וידוי.`])}
     ]});
   }
+  { // the embarrassing moments: wrong chat, the deleted message everyone saw, typos fixed with *, voice notes at 3am
+    const items = [];
+    const WRONG = /לא היה אמור להגיע|לא היה אמור להישלח|לא לפה|טעיתי (?:בקבוצה|בצ'אט|צ'אט)|זה לא היה בשבילכם|שלחתי בטעות|לא לקבוצה הזאת|wrong chat|תתעלמו (?:מזה|מההודעה)/iu;
+    for (let i=1;i<msgs.length && !items.some(x=>x.k==='wrong');i++){ const m=msgs[i]; if (!isText(m) || !WRONG.test(m.text) || seen(m)) continue;
+      const prev = msgs[i-1]; if (prev.who!==m.who || m.t-prev.t>10*60e3 || !isText(prev)) continue;
+      if (/\d{6,}|\S+@\S+\.\S+|https?:|סיסמ|אשראי|תעודת זהות|נפטר|הלוויה|בית חולים|מאושפז|ניתוח|הריון|רופא|כדורים|תרופ|פסיכולוג|טיפול|משכורת|חוב|מינוס|בנק/u.test(prev.text)) continue; // Lior's line: nothing medical, financial or secret goes on display
+      const re = msgs.slice(i+1, i+5).filter(x=>x.who!==m.who && x.t-m.t<20*60e3);
+      if (!re.length) continue;
+      items.push({k:'wrong', p: pick([`${heDate(prev.t)}. ${B(m.who)} ${g(m.who,'שולח','שולחת')} הודעה. רק שהיא לא הייתה בשבילכם:`, `יש הודעות שנשלחות לקבוצה הלא נכונה. ויש את זו, של ${B(m.who)}:`]),
+        chat:[prev, m, ...re.slice(0,3)], after: pick(['אין מחיקה שמצילה מזה. כולם כבר קראו.', 'ומאז? אף אחד לא שכח.', 'הצ\'אט זוכר הכל. במיוחד את זה.'])});
+    }
+    const ASKDEL = /מה מחקת|למה מחקת|ראיתי|צילמתי מסך|צילום מסך|מה היה שם|מאוחר מדי|תחזיר|תחזירי/u;
+    for (let i=0;i<msgs.length && !items.some(x=>x.k==='del');i++){ const m=msgs[i]; if (m.kind!=='deleted' || seen(m)) continue;
+      const re = msgs.slice(i+1, i+6).filter(x=>x.t-m.t<15*60e3);
+      const hit = re.findIndex(x=>x.who!==m.who && isText(x) && ASKDEL.test(x.text)); if (hit<0) continue;
+      items.push({k:'del', p: pick([`${heDate(m.t)}, ${hm(m.t)}. ${B(m.who)} ${g(m.who,'כתב','כתבה')} משהו. ואז ${g(m.who,'מחק','מחקה')}. מאוחר מדי:`, `ההודעה הכי מעניינת של ${B(m.who)} היא זו שאף אחד לא יכול לקרוא:`]),
+        chat:[m, ...re.slice(0, hit+3)], after: pick(['מה היה כתוב שם? יש מישהו בקבוצה שיודע. והוא לא מספר.', 'אנחנו לא יודעים מה היה שם. אבל לפי התגובות, שווה לשאול.'])});
+    }
+    const fix = {}, fixEx = {};
+    for (let i=1;i<msgs.length;i++){ const m=msgs[i], pv=msgs[i-1]; if (!isText(m) || !isText(pv) || pv.who!==m.who || m.t-pv.t>3*60e3) continue;
+      if (/^\*\s?\S{2,20}\s?$/.test(m.text.trim()) || /^\S{2,20}\*$/.test(m.text.trim())){ fix[m.who]=(fix[m.who]||0)+1; if (!seen(m) && (!fixEx[m.who] || rnd()<.35)) fixEx[m.who]=i; } }
+    const fx = Object.entries(fix).sort((a,b)=>b[1]-a[1])[0];
+    if (fx && fx[1]>=3 && fixEx[fx[0]]){ const i = fixEx[fx[0]];
+      items.push({k:'typo', p:`${B(fx[0])} ${g(fx[0],'תיקן','תיקנה')} את עצמ${g(fx[0],'ו','ה')} עם כוכבית ${B(times(fx[1]))}. האצבעות מהירות מהמוח. הנה דוגמה:`, chat:[msgs[i-1], msgs[i]], after: pick(['האוטו-קורקט ניצח. שוב.', 'הכוכבית הכי עסוקה בישראל.'])});
+    }
+    const nv = {}; for (const m of msgs){ if (m.kind==='media' && /audio|voice|ptt/i.test(m.media||'') ){ const h=new Date(m.t).getHours(); if (h<5) nv[m.who]=(nv[m.who]||0)+1; } }
+    const nvt = Object.entries(nv).sort((a,b)=>b[1]-a[1])[0];
+    if (nvt && nvt[1]>=4) items.push({k:'voice', p:`${B(nvt[0])} ${g(nvt[0],'שלח','שלחה')} ${B(n(nvt[1]))} הודעות קוליות בין חצות לחמש בבוקר. מה יש בהן? אף אחד לא יודע. ${g(nvt[0],'כנראה שגם הוא לא','כנראה שגם היא לא')}.`});
+    if (items.length>=2){
+      const blocks = [{t:'p', text: pick(['כל קבוצה צריכה רגעים שגורמים להסמיק. אלה שלכם. אל תדאגו, זה נשאר בינינו. (ובין כל מי שיקבל את הקישור.)', 'יש רגעים שהייתם מעדיפים שנשכח. אנחנו לא שוכחים. אנחנו רק מזכירים, באהבה.'])}];
+      for (const it of items.map(x=>[rnd(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).slice(0,3)){ blocks.push({t:'p', text: it.p}); if (it.chat) blocks.push({t:'chat', msgs: it.chat.map(msgOf), after: it.after||''}); }
+      add('roast', {icon:'🙈', title: pick(['הרגעים המביכים', 'רגעים שהייתם מעדיפים לשכוח', 'אוי לא']), blocks});
+    }
+  }
+  { // who reaches for whom: a little sting, a lot of love
+    let line = null;
+    if (!st.isGroup && P.length===2){
+      const [a,b] = P; const sa = a.starts||0, sb = b.starts||0, tot = sa+sb;
+      if (tot>=30){ const hi = sa>=sb ? a : b, lo = hi===a ? b : a, pct = Math.round(Math.max(sa,sb)/tot*100);
+        if (pct>=64) line = {a:hi.name, b:lo.name, text: pick([`${B(hi.name)} ${g(hi.name,'פותח','פותחת')} ${B(pct+'%')} מהשיחות ביניכם. כמעט תמיד ${g(hi.name,'הוא','היא')} ${g(hi.name,'זה שכותב','זו שכותבת')} ראשונ${g(hi.name,'','ה')} אחרי שקט.`, `ספרנו מי כותב ראשון אחרי כמה שעות של שקט. ${B(hi.name)}: ${B(pct+'%')} מהפעמים. ${lo.name}: השאר.`]),
+          reveal: `וזה לא אומר של${lo.name} אכפת פחות. זה אומר שיש פה מישהו שלא ${g(hi.name,'מוותר','מוותרת')} אף פעם. ${lo.name}, אולי מחר ${g(lo.name,'אתה תכתוב','את תכתבי')} ראשונ${g(lo.name,'','ה')}?`};
+      }
+    } else if (st.isGroup){
+      const dm = {}; for (const m of msgs){ if (!isText(m) || !inP.has(m.who)) continue; for (const p of P){ if (p.name===m.who) continue; const fn = first(p.name); if (fn.length>=2 && new RegExp(`(^|[^\\p{L}])${fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![\\p{L}])`,'u').test(m.text)) dm[m.who+'→'+p.name]=(dm[m.who+'→'+p.name]||0)+1; } }
+      let best = null; for (const [k,v] of Object.entries(dm)){ const [x,y]=k.split('→'); const back = dm[y+'→'+x]||0; if (v>=15 && v>=back*2.5 && (!best || v-back>best.v-best.back)) best={x,y,v,back}; }
+      if (best) line = {a:best.x, b:best.y, text: pick([`${B(best.x)} ${g(best.x,'פנה','פנתה')} ל${B(best.y)} בשם ${B(times(best.v))}. ${best.y} ${g(best.y,'פנה','פנתה')} ל${best.x}? ${best.back ? times(best.back) : 'אף פעם'}.`, `${B(times(best.v))} ${best.x} ${g(best.x,'כתב','כתבה')} את השם של ${B(best.y)} בצ'אט. בכיוון ההפוך: ${best.back ? times(best.back) : 'אף לא פעם אחת'}.`]),
+        reveal: `לא אומרים כלום. רק מציינים. ${best.y}, ${g(best.x,'הוא','היא')} ${g(best.x,'מחפש','מחפשת')} אות${g(best.y,'ך','ך')}. אולי הגיע הזמן ${g(best.y,'שתחפש','שתחפשי')} בחזרה.`};
+    }
+    if (line) add('heart', {icon:'🫶', title: pick(['מי מחפש את מי', 'מי מחזיק את הקשר', 'מי מתגעגע למי']), blocks:[{t:'p', text: line.text}, {t:'reveal', text: line.reveal}]});
+  }
   if (hang){
     const m = msgs[hang.i], nx = msgs[hang.i+1];
     add('roast', {icon:'🦗', title: pick(['השאלה שנשארה באוויר', 'שאלה, שקט, צרצרים']), blocks:[
@@ -3345,6 +3395,15 @@ function makeDemoChat(){
   scene(at(2025,3,10,22,15), [[M,'נפרדנו. אני לא מסוגלת לדבר על זה עכשיו',0],[N,'אני באה אלייך עם גלידה. אל תהיי לבד הלילה',1],[I,'מאיה, את הכי טובה שיש. הוא פספס',2],[O,'אנחנו פה בשבילך ❤️',1],[RO,'כל מה שצריך',3],[M,'תודה. אני צריכה אתכם',4]]);
   scene(at(2025,9,12,23,55), [[N,'תודה שהייתם שם היום. כל אחד מכם. אתם המשפחה שבחרתי 🤍',0],[M,'החתונה הכי יפה שראיתי בחיים',1],[I,'רקדתי כמו שלא רקדתי מאז הטיול',1],[I,'השיר של הטיול בחתונה!!! '+ANTHEM,1],[RO,'הכי מרגש שיש',2],[O,'❤️❤️❤️',1]]);
   scene(at(2025,10,23,21,40), [[I,'מי בא ביום חמישי? אני מביא את הגזייה',0],[M,'חחחחחח',1],[RO,'אני מביא גיבוי',2]]);
+  // embarrassing moments: the wrong chat, the deleted message everyone saw, typos fixed with *
+  scene(at(2023,5,11,13,2), [[M,'אמא תקני לי מחר טחינה ושתי עגבניות. ואל תשכחי את החומוס',0],[M,'זה לא היה אמור להגיע לפה 🙈',0.4],[I,'מאוחר מדי מאיה',0.3],[N,'חחחחחחחחחחחח טחינה ושתי עגבניות',0.3],[O,'אני מביא את העגבניות',1]]);
+  scene(at(2023,11,4,1,12), [[O,'‎ההודעה נמחקה',0],[I,'מה מחקת?? 👀',0.5],[N,'ראיתי. לא אגיד כלום',0.6],[O,'לא היה כלום תירגעו',0.4],[I,'צילמתי מסך',0.3]]);
+  scene(at(2022,9,8,19,10), [[RO,'אני מגיע עוד חמש דקוצ',0],[RO,'*דקות',0.2]]);
+  scene(at(2023,6,22,20,30), [[RO,'יאללה סגנו',0],[RO,'*סגרנו',0.3],[I,'סגנו 😂',1]]);
+  scene(at(2024,8,14,18,5), [[RO,'מי לוקח את הגזיה',0],[RO,'*הגזייה',0.2],[M,'בכל מקרה לא אתה',0.5]]);
+  scene(at(2025,4,2,21,40), [[RO,'אני בדרך, תשמרו לי מקם',0],[RO,'*מקום',0.3]]);
+  scene(at(2023,2,17,2,40), [[I,'‎audio omitted',0],[I,'‎audio omitted',1]]);
+  scene(at(2024,10,30,3,5), [[I,'‎audio omitted',0],[I,'‎audio omitted',2]]);
   out.sort((a,b)=>a[0]-b[0]);
   return out.map(x=>x[1]).join('\n');
 }

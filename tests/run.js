@@ -41,7 +41,7 @@ const REPORT_TEXT = (r) => {
     if (bl.t === 'p' || bl.t === 'reveal' || bl.t === 'h') s += strip(bl.text) + '\n';
     else if (bl.t === 'num') s += `[${bl.value}] ${strip(bl.label)}\n`;
     else if (bl.t === 'list') s += bl.items.map(x => ' • ' + strip(x)).join('\n') + '\n';
-    else if (bl.t === 'chat') { s += bl.msgs.map(m => `   | ${m.who}: ${m.text || '(' + m.media + ')'}`).join('\n') + '\n'; if (bl.after) s += `   ↳ ${strip(bl.after)}\n`; } } }
+    else if (bl.t === 'chat') { s += bl.msgs.map(m => `   | ${m.who}: ${m.text || (m.kind === 'deleted' ? '🚫 נמחקה' : '(' + m.media + ')')}`).join('\n') + '\n'; if (bl.after) s += `   ↳ ${strip(bl.after)}\n`; } } }
   return s + `\n## מכתב\n${(r.letter || []).map(strip).join('\n')}\n`;
 };
 
@@ -118,6 +118,21 @@ test('הדוגמה מספרת את הסיפור נכון', async ({ page }) => {
   const hard = text.match(/והתקופה שבה היה הכי קשה: ([^.]+)/); ok(!hard || /מרץ 2023|ינואר 2024|מרץ 2025/.test(hard[1]), `"הכי קשה" בטקסט נכון (${hard && hard[1]})`);
   const sorry = text.match(/\[(\d+)\] פעמים ש(\S+) התנצל[^\n]*/); ok(!sorry || +sorry[1] < 20 || /חתימה/.test(sorry[0]), `כשההתנצלויות הן בעצם הרגל, הדוח אומר את זה (${sorry && sorry[0]})`);
   ok(!/נועה ומאיה עונים|מאיה ונועה עונים|אחד לשני פי/.test(text.replace(/[^\n]*(איתי|רועי|עומר)[^\n]*/g, '')), 'שתי נשים: "עונות אחת לשנייה"');
+  // ליאור: מסע רגשות מלא. צחוק, שמחה, כאב, ריב, מבוכה, ומי מחפש את מי
+  const icons = new Set(res.sections.map(s => s.icon));
+  for (const [ic, what] of [['😂', 'צחוק'], ['🙈', 'מבוכה'], ['🫶', 'מי מחפש את מי'], ['🌧️', 'ריב וסליחה'], ['🫂', 'ימים קשים'], ['🌡️', 'גרף רגשות']]) ok(icons.has(ic), `בדוח יש ${what} (${ic})`);
+  const emb = res.sections.find(s => s.icon === '🙈');
+  ok(emb && emb.blocks.filter(b => b.t === 'p').length >= 3, 'בפרק המביך יש לפחות שני רגעים');
+  ok(!/כדורים|תרופ|רופא|בנק|משכורת/.test(JSON.stringify(emb || {})), 'הפרק המביך לא חושף פרט רפואי או כספי');
+});
+
+test('הקו של ליאור: מה שרגיש לא עולה לפרק המביך', async ({ page }) => {
+  const r = await page.evaluate(() => { const L = []; const d = (h, mi) => `[05/05/2024, ${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}:00]`;
+    for (let k = 0; k < 40; k++) L.push(`${d(10 + (k % 8), k)} ${k % 2 ? 'שירן' : 'בני'}: ${k % 3 ? 'מה קורה' : 'אני בדרך'} ${k}`);
+    L.push(`${d(20, 1)} בני: אמא אל תשכחי לקחת את התרופות של אבא, הרופא אמר פעמיים ביום`, `${d(20, 2)} בני: זה לא היה אמור להגיע לפה`, `${d(20, 3)} שירן: חחחחחח בני`);
+    L.push(`${d(21, 1)} שירן: ‎ההודעה נמחקה`, `${d(21, 2)} בני: מה מחקת??`);
+    const msgs = parseChat(L.join('\n')); return quickReport(msgs, computeStats(msgs, ''), 'שירן', 'f'); });
+  ok(!/התרופות של אבא/.test(JSON.stringify(r)), 'הודעה רפואית שנשלחה לצ\'אט הלא נכון לא מוצגת');
 });
 
 test('העלאת zip, דוח, דוח אישי וחידון', async ({ ctx, base, fx, errs }) => {

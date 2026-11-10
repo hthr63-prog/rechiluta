@@ -79,7 +79,9 @@ test('דף הבית והדוגמה', async ({ browser, ctx, base, csp, errs }) =
   for (const w of [360, 390]) { // נועם: אין גלילה הצידה בטלפון
     const c2 = await browser.newContext({ viewport: { width: w, height: 800 }, isMobile: true, hasTouch: true }); await c2.route(/^https?:\/\/(?!127\.0\.0\.1)/, r => r.abort());
     const m = await c2.newPage(); await m.goto(base); await m.waitForSelector('.lr-h'); await m.click('.howto summary'); await m.waitForTimeout(300);
-    const sw = await m.evaluate(() => document.documentElement.scrollWidth); ok(sw <= w, `ברוחב ${w} אין גלילה הצידה (${sw})`);
+    const sw = await m.evaluate(() => document.documentElement.scrollWidth);
+    const wide = sw > w ? await m.evaluate(() => [...document.querySelectorAll('body *')].filter(e => { const r = e.getBoundingClientRect(); return r.width && r.right > innerWidth + 0.5 && !e.closest('.chart,.marq,.trk'); }).filter(e => ![...e.children].some(c => c.getBoundingClientRect().right > innerWidth + 0.5)).slice(0, 4).map(e => `${e.tagName}.${e.className}[${Math.round(e.getBoundingClientRect().right)}] ${(e.textContent || '').trim().slice(0, 20)}`).join(' | ')) : '';
+    ok(sw <= w, `ברוחב ${w} אין גלילה הצידה (${sw}) ${wide}`);
     ok(await m.evaluate(() => { const r = document.querySelector('#acctBtn, #themeBtn').getBoundingClientRect(); return r.right <= innerWidth && r.left >= 0; }), `ברוחב ${w} הכפתורים למעלה בתוך המסך`);
     await c2.close();
   }

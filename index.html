@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-pdO3OGwwD8I5dj+izkn3H9VvPNXKSdbqNkDlVzJlSRE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-5X3OJ6RnaoPXbPg571nDjmDK6mYJuqA7QEVY59UkbWk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -1520,6 +1520,8 @@ function musicLink(text){
   if ((m = text.match(/soundcloud\.com\/([\w-]{1,60})\/([\w-]{1,100})/i))) return {url:`https://soundcloud.com/${m[1]}/${m[2]}`, kind:'sc'};
   return null;
 }
+const NAME_M = new Set('אבי אביב אבירם אבנר אברהם אדם אהרון אודי אוהד אורי אוריאל אחיה איל אייל איתי איתמר איתן אלון אלחנן אליאב אליאור אליה אליהו אלירן אלישע אלעד אלעזר אמיר אמיתי אסף אפרים אריאל אריה ארז אשר בועז ביני בן בנימין בני ברק גבי גבריאל גד גדי גיא גיל גלעד דביר דוד דודי דור דורון דן דני הראל זאב חגי חיים חנן טום יאיר יגאל ידין יהודה יהונתן יהושע יואב יואל יוחאי יוסי יוסף יונתן יורם יותם יחיאל ינון יניב יעקב יפתח יצחק ירון ישי ישראל כפיר לביא ליאב ליאם לירן מאור מוטי מיכאל מנחם מני משה מתן מתנאל נדב נחום נחמן ניב ניר ניסים נתן נתנאל סער עדו עוזי עומר עידו עידן עמוס עמרי ערן פלג צביקה צחי קובי רביד רון רועי רז רן רפאל שאול שגיא שילה שלום שלמה שמואל שמעון תומר תמיר'.split(' ')), NAME_F = new Set('אביבית אביגיל אביטל אדל אדווה אודליה אווה אורית אורלי אורנה אושרת אילנה איילת איה אלה אלונה אליאנה אלינור אלישבע אמה אנה אסנת אפרת אריאלה אתי בתיה ברכה גליה גלית גילה דבורה דורית דנה דניאלה דפנה הגר הדס הדר הילה ויקי זהבה זיוה חיה חנה טליה טלי טובה יעל יערה יפית יפעת כנרת לאה לבנה ליאורה ליאת ליה ליהי לילך לימור לינוי ליטל לירז מאיה מגי מורן מורית מיה מיטל מיכל מירב מירי מלכה נגה נוגה נויה נועה נורית נטע נעמה נעמי נתלי סיגל סיון עינב ענבל ענבר עלמה פזית פנינה צליל קרן רבקה רונית רות רחל רינה ריקי רעות שגית שושנה שירה שירן שירי שלומית שני שרה שרית תאיר תהל תהילה תמר'.split(' '));
+const nameGender = (n) => { const w = String(n||'').replace(/[^\p{L}\s]/gu,' ').trim().split(/\s+/)[0]||''; return NAME_M.has(w) ? 'm' : NAME_F.has(w) ? 'f' : ''; };
 function guessGenders(msgs, people, readerName, readerGender){
   const map = new Map(); for (const [m,f] of G_PAIRS){ map.set(m,'m'); map.set(f,'f'); }
   const vote = {}; const V = (who,g,w=1) => { const o = vote[who] ||= {m:0,f:0}; o[g]+=w; };
@@ -1536,7 +1538,7 @@ function guessGenders(msgs, people, readerName, readerGender){
     }
   }
   const G = {};
-  for (const p of people){ const o = vote[p.name]; if (!o) continue; const tot=o.m+o.f; if (tot>=2 && Math.max(o.m,o.f)/tot>=.72) G[p.name] = o.m>o.f ? 'm' : 'f'; }
+  for (const p of people){ const o = vote[p.name]; if (o){ const tot=o.m+o.f; if (tot>=2 && Math.max(o.m,o.f)/tot>=.72){ G[p.name] = o.m>o.f ? 'm' : 'f'; continue; } } const ng = nameGender(p.name); if (ng) G[p.name] = ng; }
   if (readerName && (readerGender==='m' || readerGender==='f')) G[readerName] = readerGender;
   return G;
 }
@@ -1559,7 +1561,9 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const HEART_RE = /❤|🤍|💕|💖|💗|🥹|🥰|😍|♥|💙|💜|🧡|💛/u;
   const isLoveMsg = t => /אוהב(?:ת|ים)?\s+אות(?:ך|ו|ה|כם|כן)/u.test(t) || /love you/i.test(t) || /^(?:אני\s+)?(?:גם\s+)?(?:אוהב|אוהבת)(?:\s+(?:כל כך|המון|מאוד|יותר|אותך))?$/u.test(t.replace(/[^\p{L}\s]/gu,'').replace(/\s+/g,' ').trim());
   const LOVE_RE = /אוהב(?:ת|ים)?\s+אות|מתגעגע|love you|❤|🥰|😍/iu;
-  const msgOf = m => ({who:m.who, text:m.kind==='text'?m.text.slice(0,600):'', t:m.t, kind:m.kind, media:m.media});
+  const SHOWN = new Set(); // every message quoted in the report, so no moment is told twice
+  const SHOWN_T = new Set(), seen = m => SHOWN.has(m) || (m.kind==='text' && m.text.length>=12 && SHOWN_T.has(m.text));
+  const msgOf = m => { SHOWN.add(m); if (m.kind==='text' && m.text.length>=12) SHOWN_T.add(m.text); return {who:m.who, text:m.kind==='text'?m.text.slice(0,600):'', t:m.t, kind:m.kind, media:m.media}; };
   const B = s => `**${s}**`, q = s => `"${String(s).replace(/\s+/g,' ').trim()}"`, n = v => fmt(v);
   const times = c => c===1 ? 'פעם אחת' : c===2 ? 'פעמיים' : `${n(c)} פעמים`;
   const findIdx = t => msgs.findIndex(m=>m.t===t);
@@ -1671,6 +1675,17 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (ok<0) continue;
     const score = tense + m.text.length/40; if (!makeup || score>makeup.score) makeup = {from, i, ok, score, wait: msgs[i].t - msgs[Math.max(from, i-1)].t};
   }
+  // the fight may have started before a long silence: find where it really broke
+  if (makeup){
+    const TENSE = /!!|\?\?|לא מאמינ|כועס|נעלב|די כבר|למה את|למה אתה|חשוב לי|שוב\b|אף פעם לא/u;
+    for (let k=makeup.from; k>0 && k>makeup.from-6; k--){
+      if (msgs[k].t - msgs[k-1].t < 2*864e5) continue;
+      let s0 = -1, n0 = 0; const end = k-1;
+      for (let j=end; j>=0 && msgs[end].t-msgs[j].t<8*3600e3 && end-j<14; j--){ const r=msgs[j]; if (isText(r) && TENSE.test(r.text)){ n0++; s0 = j; } }
+      if (n0>=1){ if (s0>0 && msgs[s0-1].who===msgs[makeup.i].who && msgs[s0].t-msgs[s0-1].t<3600e3) s0--; makeup.start = s0; makeup.preEnd = end; makeup.gapTo = k; }
+      break;
+    }
+  }
 
   /* ===== 8. the day the chat exploded ===== */
   let bigDay = null;
@@ -1776,7 +1791,11 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     miss:  /מתגעגע|מתגעגעת|מתגעגעים|געגוע|חסר לי|חסרה לי|חסרים לי/u,
     thank: /תודה ש|תודה על|תודה לך על|תודה לכם|תודה לכולם|בזכותך|בזכותכם/u,
   };
-  const isSad = t => EMO_SETS.sad.test(t) && !isLaugh(t) && !/בוכה מ(?:רוב )?צחוק|בוכה מצחוק|מתה מצחוק|מת מצחוק/u.test(t);
+  const HAPPY_TEARS = /מזל טוב|מתרגש|מתרגשת|מאושר|מאושרת|התרגשות|אושר|איזה כיף|🥹|🥰|😍|💍|🎉|🥳|❤️|!!!|\?!|מה\?!/u;
+  const JOY_T = msgs.filter(m=>isText(m) && LIFE.test(m.text)).map(m=>m.t);
+  const isSadAt = m => isSad(m.text) && !(/בוכה|בכיתי|דמעות|😭/u.test(m.text) && !/עצוב|קשה|נפטר|הלוויה|בית חולים|נפרד|שבור|💔/u.test(m.text) && JOY_T.some(t=>m.t>=t && m.t-t<36*3600e3));
+  const isSad = t => EMO_SETS.sad.test(t) && !isLaugh(t) && !/בוכה מ(?:רוב )?צחוק|בוכה מצחוק|מתה מצחוק|מת מצחוק/u.test(t)
+    && !(/בוכה|בכיתי|דמעות/u.test(t) && !/עצוב|קשה|נפטר|הלוויה|בית חולים|נפרד|שבור|💔|😢|😞|😔/u.test(t) && HAPPY_TEARS.test(t));
   const SUPPORT = /אני פה|אני כאן|אני איתך|אנחנו איתך|אנחנו פה|תחזיק|תחזיקי|יהיה בסדר|יהיה טוב|חיבוק|🫂|מחבק|מחבקת|שולח כוח|שולחת כוח|שולחים כוח|רפואה שלמה|בצער|רק בשמחות|תהיה חזק|תהיי חזקה|בשבילך|אוהבים אותך|אלייך|אליך|אני מגיע|אני מגיעה|לנחם|❤|🤍|💪|🙏/u;
   const JOYREPLY = /מזל טוב|איזה כיף|גאה|❤|😍|🥳|🎉|!!!|וואו|מגיע לך|כל הכבוד/u;
   const pickMoment = (re, replyRe, minLen) => { let best=null;
@@ -1789,7 +1808,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   let momJoy = pickMoment(EMO_SETS.joy, JOYREPLY, 8), momSad = pickMoment({test:isSad}, SUPPORT, 12), momMiss = pickMoment(EMO_SETS.miss, /מתגעגע|גם אני|❤|🥹|חסר|בקרוב/u, 10), momThank = pickMoment(EMO_SETS.thank, /❤|🥹|אוהב|תמיד|בכיף|בשבילך|🙏/u, 15);
   const showedUp = {}, cheered = {}; let hardTimes = 0;
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who)) return;
-    const sad = isSad(m.text) && m.text.length>=12, joy = EMO_SETS.joy.test(m.text) && !isLaugh(m.text);
+    const sad = isSadAt(m) && m.text.length>=12, joy = EMO_SETS.joy.test(m.text) && !isLaugh(m.text);
     if (!sad && !joy) return; if (sad) hardTimes++;
     const seen = new Set();
     for (let j=i+1;j<Math.min(msgs.length,i+15);j++){ const r=msgs[j]; if (r.t-m.t>6*3600e3) break; if (r.who===m.who || !inP.has(r.who) || !isText(r) || seen.has(r.who)) continue;
@@ -1809,7 +1828,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const bdayDays = new Set(msgs.filter(m=>isText(m) && /יום הולדת שמח|יומולדת שמח|מזל טוב ליום ההולדת|happy birthday/iu.test(m.text)).map(m=>ymd(new Date(m.t))));
 
   /* ======================= writing ======================= */
-  const used = (i) => (makeup && i>=makeup.from-2 && i<=makeup.ok+3) || (silenceBreak>=0 && i>=silenceBreak && i<=silenceBreak+4);
+  const used = (i) => (makeup && i>=(makeup.start ?? makeup.from)-2 && i<=makeup.ok+3) || (silenceBreak>=0 && i>=silenceBreak && i<=silenceBreak+4);
   for (let k=topHearts.length-1;k>=0;k--) if (used(topHearts[k].i)) topHearts.splice(k,1);
   if (topHearts.length<2) for (const h of hearts){ if (topHearts.length>=2) break; if (used(h.i) || topHearts.some(x=>Math.abs(msgs[x.i].t-msgs[h.i].t)<3*864e5)) continue; topHearts.push(h); }
   topHearts.sort((a,b)=>b.s-a.s);
@@ -1869,7 +1888,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
       {t:'reveal', text: pick([`${best.p.name}, ${q(best.x.key)} ${times(best.x.c)}. זה כבר לא משפט. זה מותג רשום.`, `${q(best.x.key)}. ${times(best.x.c)}. ${best.p.name}, ${g(best.p.name,'אתה','את')} ${g(best.p.name,'יודע','יודעת')} שאפשר לגוון, נכון?`, `אם ${best.p.name} ${g(best.p.name,'יכתוב','תכתוב')} ${q(best.x.key)} עוד פעם אחת, מגיע לזה פרס על מפעל חיים.`])}
     ]});
   }
-  if (longLaugh){
+  if (longLaugh && !seen(msgs[longLaugh.i]) && !(longLaugh.i>0 && seen(msgs[longLaugh.i-1]))){
     const m = msgs[longLaugh.i];
     const prev = longLaugh.i>0 && msgs[longLaugh.i-1].who!==m.who && m.t-msgs[longLaugh.i-1].t<10*60e3 ? longLaugh.i-1 : -1;
     add('comedy', {icon:'🤣', title:'ה"חחח" הכי ארוך בהיסטוריה', blocks:[
@@ -1901,6 +1920,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
       {t:'p', text: pick([`${B(shortKing.who)} ${g(shortKing.who,'ענה','ענתה')} ${q(shortKing.w)}, ולא שום דבר מעבר לזה, ${B(times(shortKing.c))}. משפט שלם, הודעה שלמה, השקפת עולם שלמה.`, `${B(times(shortKing.c))}. זה מספר הפעמים ש${shortKing.who} ${g(shortKing.who,'הסתפק','הסתפקה')} במילה ${q(shortKing.w)}. קצר, ענייני, ומטריף את כל השאר.`])}
     ]});
   }
+  if (owl && nightIdx>=0 && seen(msgs[nightIdx])){ let best=-1; msgs.forEach((m,i)=>{ const h=new Date(m.t).getHours(); if (m.who===owl.name && isText(m) && h<5 && m.text.length>=15 && m.text.length<=200 && !/https?:/.test(m.text) && !seen(m) && (best<0 || m.text.length>msgs[best].text.length)) best=i; }); nightIdx = best; }
   if (owl && nightIdx>=0){
     const t = msgs[nightIdx].t;
     add('roast', {icon:'🦉', title: pick(['משמרת לילה', `${owl.name} אחרי חצות`, 'מה קורה פה בשלוש בלילה']), blocks:[
@@ -1928,10 +1948,11 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   }
   if (duos.length){
     const d = duos[0];
+    const both = (a,b) => GEN[a]==='f' && GEN[b]==='f', ans = (a,b) => both(a,b) ? 'עונות אחת לשנייה' : 'עונים אחד לשני', one = (a,b) => both(a,b) ? 'אחת' : 'אחד', other = (a,b) => both(a,b) ? 'השנייה' : 'השני';
     add('roast', {icon:'👯', title: pick(['הזוגות הסודיים של הקבוצה', 'מי באמת מדבר עם מי', 'קבוצה בתוך קבוצה']), blocks:[
-      {t:'p', text: pick([`על הנייר זו קבוצה של ${n(st.people.length)} אנשים. בפועל? יש פה כמה שיחות פרטיות שמתנהלות בפומבי. ${B(d.a)} ו${B(d.b)} עונים אחד לשני ${B('פי '+(Math.round(d.lift*10)/10))} יותר ממה שהיה צפוי לפי כמה שכל אחד כותב. ${n(d.obs)} פעמים שאחד כתב והשני ענה מיד.`, `${B(d.a)} כותב/ת, ${B(d.b)} עונה. ${B(d.b)} כותב/ת, ${B(d.a)} עונה. ${n(d.obs)} פעמים. פי ${Math.round(d.lift*10)/10} מהצפוי. אולי כדאי לכם קבוצה משלכם.`.replace(`${B(d.a)} כותב/ת`, `${B(d.a)} ${g(d.a,'כותב','כותבת')}`).replace(`${B(d.b)} כותב/ת`, `${B(d.b)} ${g(d.b,'כותב','כותבת')}`).replace(`${B(d.b)} עונה. `, `${B(d.b)} ${g(d.b,'עונה','עונה')}. `)])},
+      {t:'p', text: pick([`על הנייר זו קבוצה של ${n(st.people.length)} אנשים. בפועל? יש פה כמה שיחות פרטיות שמתנהלות בפומבי. ${B(d.a)} ו${B(d.b)} ${ans(d.a,d.b)} ${B('פי '+(Math.round(d.lift*10)/10))} יותר ממה שהיה צפוי לפי כמה שכל אחד כותב. ${n(d.obs)} פעמים ש${one(d.a,d.b)} ${GEN[d.a]==='f'&&GEN[d.b]==='f'?'כתבה':'כתב'} ו${other(d.a,d.b)} ${GEN[d.a]==='f'&&GEN[d.b]==='f'?'ענתה':'ענה'} מיד.`, `${B(d.a)} ${g(d.a,'כותב','כותבת')}, ${B(d.b)} ${g(d.b,'עונה','עונה')}. ${B(d.b)} ${g(d.b,'כותב','כותבת')}, ${B(d.a)} ${g(d.a,'עונה','עונה')}. ${n(d.obs)} פעמים. פי ${Math.round(d.lift*10)/10} מהצפוי. אולי כדאי לכם קבוצה משלכם.`.replace(`${B(d.a)} כותב/ת`, `${B(d.a)} ${g(d.a,'כותב','כותבת')}`).replace(`${B(d.b)} כותב/ת`, `${B(d.b)} ${g(d.b,'כותב','כותבת')}`).replace(`${B(d.b)} עונה. `, `${B(d.b)} ${g(d.b,'עונה','עונה')}. `)])},
       ...(duos[1] ? [{t:'p', text:`ועוד צמד: ${B(duos[1].a)} ו${B(duos[1].b)}, פי ${Math.round(duos[1].lift*10)/10} מהצפוי.`}] : []),
-      ...(strangers ? [{t:'reveal', text: pick([`ומהצד השני: ${strangers.a} ו${strangers.b}. באותה קבוצה, אבל כמעט אף פעם לא עונים אחד לשני ישירות. לא אומרים כלום, רק מציינים.`, `${strangers.a} ו${strangers.b}: שכנים באותו צ'אט שכמעט לא מדברים ישירות. אולי זה הזמן?`])}] : [])
+      ...(strangers ? [{t:'reveal', text: pick([`ומהצד השני: ${strangers.a} ו${strangers.b}. באותה קבוצה, אבל כמעט אף פעם לא ${ans(strangers.a,strangers.b)} ישירות. לא אומרים כלום, רק מציינים.`, `${strangers.a} ו${strangers.b}: שכנים באותו צ'אט שכמעט לא מדברים ישירות. אולי זה הזמן?`])}] : [])
     ]});
   }
   if (bomb){
@@ -1957,7 +1978,20 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   }
 
   // --- act 4: the heart
-  if (makeup){
+  const fightSilence = !!(makeup && makeup.start!=null && silenceBreak>=0 && silenceBreak===makeup.gapTo);
+  if (makeup && makeup.start!=null){
+    const pre = msgs.slice(makeup.start, makeup.preEnd+1); const preShown = pre.length>6 ? pre.slice(0,6) : pre;
+    const seg = msgs.slice(makeup.from, makeup.ok+1); const shown = seg.length>6 ? seg.slice(0,2).concat(seg.slice(-3)) : seg;
+    const ap = msgs[makeup.i], brk = msgs[makeup.gapTo], gapMs = brk.t - msgs[makeup.preEnd].t;
+    const breaker = fightSilence && brk.who!==ap.who ? brk : null;
+    add('heart', {icon:'🌧️', title: pick(['הריב, והדרך חזרה', 'גם זה קרה', 'יום אחד זה לא היה מצחיק']), blocks:[
+      {t:'p', text: pick([`לא הכל פה צחוקים. ב-${heDate(msgs[makeup.start].t)} משהו נשבר. לא נעים לקרוא את זה, אבל דוח אמיתי לא מדלג על החלקים האלה. כי מה שבא אחריהם הוא בדיוק הסיבה שהצ'אט הזה עוד קיים.`, `כל קשר אמיתי עובר רגעים כאלה. ב-${heDate(msgs[makeup.start].t)} היה אחד.`])},
+      {t:'chat', msgs: preShown.map(msgOf), after: `ואז: ${B(dur(gapMs))} של שקט. אף אחד לא כתב פה מילה.`},
+      ...(breaker ? [{t:'p', text: `עד ש${B(breaker.who)}, ${g(breaker.who,'דווקא הוא','דווקא היא')}, ${g(breaker.who,'שבר','שברה')} את השקט:`}, {t:'chat', msgs:[msgOf(breaker)], after:''}] : []),
+      {t:'chat', msgs: shown.filter(x=>!breaker || x!==breaker).map(msgOf), after: pick([`${ap.who} ${g(ap.who,'ביקש','ביקשה')} סליחה. ומה שבא אחר כך הוא כל מה שצריך לדעת על שניכם.`, 'סליחה אמיתית, ותשובה שמוכיחה שהיא נשמעה.', 'זה לא ריב. זה ההוכחה שאכפת.'])},
+      {t:'reveal', text: pick(['ריבים יש לכולם. לחזור ככה יודעים רק מעטים.', 'הצ\'אט הזה לא מושלם. הוא אמיתי. וזה יותר טוב.'])}
+    ]});
+  } else if (makeup){
     const seg = msgs.slice(makeup.from, makeup.ok+1); const shown = seg.length>8 ? seg.slice(0,3).concat(seg.slice(-4)) : seg;
     const ap = msgs[makeup.i];
     add('heart', {icon:'🌧️', title: pick(['הריב, והדרך חזרה', 'גם זה קרה', 'יום אחד זה לא היה מצחיק']), blocks:[
@@ -1966,7 +2000,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
       {t:'reveal', text: pick(['ריבים יש לכולם. לחזור ככה יודעים רק מעטים.', 'הצ\'אט הזה לא מושלם. הוא אמיתי. וזה יותר טוב.'])}
     ]});
   }
-  if (silenceBreak>=0){
+  if (silenceBreak>=0 && !fightSilence){
     const m = msgs[silenceBreak];
     facts.push([st.gap.ms/(25*864e5), pick([`${dur(st.gap.ms)} של שקט, ואז ${m.who}: הדוח על ${chat}`, `השקט הגדול של ${chat}: ${dur(st.gap.ms)}`])]);
     const back = msgs.slice(silenceBreak, silenceBreak+4).filter(x=>x.t-m.t<40*60e3);
@@ -1979,7 +2013,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   if (evo){
     const lines = [];
     const pctUp = (a,z) => a>0 ? Math.round((z/a-1)*100) : 0;
-    if (evo.loveZ > evo.loveA*1.25 && evo.loveZ>0.02) lines.push(`בתקופה הראשונה, ${Math.round(evo.loveA*100)}% מההודעות היו עם לב או "אוהב/ת". בתקופה האחרונה? ${B(Math.round(evo.loveZ*100)+'%')}. זה לא התקרר. זה רק התחמם.`);
+    if (evo.loveZ > evo.loveA*1.25 && evo.loveZ>0.02) lines.push(`בתקופה הראשונה, ${Math.round(evo.loveA*100)}% מההודעות היו עם לב או "אוהב אותך". בתקופה האחרונה? ${B(Math.round(evo.loveZ*100)+'%')}. זה לא התקרר. זה רק התחמם.`);
     else if (evo.loveA > evo.loveZ*1.4 && evo.loveA>0.02) lines.push(`בהתחלה היו פה הרבה יותר לבבות (${Math.round(evo.loveA*100)}% מההודעות, לעומת ${Math.round(evo.loveZ*100)}% היום). אל דאגה, זה לא שהאהבה נגמרה. פשוט כבר לא צריך להוכיח אותה בכל הודעה.`);
     if (evo.laughZ > evo.laughA*1.3 && evo.laughZ>0.03) lines.push(`ובצחוק: היום צוחקים פה ${B(pctUp(evo.laughA, evo.laughZ)+'%')} יותר מאשר בהתחלה. ככל שמכירים יותר, זה נהיה יותר מצחיק.`);
     if (evo.perDayZ > evo.perDayA*1.5) lines.push(`בהתחלה נכתבו פה בערך ${n(evo.perDayA)} הודעות ביום. היום: ${B(n(evo.perDayZ))}. מה שהתחיל כצ'אט הפך לחלק מהיום.`);
@@ -1991,8 +2025,8 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     const [a,b] = P.map(p=>p.name); const la = loveBy[a]||0, lb = loveBy[b]||0;
     if (la+lb >= 6){
       const more = la>=lb ? a : b, less = more===a ? b : a, lm = Math.max(la,lb), ll = Math.min(la,lb);
-      add('heart', {icon:'💌', title: pick(['מי אומר "אוהב/ת" יותר', 'ספרנו את ה"אוהב אותך"']), blocks:[
-        {t:'num', value:n(la+lb), label:`פעמים מישהו פה כתב "אוהב/ת אותך" או משהו קרוב. ${B(more)}: ${n(lm)}. ${B(less)}: ${n(ll)}.`},
+      add('heart', {icon:'💌', title: pick(['מי אומר "אוהב אותך" יותר', 'ספרנו את ה"אוהב אותך"']), blocks:[
+        {t:'num', value:n(la+lb), label:`פעמים מישהו פה כתב "אוהב אותך", "אוהבת אותך" או משהו קרוב. ${B(more)}: ${n(lm)}. ${B(less)}: ${n(ll)}.`},
         {t:'p', text: lm > ll*1.5 ? pick([`${less}, אין לחץ. אבל ${more} ${g(more,'מוביל','מובילה')} בפער. אולי הערב?`, `${more} ${g(more,'אומר','אומרת')} את זה יותר. ${less} ${g(less,'מראה','מראה')} את זה אחרת. ככה זה עובד.`]) : `כמעט תיקו. זה הכי יפה שיש.`}
       ]});
     }
@@ -2031,7 +2065,15 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const numBlocks = [{t:'num', value:n(st.total), label: st.totalWords < 2500 ? `הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים. זו רק ההתחלה.` : pick([`הודעות ב-${n(st.spanDays)} ימים. ${n(st.totalWords)} מילים, כלומר ${(h=>h<1.4?'שעה':h<2.5?'שעתיים':n(h)+' שעות')(st.totalWords/220/60)} של קריאה רצופה.`, `הודעות. אם הייתם מדפיסים את כל זה, זה היה ספר של ${n(st.totalWords/250)} עמודים.`])}];
   if (st.runRec.n>=10) numBlocks.push({t:'num', value:n(st.runRec.n), label:`הודעות ברצף של ${st.runRec.who}, ב-${heDate(st.runRec.t)}, בלי שאף אחד ענה באמצע. מונולוג.`});
   if (st.deleted>=5) numBlocks.push({t:'num', value:n(st.deleted), label:'הודעות שנמחקו. מה היה כתוב שם? רק השולח יודע. והוא לא מספר.'});
-  if (sorryTop) numBlocks.push({t:'num', value:n(sorryTop.sorry), label:`פעמים ש${sorryTop.name} ${g(sorryTop.name,'התנצל','התנצלה')}. ${sorryTop.sorry>=15 ? 'על מה, בדיוק?' : 'מנומס/ת.'.replace('מנומס/ת', g(sorryTop.name,'מנומס','מנומסת'))}`});
+  if (sorryTop){
+    const SORRY_RE = /סליחה|סורי|sorry|מצטער|מצטערת|סלחו/iu, cnt = new Map(); let tot = 0;
+    for (const m of msgs) if (m.who===sorryTop.name && isText(m) && SORRY_RE.test(m.text)){ tot++; const k = m.text.trim(); cnt.set(k, (cnt.get(k)||0)+1); }
+    const top1 = [...cnt.entries()].sort((a,b)=>b[1]-a[1])[0];
+    const habit = top1 && tot>=8 && top1[1]/tot>=.4 && top1[0].length<=40;
+    numBlocks.push({t:'num', value:n(sorryTop.sorry), label: habit
+      ? `פעמים ש${sorryTop.name} ${g(sorryTop.name,'התנצל','התנצלה')}. ${n(top1[1])} מהן: ${q(top1[0])}. זו כבר לא התנצלות, זו חתימה.`
+      : `פעמים ש${sorryTop.name} ${g(sorryTop.name,'התנצל','התנצלה')}. ${sorryTop.sorry>=15 ? 'על מה, בדיוק?' : g(sorryTop.name,'מנומס','מנומסת')+'.'}`});
+  }
   numBlocks.push({t:'num', value:pad(st.peakHour)+':00', label:`השעה הכי עמוסה בצ'אט. היום הכי רועש בשבוע: ${WD[st.peakWd]}.`});
   if (gmTop?.[1]>=5 || gnTop?.[1]>=5){ const bits=[]; if (gmTop?.[1]>=5) bits.push(`${gmTop[0]} ${g(gmTop[0],'פותח','פותחת')} את היום (${times(gmTop[1])} "בוקר טוב")`); if (gnTop?.[1]>=5) bits.push(`${gnTop[0]} ${g(gnTop[0],'סוגר','סוגרת')} אותו (${times(gnTop[1])} "לילה טוב")`); numBlocks.push({t:'p', text: bits.join(', ו') + '. אף אחד לא סיכם על חלוקת התפקידים הזו, וכולם מקיימים אותה.'}); }
 
@@ -2089,10 +2131,11 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (firstLove>=0) ev.push({t:msgs[firstLove].t, s:`💘 ה"אוהב/ת אותך" הראשון`.replace('אוהב/ת', g(msgs[firstLove].who,'אוהב','אוהבת'))});
     if (jokes[0]) ev.push({t:msgs[jokes[0].firstI].t, s:`😂 נולדה הבדיחה ${q(jokes[0].key)}`});
     for (const x of miles) ev.push({t:msgs[x.i].t, s:`${x.ic} ${msgs[x.i].who}: ${q(short(msgs[x.i].text,60))}`});
-    if (makeup) ev.push({t:msgs[makeup.i].t, s:'🌧️ הריב. והסליחה.'});
-    if (st.gap.ms>=4*864e5) ev.push({t:st.gap.from, s:`🤫 ${dur(st.gap.ms)} של שקט`});
+    if (makeup && makeup.start!=null){ ev.push({t:msgs[makeup.start].t, o:0, s:'🌧️ הריב'}); ev.push({t:msgs[makeup.i].t, s:'🤝 הסליחה'}); }
+    else if (makeup) ev.push({t:msgs[makeup.i].t, s:'🌧️ הריב. והסליחה.'});
+    if (st.gap.ms>=4*864e5) ev.push({t:st.gap.from, o:1, s:`🤫 ${dur(st.gap.ms)} של שקט${fightSilence?' אחרי הריב':''}`});
     if (bomb) ev.push({t:msgs[bomb.i].t, s:`💣 ${q(short(msgs[bomb.i].text,40))}, ו-${n(bomb.burst)} תגובות`});
-    ev.sort((a,b)=>a.t-b.t);
+    ev.sort((a,b)=>(a.t-b.t) || ((a.o??.5)-(b.o??.5)));
     const lastT = msgs[msgs.length-1].t;
     if (ev.length>=4){
       const shown = ev.length>10 ? ev.slice(0,3).concat(ev.slice(3,-3).filter((_,k,a)=>k % Math.ceil(a.length/4)===0), ev.slice(-3)) : ev;
@@ -2106,14 +2149,15 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
 
   { // the mood over time: laughter, love and hard days, month by month (3-month rolling, so one loud week doesn't shout)
     const mon = {}; for (const m of msgs){ if (!isText(m)) continue; const k = ymd(new Date(m.t)).slice(0,7); const o = mon[k] ||= {n:0, laugh:0, love:0, sad:0};
-      o.n++; if (isLaugh(m.text)) o.laugh++; if (isLoveMsg(m.text) || LOVE_RE.test(m.text) || HEART_RE.test(m.text)) o.love++; if (isSad(m.text)) o.sad++; }
+      o.n++; if (isLaugh(m.text)) o.laugh++; if (isLoveMsg(m.text) || LOVE_RE.test(m.text) || HEART_RE.test(m.text)) o.love++; if (isSadAt(m)) o.sad++; }
     const months = []; { const d = new Date(msgs[0].t); d.setDate(1); const end = ymd(new Date(msgs[msgs.length-1].t)).slice(0,7); for (let k=0;k<240;k++){ const key = ymd(d).slice(0,7); months.push(key); if (key>=end) break; d.setMonth(d.getMonth()+1); } }
     if (months.length >= 6){
       const roll = key => { const out=[]; months.forEach((mk,i)=>{ let a=0,nn=0; for (let j=Math.max(0,i-1); j<=Math.min(months.length-1,i+1); j++){ const o = mon[months[j]]; if (o){ a+=o[key]; nn+=o.n; } } out.push(nn>=10 ? Math.round(a/nn*1000)/10 : null); }); return out; };
       const series = {laugh: roll('laugh'), love: roll('love'), sad: roll('sad')};
       const peak = arr => { let bi=-1; arr.forEach((v,i)=>{ if (v!=null && (bi<0 || v>arr[bi])) bi=i; }); return bi; };
       const avg = arr => { const v = arr.filter(x=>x!=null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0; };
-      const pk = {laugh: peak(series.laugh), love: peak(series.love), sad: peak(series.sad)};
+      const rawPeak = (key, i) => { if (i<0) return i; let bi=i, bv=-1; for (let j=Math.max(0,i-1); j<=Math.min(months.length-1,i+1); j++){ const o=mon[months[j]]; const v = o && o.n>=5 ? o[key]/o.n : -1; if (v>bv){ bv=v; bi=j; } } return bi; };
+      const pk = {laugh: rawPeak('laugh', peak(series.laugh)), love: rawPeak('love', peak(series.love)), sad: rawPeak('sad', peak(series.sad))};
       const sadReal = pk.sad>=0 && series.sad[pk.sad] >= .25 && series.sad[pk.sad] >= avg(series.sad)*2.5;
       const marks = []; const addMark = (t, ic) => { const k = ymd(new Date(t)).slice(0,7); if (!marks.some(x=>x.k===k) && marks.length<7) marks.push({k, ic}); };
       if (firstLove>=0) addMark(msgs[firstLove].t, '💘'); for (const x of miles) addMark(msgs[x.i].t, x.ic); if (makeup) addMark(msgs[makeup.i].t, '🌧️'); topHearts.forEach(h=>addMark(msgs[h.i].t,'🤍'));
@@ -2149,7 +2193,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (fastTo.length>=2 && fastTo[fastTo.length-1][1] >= fastTo[0][1]*2) bits.push(`למי ${g(reader,'אתה עונה','את עונה')} הכי מהר? ל${B(fastTo[0][0])}, תוך ${dur(fastTo[0][1])}. ול${fastTo[fastTo.length-1][0]}? ${dur(fastTo[fastTo.length-1][1])}. לא שופטים. רק מודדים.`);
     else if (fastTo.length>=1) bits.push(`${g(reader,'אתה עונה','את עונה')} ל${fastTo[0][0]} בדרך כלל תוך ${B(dur(fastTo[0][1]))}.`);
     if (catch_[reader]?.[0]) bits.push(`המשפט ${g(reader,'שלך','שלך')}: ${q(catch_[reader][0].key)}, ${times(catch_[reader][0].c)}. ${g(reader,'אתה','את')} ${g(reader,'יודע','יודעת')}, נכון?`);
-    const myBest = moments.find(mo=>msgs[mo.i].who===reader);
+    const myBest = moments.find(mo=>msgs[mo.i].who===reader && !msgs.slice(mo.i, mo.last+1).some(seen));
     if (bits.length>=2 || myBest){
       const blocks = bits.map(t=>({t:'p', text:t}));
       if (myBest){ blocks.push({t:'p', text: pick([`וההודעה הכי מצחיקה ${g(reader,'שכתבת','שכתבת')} אי פעם, לפי התגובות:`, `ולסיום החלק ${g(reader,'שלך','שלך')}, ההודעה ${g(reader,'שלך','שלך')} שהכי הצחיקה פה:`])}); blocks.push({t:'chat', msgs: msgs.slice(myBest.i, myBest.last+1).map(msgOf), after:''}); }
@@ -2180,7 +2224,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   if (momSad) letter.push(`והיו ימים קשים. ${heDate(msgs[momSad.i].t)}, ${q(short(msgs[momSad.i].text,60))}. ${rock && rock[1]>=2 ? (rock[0]===reader ? `${g(reader,'אתה היית','את היית')} שם. כמו תמיד.` : `${rock[0]} ${g(rock[0],'היה','הייתה')} שם. כמו תמיד.`) : 'ומישהו ענה. כמו תמיד.'}`);
   if (makeup) letter.push(`רבתם, וחזרתם. ואולי יותר מכל השאר, זה מה שהופך את זה לאמיתי.`);
   if (st.gap.ms>=3*864e5) letter.push(`היה שקט של ${dur(st.gap.ms)}. ואז מישהו כתב, והכל המשיך כאילו לא עבר יום.`);
-  if (loveAll>=5) letter.push(`${n(loveAll)} פעמים מישהו פה כתב "אוהב/ת"${firstLove>=0 ? `, הראשונה ב-${heDate(msgs[firstLove].t)}` : ''}.`);
+  if (loveAll>=5) letter.push(`${n(loveAll)} פעמים מישהו פה כתב "אוהב אותך"${firstLove>=0 ? `, הראשונה ב-${heDate(msgs[firstLove].t)}` : ''}.`);
   if (lastMsg) letter.push(`ההודעה האחרונה שנכתבה פה, נכון לרגע שבו נבנה הדוח הזה: ${q(short(lastMsg.text,60))}. היא לא נראית מיוחדת. אף אחת מהן לא נראתה מיוחדת כשהיא נכתבה. רק כשמסתכלים על כולן ביחד, רואים מה זה באמת.`);
   letter.push(pick([`אז בקשה קטנה: כשתסיימו לקרוא, תכתבו פה משהו. לא חייב להיות חכם. רק שידעו שאתם פה.`, `ההודעה הבאה עוד לא נכתבה. תדאגו שהיא תהיה טובה.`, `שמרו על זה. דברים כאלה לא קורים הרבה.`]));
 
@@ -2189,7 +2233,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const fin = [];
   fin.push(`${n(st.spanDays)} ימים.`); fin.push(`${n(st.total)} הודעות.`);
   if (laughsTotal>=5) fin.push(`${n(laughsTotal)} פעמים שמישהו צחק בגלל מישהו אחר.`);
-  if (loveTotal>=5) fin.push(`${n(loveTotal)} פעמים "אוהב/ת".`);
+  if (loveTotal>=5) fin.push(`${n(loveTotal)} פעמים "אוהב אותך".`);
   if (st.gap.ms>=3*864e5) fin.push(`שקט אחד של ${dur(st.gap.ms)}, וחזרה.`);
   const hey = reader ? `${reader}, ` : '';
   const closing = fin.join(' ') + ' ' + pick([

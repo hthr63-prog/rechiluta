@@ -13,14 +13,30 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
+  test:
+    # כל הבדיקות האוטומטיות (tests/run.js). אם משהו נכשל, האתר לא מתעדכן והגרסה הקודמת נשארת באוויר.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: התקנת דפדפן לבדיקות
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: הרצת הבדיקות
+        run: node tests/run.js
   deploy:
+    needs: test
     if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: הכנסת המפתח מהכספת
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
@@ -36,10 +52,20 @@ jobs:
       - name: הכנת קבצי האתר
         run: |
           mkdir _site
-          for f in $(ls -A); do case "$f" in .git|.github|.claude|_site|tools|.gitleaks.toml|SECURITY.md|CLAUDE.md) ;; *) cp -r "$f" _site/ ;; esac; done
+          for f in $(ls -A); do case "$f" in .git|.github|.claude|_site|tools|tests|node_modules|package.json|package-lock.json|.gitleaks.toml|SECURITY.md|CLAUDE.md|.gitignore) ;; *) cp -r "$f" _site/ ;; esac; done
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
-      - id: deployment
+      - id: first_try
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: המתנה לפני ניסיון נוסף
+        if: steps.first_try.outcome == 'failure'
+        run: sleep 30
+      - id: second_try
+        # תקלות זמניות אצל GitHub קורות. ניסיון שני אוטומטי, ורק אם גם הוא נכשל הפרסום נכשל.
+        if: steps.first_try.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+      - id: deployment
+        run: echo "page_url=${{ steps.first_try.outputs.page_url || steps.second_try.outputs.page_url }}" >> "$GITHUB_OUTPUT"

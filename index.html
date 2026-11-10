@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-MAwrqCgXrHWSmJVM4yCGqBoePeIHDMM5sr1F9WFZaCk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-m121cVKTLcggiHuIO9vzL8CRB29np7/YvyYAKx5IPPk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="מישהו קרא את כל הצ'אט שלכם. דוח אישי, מדויק וקורע מצחוק.">
@@ -1537,12 +1537,13 @@ function musicLink(text){
   return null;
 }
 const NAME_M = new Set('אבי אביב אבירם אבנר אברהם אדם אהרון אודי אוהד אורי אוריאל אחיה איל אייל איתי איתמר איתן אלון אלחנן אליאב אליאור אליה אליהו אלירן אלישע אלעד אלעזר אמיר אמיתי אסף אפרים אריאל אריה ארז אשר בועז ביני בן בנימין בני ברק גבי גבריאל גד גדי גיא גיל גלעד דביר דוד דודי דור דורון דן דני הראל זאב חגי חיים חנן טום יאיר יגאל ידין יהודה יהונתן יהושע יואב יואל יוחאי יוסי יוסף יונתן יורם יותם יחיאל ינון יניב יעקב יפתח יצחק ירון ישי ישראל כפיר לביא ליאב ליאם לירן מאור מוטי מיכאל מנחם מני משה מתן מתנאל נדב נחום נחמן ניב ניר ניסים נתן נתנאל סער עדו עוזי עומר עידו עידן עמוס עמרי ערן פלג צביקה צחי קובי רביד רון רועי רז רן רפאל שאול שגיא שילה שלום שלמה שמואל שמעון תומר תמיר'.split(' ')), NAME_F = new Set('אביבית אביגיל אביטל אדל אדווה אודליה אווה אורית אורלי אורנה אושרת אילנה איילת איה אלה אלונה אליאנה אלינור אלישבע אמה אנה אסנת אפרת אריאלה אתי בתיה ברכה גליה גלית גילה דבורה דורית דנה דניאלה דפנה הגר הדס הדר הילה ויקי זהבה זיוה חיה חנה טליה טלי טובה יעל יערה יפית יפעת כנרת לאה לבנה ליאורה ליאת ליה ליהי לילך לימור לינוי ליטל לירז מאיה מגי מורן מורית מיה מיטל מיכל מירב מירי מלכה נגה נוגה נויה נועה נורית נטע נעמה נעמי נתלי סיגל סיון עינב ענבל ענבר עלמה פזית פנינה צליל קרן רבקה רונית רות רחל רינה ריקי רעות שגית שושנה שירה שירן שירי שלומית שני שרה שרית תאיר תהל תהילה תמר'.split(' '));
-const nameGender = (n) => { const w = String(n||'').replace(/[^\p{L}\s]/gu,' ').trim().split(/\s+/)[0]||''; return NAME_M.has(w) ? 'm' : NAME_F.has(w) ? 'f' : ''; };
+const NAME_M_EN = new Set('adam alon amir amit ariel asaf avi ben benny boaz daniel david dan dor doron eitan eyal elad eli eran erez gil gilad guy haim itai itay ido idan omer oren omri ori roi roy ron ronen shai tom tomer uri yair yoav yonatan jonathan yossi aaron alexander andrew anthony benjamin brian charles chris christopher eric ethan george jack jacob james jason john joseph josh joshua kevin liam mark matt matthew max michael mike nathan nick noah oliver paul peter robert ryan samuel steve steven thomas tim tyler william'.split(' ')), NAME_F_EN = new Set('anat ayelet dana dafna efrat einav gali hila inbal keren liat limor maya mia michal moran noa naama nofar orly osnat rachel ronit shira shiri sivan tamar yael sarah sara anna amy ashley ava chloe ella emily emma grace hannah isabella jessica julia kate katie laura lily lucy megan natalie olivia rebecca sophia sophie zoe jennifer lisa mary nicole'.split(' '));
+const nameGender = (n) => { const w = String(n||'').replace(/[^\p{L}\s]/gu,' ').trim().split(/\s+/)[0]||''; const lw = w.toLowerCase(); return NAME_M.has(w) || NAME_M_EN.has(lw) ? 'm' : NAME_F.has(w) || NAME_F_EN.has(lw) ? 'f' : ''; };
 function guessGenders(msgs, people, readerName, readerGender){
   const map = new Map(); for (const [m,f] of G_PAIRS){ map.set(m,'m'); map.set(f,'f'); }
   const vote = {}; const V = (who,g,w=1) => { const o = vote[who] ||= {m:0,f:0}; o[g]+=w; };
-  const two = people.length===2 ? people.map(p=>p.name) : null;
-  for (const m of msgs){ if (m.kind!=='text') continue;
+  const two = people.length===2 ? people.map(p=>p.name) : null; let seenT = 0;
+  for (const m of msgs){ if (m.kind!=='text') continue; if (++seenT > 20000) break; // plenty of votes; keeps huge chats fast
     const tk = m.text.replace(/[^\p{L}\s]/gu,' ').split(/\s+/).filter(Boolean);
     for (let i=0;i<tk.length;i++){
       const w = tk[i];
@@ -1575,7 +1576,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   const isLaugh = t => LAUGH_RE.test(t);
   const hCount = t => Math.max(0, ...(t.match(/ח{3,}/g)||[]).map(x=>x.length));
   const HEART_RE = /❤|🤍|💕|💖|💗|🥹|🥰|😍|♥|💙|💜|🧡|💛/u;
-  const isLoveMsg = t => /אוהב(?:ת|ים)?\s+אות(?:ך|ו|ה|כם|כן)/u.test(t) || /love you/i.test(t) || /^(?:אני\s+)?(?:גם\s+)?(?:אוהב|אוהבת)(?:\s+(?:כל כך|המון|מאוד|יותר|אותך))?$/u.test(t.replace(/[^\p{L}\s]/gu,'').replace(/\s+/g,' ').trim());
+  const isLoveMsg = t => (t.includes('אוהב') || /love/i.test(t)) && (/אוהב(?:ת|ים)?\s+אות(?:ך|ו|ה|כם|כן)/u.test(t) || /love you/i.test(t) || t.length<40 && /^(?:אני\s+)?(?:גם\s+)?(?:אוהב|אוהבת)(?:\s+(?:כל כך|המון|מאוד|יותר|אותך))?$/u.test(t.replace(/[^\p{L}\s]/gu,'').replace(/\s+/g,' ').trim()));
   const LOVE_RE = /אוהב(?:ת|ים)?\s+אות|מתגעגע|love you|❤|🥰|😍/iu;
   const SHOWN = new Set(); // every message quoted in the report, so no moment is told twice
   const SHOWN_T = new Set(), seen = m => SHOWN.has(m) || (m.kind==='text' && m.text.length>=12 && SHOWN_T.has(m.text));
@@ -1634,15 +1635,15 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   /* ===== 4. the private language: words and phrases the chat invented, with the moment each one was born ===== */
   const ph = new Map();
   msgs.forEach((m,i)=>{ if (!isText(m) || !inP.has(m.who) || /https?:/.test(m.text) || isLaugh(m.text) && m.text.length<12) return;
-    const seen = new Set();
+    const seen = new Set(), dk = ymd(new Date(m.t));
     for (const sent of m.text.toLowerCase().split(/[.!?,\n:;()]+/)){ const w = (sent.match(/[\p{L}']+/gu)||[]).filter(x=>!/^ח+$/.test(x));
     for (let L=1; L<=3; L++) for (let k=0;k+L<=w.length;k++){ const gr=w.slice(k,k+L);
-      if (isLaugh(gr.join(' ')) || gr.some(x=>x.length<2) || gr.every(x=>STOP.has(x)||COMMON_HE.has(x)) || STOP.has(gr[0]) || STOP.has(gr[gr.length-1])) continue;
       if (L===1 && (gr[0].length<4 || COMMON_HE.has(gr[0]))) continue;
+      if (STOP.has(gr[0]) || STOP.has(gr[gr.length-1]) || gr.some(x=>x.length<2) || gr.every(x=>STOP.has(x)||COMMON_HE.has(x)) || isLaugh(gr.join(' '))) continue;
       const nm_ = gr.some(isNameish);
       const key = gr.join(' '); if (seen.has(key)) continue; seen.add(key);
       let o = ph.get(key); if (!o){ o = {key, c:0, who:{}, days:new Set(), firstI:i, idx:[], nameish:nm_}; ph.set(key,o); }
-      o.c++; if (o.idx.length<400) o.idx.push(i); o.who[m.who]=(o.who[m.who]||0)+1; o.days.add(ymd(new Date(m.t))); } } });
+      o.c++; if (o.idx.length<400) o.idx.push(i); o.who[m.who]=(o.who[m.who]||0)+1; o.days.add(dk); } } });
   const nameWords = new Set(P.flatMap(p=>p.name.toLowerCase().split(/\s+/)));
   let jokes = [...ph.values()].filter(o=>{ const users=Object.keys(o.who).length, days=o.days.size; const span = msgs[msgs.length-1].t - msgs[o.firstI].t;
       const born = msgs[o.firstI].t - msgs[0].t;
@@ -1677,7 +1678,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
     if (m.text.length < 25 && !replies.length) return;
     hearts.push({i, s, replies});
   });
-  const LIFE = /מתחתנ|התארס|הצעת נישואין|נולד לנו|נולדה לנו|נולד לי|בהריון|קיבלתי את העבודה|התקבלתי|סיימתי את התואר|עברתי את המבחן/u;
+  const LIFE = /מתחתנ|התארס|הצעת נישואין|נולד לנו|נולדה לנו|נולד לי|בהריון|קיבלתי את העבודה|התקבלתי|סיימתי את התואר|עברתי את המבחן|got the job|got engaged|we're engaged|getting married|it's a (?:boy|girl)|pregnant|graduated|got accepted|passed (?:the|my) (?:exam|test)/iu;
   for (let k=hearts.length-1;k>=0;k--){ const h=hearts[k], t=msgs[h.i].text; const keep = LIFE.test(t) && h.replies.length>=2 || (t.length>=30 && h.s>=9) || (t.length>=80 && h.s>=6); if (!keep) hearts.splice(k,1); }
   hearts.sort((a,b)=>b.s-a.s);
   const topHearts = []; for (const h of hearts){ if (topHearts.every(x=>Math.abs(msgs[x.i].t-msgs[h.i].t)>3*864e5)) topHearts.push(h); if (topHearts.length>=2) break; }
@@ -1740,7 +1741,8 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
   let hang = null;
   for (let i=0;i<msgs.length-1;i++){ const m=msgs[i], nx=msgs[i+1]; if (!isText(m) || !inP.has(m.who) || !m.text.includes('?') || m.text.length<10 || m.text.length>160 || /https?:/.test(m.text)) continue; if (nx.who===m.who) continue; const gp=nx.t-m.t; if (gp>=3*3600e3 && gp<=4*864e5 && (!hang || gp>hang.g)) hang = {i, g:gp}; }
   const silenceBreak = st.gap.ms>=3*864e5 ? findIdx(st.gap.to) : -1;
-  const mentions = {}; if (st.isGroup){ for (const m of msgs){ if (!isText(m)) continue; for (const p of P){ if (p.name===m.who) continue; const fn = first(p.name); if (fn.length>=2 && new RegExp('(^|[^\\p{L}])'+fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^\\p{L}]|$)','u').test(m.text)) mentions[p.name]=(mentions[p.name]||0)+1; } } }
+  const NAME_RE = new Map(P.map(p=>{ const fn = first(p.name); return [p.name, fn.length>=2 ? {fn, re:new RegExp('(^|[^\\p{L}])'+fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^\\p{L}]|$)','u')} : null]; }));
+  const mentions = {}; if (st.isGroup){ for (const m of msgs){ if (!isText(m)) continue; for (const p of P){ if (p.name===m.who) continue; const nr = NAME_RE.get(p.name); if (nr && m.text.includes(nr.fn) && nr.re.test(m.text)) mentions[p.name]=(mentions[p.name]||0)+1; } } }
   const star = topOf(mentions);
   const sorryTop = P.filter(p=>p.sorry>=4).sort((a,b)=>b.sorry-a.sorry)[0];
   const mono = P.slice().sort((a,b)=>(b.longest||'').length-(a.longest||'').length)[0];
@@ -1987,7 +1989,7 @@ function quickReport(msgs, st, reader, readerGender, personal=false){
           reveal: `וזה לא אומר של${lo.name} אכפת פחות. זה אומר שיש פה מישהו שלא ${g(hi.name,'מוותר','מוותרת')} אף פעם. ${lo.name}, אולי מחר ${g(lo.name,'אתה תכתוב','את תכתבי')} ראשונ${g(lo.name,'','ה')}?`};
       }
     } else if (st.isGroup){
-      const dm = {}; for (const m of msgs){ if (!isText(m) || !inP.has(m.who)) continue; for (const p of P){ if (p.name===m.who) continue; const fn = first(p.name); if (fn.length>=2 && new RegExp(`(^|[^\\p{L}])${fn.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![\\p{L}])`,'u').test(m.text)) dm[m.who+'→'+p.name]=(dm[m.who+'→'+p.name]||0)+1; } }
+      const dm = {}; for (const m of msgs){ if (!isText(m) || !inP.has(m.who)) continue; for (const p of P){ if (p.name===m.who) continue; const nr = NAME_RE.get(p.name); if (nr && m.text.includes(nr.fn) && nr.re.test(m.text)) dm[m.who+'→'+p.name]=(dm[m.who+'→'+p.name]||0)+1; } }
       let best = null; for (const [k,v] of Object.entries(dm)){ const [x,y]=k.split('→'); const back = dm[y+'→'+x]||0; if (v>=15 && v>=back*2.5 && (!best || v-back>best.v-best.back)) best={x,y,v,back}; }
       if (best) line = {a:best.x, b:best.y, text: pick([`${B(best.x)} ${g(best.x,'פנה','פנתה')} ל${B(best.y)} בשם ${B(times(best.v))}. ${best.y} ${g(best.y,'פנה','פנתה')} ל${best.x}? ${best.back ? times(best.back) : 'אף פעם'}.`, `${B(times(best.v))} ${best.x} ${g(best.x,'כתב','כתבה')} את השם של ${B(best.y)} בצ'אט. בכיוון ההפוך: ${best.back ? times(best.back) : 'אף לא פעם אחת'}.`]),
         reveal: `לא אומרים כלום. רק מציינים. ${best.y}, ${g(best.x,'הוא','היא')} ${g(best.x,'מחפש','מחפשת')} אות${g(best.y,'ך','ך')}. אולי הגיע הזמן ${g(best.y,'שתחפש','שתחפשי')} בחזרה.`};
@@ -2659,6 +2661,7 @@ async function runPipeline(job){
 let QUICK_READY = false;
 async function quickPath(){
   const L = $('#loading'); L.hidden = false; $('#report').innerHTML = ''; QUICK_READY = false;
+  await new Promise(r=>requestAnimationFrame(()=>setTimeout(r, 40))); // let the loading screen paint before the heavy lifting
   try { REP = quickReport(MSGS, ST, VIEW.reader); } catch(e){ console.error(e); REP = null; }
   VIEW.persona = 'mix'; VIEW.quick = true; await idbDel('job');
   if (!REP){ L.hidden = true; $('#banner').innerHTML = '<div class="err">משהו השתבש בהכנת הדוח. נסו קובץ אחר.</div>'; renderReport(); return; }

@@ -13,6 +13,7 @@ const ok = (cond, msg) => { results.push({ test: current, ok: !!cond, msg }); if
 function makeFixtures() {
   const out = {};
   for (const g of ['couple', 'group']) { out[g] = path.join(TMP, g + '.txt'); execFileSync('python3', ['-I', path.join(FIX, `gen_${g}.py`), out[g]]); }
+  for (const st of ['ios', 'android']) { out['english_' + st] = path.join(TMP, `english_${st}.txt`); fs.writeFileSync(out['english_' + st], execFileSync('python3', ['-I', path.join(FIX, 'gen_english.py'), '-', st])); }
   for (const f of fs.readdirSync(FIX).filter(f => f.endsWith('.txt'))) out[f.replace('.txt', '')] = path.join(FIX, f);
   // zip כמו שוואטסאפ מייצא מאייפון
   out.zip = path.join(TMP, 'chat.zip');
@@ -56,7 +57,7 @@ function hygiene(name, text, rep) {
   const seen = new Map(), dups = [];
   for (const sec of rep.sections) for (const bl of sec.blocks) if (bl.t === 'chat') for (const m of bl.msgs) {
     if (!m.text || m.text.length < 12 || /^ח{3,}/.test(m.text)) continue;
-    const k = m.who + '|' + m.text; if (seen.has(k) && seen.get(k) !== sec.title) dups.push(`"${m.text.slice(0, 30)}" ב-${seen.get(k)} וב-${sec.title}`); else seen.set(k, sec.title);
+    const k = m.who + '|' + m.t + '|' + m.text; if (seen.has(k) && seen.get(k) !== sec.title) dups.push(`"${m.text.slice(0, 30)}" ב-${seen.get(k)} וב-${sec.title}`); else seen.set(k, sec.title);
   }
   ok(dups.length === 0, `${name}: אין ציטוט כפול בין פרקים ${dups.slice(0, 2).join(' ; ')}`);
   const minS = text.length > 4000 ? 8 : 4; ok(rep.sections.length >= minS, `${name}: לפחות ${minS} פרקים (${rep.sections.length})`);
@@ -97,9 +98,36 @@ test('המפענח מסנן הודעות מערכת', async ({ page }) => {
   ok(!texts.some(t => /נוצרה|צורפת|לא נענתה|הוסיף\/ה|Missed|omitted|נכלל/.test(t)), `הודעות מערכת לא נספרות כטקסט (${texts.join(' | ')})`);
 });
 
+test('ייצוא באנגלית: אייפון ואנדרואיד', async ({ page, fx }) => {
+  for (const st of ['ios', 'android']) {
+    const raw = fs.readFileSync(fx['english_' + st], 'utf8');
+    const r = await page.evaluate((raw) => { const msgs = parseChat(raw); const d = t => { const x = new Date(t); return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()} ${x.getHours()}:${String(x.getMinutes()).padStart(2, '0')}`; };
+      const job = msgs.find(m => /got the job/.test(m.text || ''));
+      return { n: msgs.length, people: computeStats(msgs, '').people.map(p => p.name).sort().join(','), job: job && d(job.t), last: d(msgs[msgs.length - 1].t),
+        sys: msgs.filter(m => m.kind === 'text' && /created group|added|left|end-to-end|Missed voice|omitted|was deleted/i.test(m.text)).length,
+        media: msgs.filter(m => m.kind === 'media').length, del: msgs.filter(m => m.kind === 'deleted').length }; }, raw);
+    ok(r.people === 'Ben,Maya,Noa,Tom', `${st}: ארבעה משתתפים, בלי "הקבוצה" כמשתתף (${r.people})`);
+    ok(r.job === '2024-2-12 22:00', `${st}: תאריך אמריקאי ושעה של 12 שעות מתפרשים נכון (${r.job})`);
+    ok(r.last === '2024-7-20 14:36', `${st}: ההודעה האחרונה בתאריך הנכון (${r.last})`);
+    ok(r.sys === 0, `${st}: הודעות מערכת באנגלית לא נספרות כטקסט (${r.sys})`);
+    ok(r.media > 10 && r.del > 3, `${st}: מדיה והודעות שנמחקו מזוהות (${r.media}, ${r.del})`);
+  }
+});
+
+test('צ\'אט ענק: 100 אלף הודעות', async ({ page }) => {
+  const r = await page.evaluate(() => { const base = makeDemoChat().split('\n'); const out = [];
+    for (let k = 0; k < 27; k++) for (const l of base) out.push(l.replace(/(\d\d)\.(\d\d)\.(20\d\d)/, (m, d, mo, y) => `${d}.${mo}.${+y + k * 4}`));
+    const t0 = performance.now(); const msgs = parseChat(out.join('\n')); const st = computeStats(msgs, ''); const t1 = performance.now();
+    let rep = null, err = ''; try { rep = quickReport(msgs, st, 'נועה', 'f'); } catch (e) { err = e.message; }
+    return { n: msgs.length, read: Math.round(t1 - t0), build: Math.round(performance.now() - t1), secs: rep ? rep.sections.length : 0, err }; });
+  ok(!r.err && r.n > 100000, `צ'אט של ${r.n} הודעות עובר בלי שגיאה ${r.err}`);
+  ok(r.secs >= 20, `גם בצ'אט ענק הדוח מלא (${r.secs} פרקים)`);
+  ok(r.read + r.build < 12000, `זמן סביר (קריאה ${r.read}ms, דוח ${r.build}ms)`);
+});
+
 test('המנוע על כל הצ\'אטים', async ({ page, fx }) => {
   const runs = [['demo', null, 'נועה', 'f'], ['demo', null, 'איתי', 'm'], ['couple', fx.couple, '', ''], ['group', fx.group, '', ''], ['tiny', fx.tiny, '', '']];
-  if (fx.english) runs.push(['english', fx.english, '', '']);
+  runs.push(['english_ios', fx.english_ios, '', ''], ['english_android', fx.english_android, '', '']);
   for (const [name, file, reader, g] of runs) {
     const raw = file ? fs.readFileSync(file, 'utf8') : null;
     const res = await page.evaluate(({ raw, reader, g }) => { try {
